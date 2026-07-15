@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/forms.css">
+    <style>
+        .invoice-preview {
+            background: var(--card-bg);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+        .invoice-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qr-placeholder {
+            width: 100px;
+            height: 100px;
+            border: 1px dashed var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4" data-aos="fade-down">
+                    <div class="mb-3 mb-md-0">
+                        <h2 class="mb-0 fw-bold">Billing & Invoice</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Billing</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Billing Form -->
+                    <div class="col-12 col-xl-5" data-aos="fade-right">
+                        <div class="card h-100">
+                            <div class="card-header pt-4 pb-0 border-bottom-0">
+                                <h5 class="fw-bold">Create Invoice</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="billingForm">
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="billCustomer" required>
+                                            <option value="" selected disabled>Select Customer</option>
+                                            <option value="1">Alexander Pierce (CUST-001)</option>
+                                            <option value="2">Sarah Connor (CUST-002)</option>
+                                        </select>
+                                        <label for="billCustomer"><i class="bi bi-person me-2"></i>Customer</label>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label text-muted small fw-bold text-uppercase">Add Items</label>
+                                        <div class="input-group mb-2">
+                                            <select class="form-select" id="itemSelect">
+                                                <option selected disabled>Select Product/Lens</option>
+                                                <option value="150" data-name="Ray-Ban Aviator Classic">Ray-Ban Aviator Classic - $150</option>
+                                                <option value="200" data-name="Zeiss Progressive Lenses">Zeiss Progressive Lenses - $200</option>
+                                                <option value="35" data-name="Eye Exam">Eye Exam - $35</option>
+                                            </select>
+                                            <button class="btn btn-secondary text-white" type="button" id="addItemBtn"><i class="bi bi-plus-lg"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input type="number" class="form-control" id="discount" placeholder="Discount %" value="0" min="0" max="100">
+                                                <label for="discount">Discount (%)</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input type="number" class="form-control" id="gst" placeholder="GST %" value="18" min="0" max="100">
+                                                <label for="gst">GST/Tax (%)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid gap-2 mt-auto">
+                                        <button type="button" class="btn btn-primary py-2 fw-bold shadow-sm" id="generateInvoiceBtn">
+                                            <i class="bi bi-receipt me-2"></i>Generate Invoice
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Preview -->
+                    <div class="col-12 col-xl-7" data-aos="fade-left">
+                        <div class="invoice-preview h-100 d-flex flex-column" id="printableInvoice">
+                            
+                            <!-- Header -->
+                            <div class="invoice-header d-flex justify-content-between">
+                                <div>
+                                    <h2 class="text-primary fw-bold mb-1"><i class="bi bi-eyeglasses me-2"></i>VisionEdge</h2>
+                                    <p class="text-muted small mb-0">123 Optic Street, Vision City</p>
+                                    <p class="text-muted small mb-0">Phone: (555) 123-4567 | GSTIN: 22AAAAA0000A1Z5</p>
+                                </div>
+                                <div class="text-end">
+                                    <h4 class="fw-bold text-uppercase text-secondary mb-1">Invoice</h4>
+                                    <p class="mb-0 fw-medium">#INV-<span id="invNumber">2026100</span></p>
+                                    <p class="text-muted small mb-0">Date: <span id="invDate">Oct 26, 2026</span></p>
+                                </div>
+                            </div>
+
+                            <!-- Bill To -->
+                            <div class="row mb-4">
+                                <div class="col-sm-6">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-2">Billed To:</h6>
+                                    <h6 class="fw-bold mb-1" id="invCustomerName">Alexander Pierce</h6>
+                                    <p class="text-muted small mb-0">Customer ID: CUST-001</p>
+                                </div>
+                            </div>
+
+                            <!-- Items Table -->
+                            <div class="table-responsive mb-4 flex-grow-1">
+                                <table class="table table-borderless align-middle border-bottom">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Description</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoiceItems">
+                                        <!-- Items injected here -->
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted py-4">No items added yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Totals -->
+                            <div class="row">
+                                <div class="col-sm-6 d-flex align-items-center mb-3 mb-sm-0">
+                                    <!-- QR Code Placeholder -->
+                                    <div class="d-flex align-items-center">
+                                        <div class="qr-placeholder me-3 rounded">
+                                            <i class="bi bi-qr-code fs-1 text-muted opacity-50"></i>
+                                        </div>
+                                        <div class="small text-muted">
+                                            Scan to Pay<br>UPI ID: visionedge@upi
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <table class="table table-borderless table-sm text-end mb-0">
+                                        <tr>
+                                            <td class="text-muted">Subtotal:</td>
+                                            <td class="fw-medium" id="invSubtotal">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Discount (<span id="invDiscPerc">0</span>%):</td>
+                                            <td class="text-danger" id="invDiscAmount">-$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">GST (<span id="invGstPerc">18</span>%):</td>
+                                            <td class="fw-medium" id="invGstAmount">+$0.00</td>
+                                        </tr>
+                                        <tr class="border-top">
+                                            <td class="fs-5 fw-bold text-primary pt-2">Grand Total:</td>
+                                            <td class="fs-5 fw-bold text-primary pt-2" id="invTotal">$0.00</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons (Hidden on print) -->
+                            <div class="d-flex justify-content-end mt-4 pt-3 border-top d-print-none gap-2">
+                                <button class="btn btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer me-2"></i>Print</button>
+                                <a href="payment.html" class="btn btn-success shadow-sm"><i class="bi bi-credit-card me-2"></i>Proceed to Payment</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({duration: 800, once: true});</script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/billing.js"></script>
+    
+    <style>
+        /* Print Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #printableInvoice, #printableInvoice * { visibility: visible; }
+            #printableInvoice { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; }
+            .d-print-none { display: none !important; }
+        }
+    </style>
+</body>
+</html>

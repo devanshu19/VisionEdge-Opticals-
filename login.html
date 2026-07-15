@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VisionEdge Opticals</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(-45deg, var(--primary-color), var(--secondary-color), var(--accent-color), #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            padding: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .login-card .form-control {
+            border: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .login-card .form-control:focus {
+            border-bottom: 2px solid var(--accent-color);
+            box-shadow: none;
+        }
+        
+        .invalid-feedback {
+            color: #FFD166 !important;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card glass animate__animated animate__zoomIn">
+        <div class="text-center mb-5">
+            <h2 class="text-white fw-bold mb-2 d-flex align-items-center justify-content-center">
+                <i class="bi bi-eyeglasses text-info me-2 fs-1"></i>VisionEdge
+            </h2>
+            <p class="text-light opacity-75">Sign in to manage your optical shop</p>
+        </div>
+
+        <form id="loginForm" class="needs-validation" novalidate>
+            <div class="form-floating mb-4">
+                <input type="text" class="form-control bg-white bg-opacity-75 text-dark fw-medium" id="username" placeholder="Username" required value="admin">
+                <label for="username" class="text-dark"><i class="bi bi-person-fill me-2"></i>Username</label>
+                <div class="invalid-feedback">Please enter your username.</div>
+            </div>
+
+            <div class="form-floating mb-4 position-relative">
+                <input type="password" class="form-control bg-white bg-opacity-75 text-dark fw-medium" id="password" placeholder="Password" required value="password123">
+                <label for="password" class="text-dark"><i class="bi bi-lock-fill me-2"></i>Password</label>
+                <button type="button" class="btn btn-link text-dark position-absolute end-0 top-50 translate-middle-y text-decoration-none pt-0" id="togglePassword">
+                    <i class="bi bi-eye-fill fs-5"></i>
+                </button>
+                <div class="invalid-feedback">Please enter your password.</div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check text-light">
+                    <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                    <label class="form-check-label small" for="rememberMe">Remember Me</label>
+                </div>
+                <a href="#" class="text-info text-decoration-none small hover-underline">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold text-uppercase shadow" style="border-radius: 12px;">
+                Login <i class="bi bi-box-arrow-in-right ms-2"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password Visibility Toggle
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const password = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('bi-eye-fill');
+                icon.classList.add('bi-eye-slash-fill');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('bi-eye-slash-fill');
+                icon.classList.add('bi-eye-fill');
+            }
+        });
+
+        // Form Validation & Redirect
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (form.checkValidity()) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Authenticating...';
+                btn.disabled = true;
+                
+                // Simulate network request
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1200);
+            } else {
+                form.classList.add('was-validated');
+            }
+        }, false);
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Customer - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/forms.css">
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <!-- Page Header -->
+                <div class="d-flex align-items-center mb-4" data-aos="fade-down">
+                    <a href="customers.html" class="btn btn-link text-main p-0 me-3 fs-4"><i class="bi bi-arrow-left"></i></a>
+                    <div>
+                        <h2 class="mb-0 fw-bold">Add New Customer</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Home</a></li>
+                                <li class="breadcrumb-item"><a href="customers.html" class="text-decoration-none text-muted">Customers</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Add Customer</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="row" data-aos="fade-up" data-aos-delay="100">
+                    <div class="col-12 col-xl-8">
+                        <div class="card">
+                            <div class="card-body p-4 p-md-5">
+                                <form id="addCustomerForm" class="needs-validation" novalidate>
+                                    
+                                    <h5 class="fw-bold mb-4 text-primary border-bottom pb-2">Personal Information</h5>
+                                    
+                                    <div class="row g-4 mb-4">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
+                                                <label for="firstName"><i class="bi bi-person me-2"></i>First Name</label>
+                                                <div class="invalid-feedback">First name is required.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
+                                                <label for="lastName"><i class="bi bi-person me-2"></i>Last Name</label>
+                                                <div class="invalid-feedback">Last name is required.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="tel" class="form-control" id="phone" placeholder="Phone Number" required pattern="[0-9]{10}">
+                                                <label for="phone"><i class="bi bi-telephone me-2"></i>Phone Number</label>
+                                                <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="email" class="form-control" id="email" placeholder="Email Address">
+                                                <label for="email"><i class="bi bi-envelope me-2"></i>Email Address (Optional)</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <select class="form-select" id="gender" required>
+                                                    <option value="" selected disabled>Select Gender</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <label for="gender"><i class="bi bi-gender-ambiguous me-2"></i>Gender</label>
+                                                <div class="invalid-feedback">Please select a gender.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="number" class="form-control" id="age" placeholder="Age" min="1" max="120">
+                                                <label for="age"><i class="bi bi-calendar me-2"></i>Age</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control" id="dob">
+                                                <label for="dob">Date of Birth</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="fw-bold mb-4 text-primary border-bottom pb-2">Address Information</h5>
+                                    
+                                    <div class="row g-4 mb-5">
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="address" placeholder="Address" required>
+                                                <label for="address"><i class="bi bi-geo-alt me-2"></i>Street Address</label>
+                                                <div class="invalid-feedback">Address is required.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="city" placeholder="City" required>
+                                                <label for="city"><i class="bi bi-building me-2"></i>City</label>
+                                                <div class="invalid-feedback">City is required.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="zipcode" placeholder="Zip Code" required>
+                                                <label for="zipcode"><i class="bi bi-postage me-2"></i>Zip Code</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end gap-3">
+                                        <button type="button" class="btn btn-light px-4 py-2" onclick="window.location.href='customers.html'">Cancel</button>
+                                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">Save Customer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-xl-4 d-none d-xl-block" data-aos="fade-left" data-aos-delay="200">
+                        <div class="card bg-primary bg-opacity-10 border-0 h-100">
+                            <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                <img src="https://picsum.photos/200/200?random=2" alt="Illustration" class="img-fluid rounded-circle shadow mb-4" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h4 class="fw-bold text-primary">Customer Management</h4>
+                                <p class="text-muted">Accurate customer records ensure better service, personalized lens recommendations, and faster billing.</p>
+                                <ul class="list-unstyled text-start w-100 mt-3 text-muted">
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> SMS Notifications ready</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Auto-links to prescriptions</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Tracks purchase history</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({duration: 800, once: true});</script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/customers.js"></script>
+</body>
+</html>
