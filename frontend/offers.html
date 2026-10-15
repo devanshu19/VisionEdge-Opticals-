@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers &amp; Flash Sales - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=20">
+    
+    <!-- Theme Initialization -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('visionEdgeTheme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+    
+    <style>
+        .offers-hero {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #2563EB 100%);
+            padding: 120px 0 60px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .countdown-timer {
+            display: inline-flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 75px;
+        }
+
+        .timer-number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #38BDF8;
+        }
+
+        .timer-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .offer-card {
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .offer-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .offer-card.hero-offer {
+            background: linear-gradient(135deg, #2563EB 0%, #06B6D4 100%);
+            color: white !important;
+            border: none;
+        }
+
+        .coupon-code-pill {
+            border: 2px dashed rgba(37, 99, 235, 0.5);
+            background: rgba(37, 99, 235, 0.06);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero-offer .coupon-code-pill {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .coupon-code-pill:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <header class="offers-hero">
+        <div class="container" data-aos="fade-up">
+            <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold mb-3 shadow-sm animate__animated animate__pulse animate__infinite">
+                <i class="bi bi-fire me-1"></i> MEGA OPTICAL SALE 2026
+            </span>
+            <h1 class="display-4 fw-bold mb-2">Exclusive Deals &amp; Promo Codes</h1>
+            <p class="lead opacity-90 mx-auto" style="max-width: 650px;">
+                Save big on luxury frames, prescription lenses, computer glasses, and sunglasses. Click any code to copy!
+            </p>
+
+            <div class="countdown-timer text-center">
+                <div class="timer-box">
+                    <div class="timer-number" id="t-hours">14</div>
+                    <div class="timer-label">Hours</div>
+                </div>
+                <div class="timer-box">
+                    <div class="timer-number" id="t-mins">35</div>
+                    <div class="timer-label">Mins</div>
+                </div>
+                <div class="timer-box">
+                    <div class="timer-number" id="t-secs">48</div>
+                    <div class="timer-label">Secs</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-5">
+        <div class="container py-4">
+            
+            <div class="row g-4">
+                
+                <!-- Hero Deal 1 -->
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="offer-card hero-offer p-5 text-center d-flex flex-column justify-content-center">
+                        <span class="badge bg-white text-primary rounded-pill w-auto align-self-center px-3 py-2 fw-bold mb-3 shadow-sm">
+                            SUMMER SALE
+                        </span>
+                        <h2 class="display-5 fw-bold mb-3 text-white">Flat 30% OFF</h2>
+                        <p class="fs-5 opacity-90 mb-4">On all sunglasses and photochromic lenses. Valid till end of the month.</p>
+                        
+                        <div class="mt-auto">
+                            <p class="small opacity-80 mb-2">Click to copy code</p>
+                            <div class="coupon-code-pill" onclick="copyCouponCode('VISION30', this)" role="button" title="Click to copy code">
+                                <span>VISION30</span>
+                                <i class="bi bi-clipboard-check ms-1"></i>
+                            </div>
+                            <div class="mt-4">
+                                <a href="products.html?search=sunglasses" class="btn btn-light btn-lg px-4 py-2 fw-bold text-primary shadow">Shop Sunglasses Now <i class="bi bi-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Deal 2 -->
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="offer-card p-5 text-center d-flex flex-column justify-content-center border-2" style="border-color: var(--primary-color) !important;">
+                        <span class="badge bg-primary rounded-pill w-auto align-self-center px-3 py-2 fw-bold mb-3">
+                            BOGO
+                        </span>
+                        <h2 class="display-5 fw-bold mb-3 text-primary">Buy 1 Get 1 Free</h2>
+                        <p class="fs-5 text-muted mb-4">Buy any premium frame and get a second frame of equal or lesser value absolutely free.</p>
+                        
+                        <div class="mt-auto">
+                            <p class="small text-muted mb-2">Click to copy code</p>
+                            <div class="coupon-code-pill" onclick="copyCouponCode('BOGO2026', this)" role="button" title="Click to copy code">
+                                <span>BOGO2026</span>
+                                <i class="bi bi-clipboard-check ms-1"></i>
+                            </div>
+                            <div class="mt-4">
+                                <a href="products.html" class="btn btn-primary btn-lg px-4 py-2 fw-bold shadow">Shop BOGO Frames <i class="bi bi-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 3: Student Special -->
+                <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="offer-card p-4 d-flex align-items-center gap-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 75px; height: 75px;">
+                            <i class="bi bi-mortarboard-fill fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="badge bg-primary rounded-pill px-2 py-1 small mb-1">STUDENT SPECIAL</span>
+                            <h4 class="fw-bold mb-1">Student Extra 15% OFF</h4>
+                            <p class="text-muted small mb-2">Valid for high school and university students on all eyeglasses and computer lenses.</p>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="coupon-code-pill py-1 px-3 fs-6" onclick="copyCouponCode('STUDENT15', this)" role="button" title="Click to copy code">
+                                    <span>STUDENT15</span>
+                                    <i class="bi bi-clipboard-check ms-1"></i>
+                                </div>
+                                <a href="products.html" class="text-primary fw-bold text-decoration-none small">Shop Now <i class="bi bi-chevron-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 4: Free Express Delivery -->
+                <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="offer-card p-4 d-flex align-items-center gap-4">
+                        <div class="bg-accent bg-opacity-10 text-accent rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 75px; height: 75px;">
+                            <i class="bi bi-truck fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="badge bg-success rounded-pill px-2 py-1 small mb-1">PRIORITY SHIPPING</span>
+                            <h4 class="fw-bold mb-1">Free Priority Shipping</h4>
+                            <p class="text-muted small mb-2">Free 48-hour door delivery across India on all orders over ₹999.</p>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="coupon-code-pill py-1 px-3 fs-6" onclick="copyCouponCode('FREESHIP', this)" role="button" title="Click to copy code">
+                                    <span>FREESHIP</span>
+                                    <i class="bi bi-clipboard-check ms-1"></i>
+                                </div>
+                                <a href="products.html" class="text-success fw-bold text-decoration-none small">Shop Now <i class="bi bi-chevron-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notification for Copy -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="copyToast" class="toast align-items-center text-white bg-dark border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex p-2">
+                <div class="toast-body fw-medium" id="toastMessage">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i> Coupon code copied to clipboard!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js?v=20"></script>
+    <script>
+        // Countdown timer animation logic
+        function updateTimer() {
+            const h = document.getElementById('t-hours');
+            const m = document.getElementById('t-mins');
+            const s = document.getElementById('t-secs');
+
+            let secVal = parseInt(s.innerText || 48);
+            if (secVal > 0) {
+                s.innerText = String(secVal - 1).padStart(2, '0');
+            } else {
+                s.innerText = '59';
+                let minVal = parseInt(m.innerText || 35);
+                if (minVal > 0) {
+                    m.innerText = String(minVal - 1).padStart(2, '0');
+                } else {
+                    m.innerText = '59';
+                    let hourVal = parseInt(h.innerText || 14);
+                    if (hourVal > 0) {
+                        h.innerText = String(hourVal - 1).padStart(2, '0');
+                    }
+                }
+            }
+        }
+        setInterval(updateTimer, 1000);
+
+        function copyCouponCode(code, element) {
+            const saveText = (str) => {
+                if (navigator.clipboard && window.isSecureContext) {
+                    return navigator.clipboard.writeText(str);
+                } else {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = str;
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        const successful = document.execCommand('copy');
+                        textArea.remove();
+                        return successful ? Promise.resolve() : Promise.reject();
+                    } catch (e) {
+                        textArea.remove();
+                        return Promise.reject(e);
+                    }
+                }
+            };
+
+            saveText(code).then(() => {
+                // Save coupon to localStorage for automated apply at checkout
+                const couponData = {
+                    code: code,
+                    discountPercent: code === 'VISION30' ? 30 : (code === 'STUDENT15' ? 15 : (code === 'BOGO2026' ? 50 : 0)),
+                    type: code === 'BOGO2026' ? 'bogo' : (code === 'FREESHIP' ? 'free_shipping' : 'percent'),
+                    title: code === 'VISION30' ? 'Flat 30% OFF' : (code === 'BOGO2026' ? 'Buy 1 Get 1 Free' : (code === 'STUDENT15' ? 'Student 15% OFF' : 'Free Priority Delivery'))
+                };
+                localStorage.setItem('activeCoupon', JSON.stringify(couponData));
+
+                // Button visual animation
+                const pill = element || (event ? event.currentTarget : null);
+                if (pill) {
+                    const origContent = pill.innerHTML;
+                    pill.innerHTML = `<span>COPIED!</span> <i class="bi bi-check2-circle text-success ms-1"></i>`;
+                    pill.style.borderColor = '#10B981';
+                    pill.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+                    setTimeout(() => {
+                        pill.innerHTML = origContent;
+                        pill.style.borderColor = '';
+                        pill.style.backgroundColor = '';
+                    }, 2200);
+                }
+
+                // Show Toast Notification with direct Shop Now button
+                const toastEl = document.getElementById('copyToast');
+                if (toastEl) {
+                    const msgEl = document.getElementById('toastMessage');
+                    if (msgEl) {
+                        msgEl.innerHTML = `<i class="bi bi-check-circle-fill text-success me-2"></i>Coupon <strong>"${code}"</strong> copied & applied! <a href="products.html" class="btn btn-sm btn-primary fw-bold ms-3 py-1 px-3 shadow-sm">Shop Now <i class="bi bi-arrow-right"></i></a>`;
+                    }
+                    const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+                    toast.show();
+                }
+            }).catch(err => {
+                console.warn('Copy fallback:', err);
+                prompt(`Copy your coupon code:`, code);
+            });
+        }
+    </script>
+</body>
+</html>

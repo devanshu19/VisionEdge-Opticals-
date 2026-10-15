@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .page-header { background: var(--secondary-color); padding: 120px 0 40px; color: white; text-align: center; }
+        .product-card .card-img-top { height: 220px; object-fit: cover; padding: 1rem; background: #f1f5f9; transition: transform 0.3s; }
+        .product-card:hover .card-img-top { transform: scale(1.05); }
+        .remove-btn { position: absolute; top: 15px; right: 15px; background: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); box-shadow: var(--shadow-sm); transition: all 0.3s; z-index: 2; cursor: pointer; border: none;}
+        .remove-btn:hover { color: #dc3545; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <header class="page-header">
+        <div class="container">
+            <h2 class="display-6 fw-bold mb-2" data-aos="fade-up">My Wishlist <i class="bi bi-heart-fill text-danger ms-2"></i></h2>
+        </div>
+    </header>
+
+    <section class="py-5 bg-light" style="min-height: 50vh;">
+        <div class="container py-4">
+            <div class="row g-4" id="wishlistGrid">
+                
+                <!-- Item 1 -->
+                <div class="col-md-6 col-xl-3" data-aos="fade-up">
+                    <div class="card product-card h-100 border-0 shadow-sm" id="item1">
+                        <button class="remove-btn" onclick="document.getElementById('item1').parentElement.remove()"><i class="bi bi-trash"></i></button>
+                        <div class="overflow-hidden rounded-top">
+                            <img src="https://images.unsplash.com/photo-1577803645773-f96470509666?w=400&q=80" class="card-img-top" alt="Product">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold fs-6 mb-1">Ray-Ban Classic</h5>
+                            <p class="text-muted small mb-3">Rectangle Frame</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <span class="fs-5 fw-bold text-primary">$150</span>
+                                <button class="btn btn-primary btn-sm px-3 fw-bold">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card product-card h-100 border-0 shadow-sm" id="item2">
+                        <button class="remove-btn" onclick="document.getElementById('item2').parentElement.remove()"><i class="bi bi-trash"></i></button>
+                        <div class="overflow-hidden rounded-top">
+                            <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&q=80" class="card-img-top" alt="Product">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold fs-6 mb-1">Lenskart Air</h5>
+                            <p class="text-muted small mb-3">Wayfarer Frame</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <span class="fs-5 fw-bold text-primary">$120</span>
+                                <button class="btn btn-primary btn-sm px-3 fw-bold">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing History - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                    <div>
+                        <h2 class="mb-0 fw-bold">Billing History</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="billing-dashboard.html" class="text-decoration-none text-muted">Finance</a></li>
+                                <li class="breadcrumb-item active">Billing History</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div>
+                        <a href="generate-bill.html" class="btn btn-primary shadow-sm mt-3 mt-md-0">
+                            <i class="bi bi-plus-lg me-2"></i>New Invoice
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-transparent d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3">
+                        <h5 class="mb-3 mb-md-0 fw-bold">Generated Invoices</h5>
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <select class="form-select" id="statusFilter" style="max-width: 150px;">
+                                <option value="">All Statuses</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                            <div class="input-group" style="max-width: 300px;">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="searchBill" placeholder="Search Invoice/Customer...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Invoice No</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Order ID</th>
+                                        <th>Amount</th>
+                                        <th>Payment</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billsTableBody">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading invoices...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Invoice Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" style="height: 70vh;">
+                    <iframe id="pdfPreviewFrame" src="" width="100%" height="100%" style="border:none;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="#" id="btnDownloadFull" class="btn btn-primary" download><i class="bi bi-download me-2"></i>Download</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/billing-history.js"></script>
+</body>
+</html>

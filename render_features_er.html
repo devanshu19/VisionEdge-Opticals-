@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; padding: 0; background: #ffffff; display: flex; justify-content: center; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 2000" width="1500" height="2000" style="background-color: #ffffff;">
+  <style>
+    .entity-rect { fill: #ffffff; stroke: #000000; stroke-width: 2.5; rx: 6; ry: 6; }
+    .entity-text { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    
+    .attr-ellipse { fill: #ffffff; stroke: #000000; stroke-width: 1.8; }
+    .attr-text { font-family: Arial, sans-serif; font-size: 13px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .attr-text-pk { font-family: Arial, sans-serif; font-size: 13px; fill: #000000; font-weight: bold; text-decoration: underline; text-anchor: middle; dominant-baseline: central; }
+    
+    .rel-diamond { fill: #ffffff; stroke: #000000; stroke-width: 2.0; }
+    .rel-text { font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    
+    .connector { stroke: #000000; stroke-width: 1.8; fill: none; }
+    .dashed-connector { stroke: #000000; stroke-width: 1.8; stroke-dasharray: 6,6; fill: none; }
+    
+    .card-box { fill: #ffffff; stroke: none; }
+    .card-text { font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .diagram-title { font-family: Arial, sans-serif; font-size: 26px; font-weight: bold; fill: #000000; text-anchor: middle; }
+  </style>
+
+  <text x="750" y="40" class="diagram-title">VisionEdge System - System Architecture &amp; Feature ER Diagram</text>
+
+  <!-- ======================================================== -->
+  <!-- 1. USERS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="105" x2="415" y2="65" class="connector" />
+  <line x1="750" y1="105" x2="325" y2="105" class="connector" />
+  <line x1="750" y1="105" x2="415" y2="145" class="connector" />
+
+  <line x1="750" y1="105" x2="1085" y2="65" class="connector" />
+  <line x1="750" y1="105" x2="1205" y2="105" class="connector" />
+  <line x1="750" y1="105" x2="1085" y2="145" class="connector" />
+
+  <ellipse cx="415" cy="65" rx="40" ry="20" class="attr-ellipse" />
+  <text x="415" y="65" class="attr-text-pk">id</text>
+
+  <ellipse cx="325" cy="105" rx="55" ry="20" class="attr-ellipse" />
+  <text x="325" y="105" class="attr-text">username</text>
+
+  <ellipse cx="415" cy="145" rx="45" ry="20" class="attr-ellipse" />
+  <text x="415" y="145" class="attr-text">email</text>
+
+  <ellipse cx="1085" cy="65" rx="45" ry="20" class="attr-ellipse" />
+  <text x="1085" y="65" class="attr-text">phone</text>
+
+  <ellipse cx="1205" cy="105" rx="45" ry="20" class="attr-ellipse" />
+  <text x="1205" y="105" class="attr-text">role</text>
+
+  <ellipse cx="1085" cy="145" rx="55" ry="20" class="attr-ellipse" />
+  <text x="1085" y="145" class="attr-text">created_at</text>
+
+  <rect x="630" y="80" width="240" height="50" class="entity-rect" />
+  <text x="750" y="105" class="entity-text">users</text>
+
+  <!-- USERS -> [registers] -> CUSTOMERS -->
+  <line x1="750" y1="130" x2="750" y2="190" class="connector" />
+  <rect x="738" y="150" width="24" height="20" class="card-box" />
+  <text x="750" y="160" class="card-text">1</text>
+
+  <polygon points="750,190 820,215 750,240 680,215" class="rel-diamond" />
+  <text x="750" y="215" class="rel-text">registers</text>
+
+  <line x1="750" y1="240" x2="750" y2="300" class="connector" />
+  <rect x="738" y="260" width="24" height="20" class="card-box" />
+  <text x="750" y="270" class="card-text">M</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 2. CUSTOMERS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="325" x2="415" y2="285" class="connector" />
+  <line x1="750" y1="325" x2="285" y2="325" class="connector" />
+  <line x1="750" y1="325" x2="415" y2="360" class="connector" />
+  <line x1="750" y1="325" x2="545" y2="375" class="connector" />
+
+  <line x1="750" y1="325" x2="1085" y2="375" class="connector" />
+  <line x1="750" y1="325" x2="1205" y2="335" class="connector" />
+  <line x1="750" y1="325" x2="1085" y2="285" class="connector" />
+
+  <ellipse cx="415" cy="285" rx="40" ry="20" class="attr-ellipse" />
+  <text x="415" y="285" class="attr-text-pk">id</text>
+
+  <ellipse cx="285" cy="325" rx="65" ry="20" class="attr-ellipse" />
+  <text x="285" y="325" class="attr-text">customer_code</text>
+
+  <ellipse cx="415" cy="360" rx="55" ry="20" class="attr-ellipse" />
+  <text x="415" y="360" class="attr-text">first_name</text>
+
+  <ellipse cx="545" cy="375" rx="50" ry="20" class="attr-ellipse" />
+  <text x="545" y="375" class="attr-text">last_name</text>
+
+  <ellipse cx="1085" cy="375" rx="45" ry="20" class="attr-ellipse" />
+  <text x="1085" y="375" class="attr-text">phone</text>
+
+  <ellipse cx="1205" cy="335" rx="45" ry="20" class="attr-ellipse" />
+  <text x="1205" y="335" class="attr-text">email</text>
+
+  <ellipse cx="1085" cy="285" rx="45" ry="20" class="attr-ellipse" />
+  <text x="1085" y="285" class="attr-text">status</text>
+
+  <rect x="620" y="300" width="260" height="50" class="entity-rect" />
+  <text x="750" y="325" class="entity-text">customers</text>
+
+  <!-- CUSTOMERS -> [schedules] -> APPOINTMENTS -->
+  <line x1="750" y1="350" x2="750" y2="410" class="connector" />
+  <rect x="738" y="370" width="24" height="20" class="card-box" />
+  <text x="750" y="380" class="card-text">1</text>
+
+  <polygon points="750,410 830,435 750,460 670,435" class="rel-diamond" />
+  <text x="750" y="435" class="rel-text">schedules</text>
+
+  <line x1="750" y1="460" x2="750" y2="520" class="connector" />
+  <rect x="738" y="480" width="24" height="20" class="card-box" />
+  <text x="750" y="490" class="card-text">M</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 3. APPOINTMENTS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="545" x2="415" y2="505" class="connector" />
+  <line x1="750" y1="545" x2="275" y2="545" class="connector" />
+  <line x1="750" y1="545" x2="415" y2="580" class="connector" />
+
+  <line x1="750" y1="545" x2="1085" y2="505" class="connector" />
+  <line x1="750" y1="545" x2="1205" y2="545" class="connector" />
+
+  <ellipse cx="415" cy="505" rx="40" ry="20" class="attr-ellipse" />
+  <text x="415" y="505" class="attr-text-pk">id</text>
+
+  <ellipse cx="275" cy="545" rx="75" ry="20" class="attr-ellipse" />
+  <text x="275" y="545" class="attr-text">appointment_date</text>
+
+  <ellipse cx="415" cy="580" rx="45" ry="20" class="attr-ellipse" />
+  <text x="415" y="580" class="attr-text">type</text>
+
+  <ellipse cx="1085" cy="505" rx="45" ry="20" class="attr-ellipse" />
+  <text x="1085" y="505" class="attr-text">status</text>
+
+  <ellipse cx="1205" cy="545" rx="60" ry="20" class="attr-ellipse" />
+  <text x="1205" y="545" class="attr-text">doctor_name</text>
+
+  <rect x="620" y="520" width="260" height="50" class="entity-rect" />
+  <text x="750" y="545" class="entity-text">appointments</text>
+
+  <!-- APPOINTMENTS -> [leads_to] -> EYE_TESTS -->
+  <line x1="750" y1="570" x2="750" y2="630" class="connector" />
+  <rect x="738" y="590" width="24" height="20" class="card-box" />
+  <text x="750" y="600" class="card-text">1</text>
+
+  <polygon points="750,630 820,655 750,680 680,655" class="rel-diamond" />
+  <text x="750" y="655" class="rel-text">leads_to</text>
+
+  <line x1="750" y1="680" x2="750" y2="740" class="connector" />
+  <rect x="738" y="700" width="24" height="20" class="card-box" />
+  <text x="750" y="710" class="card-text">1</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 4. EYE_TESTS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="765" x2="415" y2="725" class="connector" />
+  <line x1="750" y1="765" x2="295" y2="765" class="connector" />
+  <line x1="750" y1="765" x2="415" y2="800" class="connector" />
+
+  <line x1="750" y1="765" x2="1085" y2="725" class="connector" />
+  <line x1="750" y1="765" x2="1205" y2="765" class="connector" />
+
+  <ellipse cx="415" cy="725" rx="40" ry="20" class="attr-ellipse" />
+  <text x="415" y="725" class="attr-text-pk">id</text>
+
+  <ellipse cx="295" cy="765" rx="60" ry="20" class="attr-ellipse" />
+  <text x="295" y="765" class="attr-text">right_sphere</text>
+
+  <ellipse cx="415" cy="800" rx="60" ry="20" class="attr-ellipse" />
+  <text x="415" y="800" class="attr-text">right_cylinder</text>
+
+  <ellipse cx="1085" cy="725" rx="55" ry="20" class="attr-ellipse" />
+  <text x="1085" y="725" class="attr-text">left_sphere</text>
+
+  <ellipse cx="1205" cy="765" rx="50" ry="20" class="attr-ellipse" />
+  <text x="1205" y="765" class="attr-text">pd_value</text>
+
+  <rect x="620" y="740" width="260" height="50" class="entity-rect" />
+  <text x="750" y="765" class="entity-text">eye_tests</text>
+
+  <!-- EYE_TESTS -> [generates] -> PRESCRIPTIONS -->
+  <line x1="750" y1="790" x2="750" y2="850" class="connector" />
+  <rect x="738" y="810" width="24" height="20" class="card-box" />
+  <text x="750" y="820" class="card-text">1</text>
+
+  <polygon points="750,850 820,875 750,900 680,875" class="rel-diamond" />
+  <text x="750" y="875" class="rel-text">generates</text>
+
+  <line x1="750" y1="900" x2="750" y2="960" class="connector" />
+  <rect x="738" y="920" width="24" height="20" class="card-box" />
+  <text x="750" y="930" class="card-text">1</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 5. PRESCRIPTIONS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="985" x2="905" y2="945" class="connector" />
+  <line x1="750" y1="985" x2="1035" y2="985" class="connector" />
+  <line x1="750" y1="985" x2="1165" y2="985" class="connector" />
+  <line x1="750" y1="985" x2="1275" y2="945" class="connector" />
+
+  <ellipse cx="905" cy="945" rx="40" ry="20" class="attr-ellipse" />
+  <text x="905" y="945" class="attr-text-pk">id</text>
+
+  <ellipse cx="1035" cy="985" rx="70" ry="20" class="attr-ellipse" />
+  <text x="1035" y="985" class="attr-text">prescription_no</text>
+
+  <ellipse cx="1165" cy="985" rx="55" ry="20" class="attr-ellipse" />
+  <text x="1165" y="985" class="attr-text">add_power</text>
+
+  <ellipse cx="1275" cy="945" rx="60" ry="20" class="attr-ellipse" />
+  <text x="1275" y="945" class="attr-text">doctor_name</text>
+
+  <rect x="610" y="960" width="280" height="50" class="entity-rect" />
+  <text x="750" y="985" class="entity-text">prescriptions</text>
+
+  <!-- PRESCRIPTIONS -> [applied_to] -> ORDERS -->
+  <line x1="750" y1="1010" x2="750" y2="1070" class="connector" />
+  <rect x="738" y="1030" width="24" height="20" class="card-box" />
+  <text x="750" y="1040" class="card-text">1</text>
+
+  <polygon points="750,1070 820,1095 750,1120 680,1095" class="rel-diamond" />
+  <text x="750" y="1095" class="rel-text">applied_to</text>
+
+  <line x1="750" y1="1120" x2="750" y2="1180" class="connector" />
+  <rect x="738" y="1140" width="24" height="20" class="card-box" />
+  <text x="750" y="1150" class="card-text">M</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 6. ORDERS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="1205" x2="415" y2="1165" class="connector" />
+  <line x1="750" y1="1205" x2="285" y2="1205" class="connector" />
+
+  <line x1="750" y1="1205" x2="1085" y2="1165" class="connector" />
+  <line x1="750" y1="1205" x2="1205" y2="1205" class="connector" />
+
+  <ellipse cx="415" cy="1165" rx="40" ry="20" class="attr-ellipse" />
+  <text x="415" y="1165" class="attr-text-pk">id</text>
+
+  <ellipse cx="285" cy="1205" rx="65" ry="20" class="attr-ellipse" />
+  <text x="285" y="1205" class="attr-text">order_number</text>
+
+  <ellipse cx="1085" cy="1165" rx="60" ry="20" class="attr-ellipse" />
+  <text x="1085" y="1165" class="attr-text">total_amount</text>
+
+  <ellipse cx="1205" cy="1205" rx="45" ry="20" class="attr-ellipse" />
+  <text x="1205" y="1205" class="attr-text">status</text>
+
+  <rect x="610" y="1180" width="280" height="50" class="entity-rect" />
+  <text x="750" y="1205" class="entity-text">orders</text>
+
+  <!-- ORDERS -> [billed_via] -> BILLINGS -->
+  <line x1="750" y1="1230" x2="750" y2="1290" class="connector" />
+  <rect x="738" y="1250" width="24" height="20" class="card-box" />
+  <text x="750" y="1260" class="card-text">1</text>
+
+  <polygon points="750,1290 830,1315 750,1340 670,1315" class="rel-diamond" />
+  <text x="750" y="1315" class="rel-text">billed_via</text>
+
+  <line x1="750" y1="1340" x2="750" y2="1400" class="connector" />
+  <rect x="738" y="1360" width="24" height="20" class="card-box" />
+  <text x="750" y="1370" class="card-text">1</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 7. BILLINGS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="1425" x2="415" y2="1385" class="connector" />
+  <line x1="750" y1="1425" x2="285" y2="1425" class="connector" />
+  <line x1="750" y1="1425" x2="405" y2="1460" class="connector" />
+
+  <line x1="750" y1="1425" x2="1085" y2="1385" class="connector" />
+  <line x1="750" y1="1425" x2="1205" y2="1425" class="connector" />
+
+  <ellipse cx="415" cy="1385" rx="40" ry="20" class="attr-ellipse" />
+  <text x="415" y="1385" class="attr-text-pk">id</text>
+
+  <ellipse cx="285" cy="1425" rx="65" ry="20" class="attr-ellipse" />
+  <text x="285" y="1425" class="attr-text">invoice_number</text>
+
+  <ellipse cx="405" cy="1460" rx="55" ry="20" class="attr-ellipse" />
+  <text x="405" y="1460" class="attr-text">grand_total</text>
+
+  <ellipse cx="1085" cy="1385" rx="65" ry="20" class="attr-ellipse" />
+  <text x="1085" y="1385" class="attr-text">payment_status</text>
+
+  <ellipse cx="1205" cy="1425" rx="55" ry="20" class="attr-ellipse" />
+  <text x="1205" y="1425" class="attr-text">gst_amount</text>
+
+  <rect x="600" y="1400" width="300" height="50" class="entity-rect" />
+  <text x="750" y="1425" class="entity-text">billings</text>
+
+  <!-- BILLINGS -> [settled_by] -> PAYMENTS -->
+  <line x1="750" y1="1450" x2="750" y2="1510" class="connector" />
+  <rect x="738" y="1470" width="24" height="20" class="card-box" />
+  <text x="750" y="1480" class="card-text">1</text>
+
+  <polygon points="750,1510 820,1535 750,1560 680,1535" class="rel-diamond" />
+  <text x="750" y="1535" class="rel-text">settled_by</text>
+
+  <line x1="750" y1="1560" x2="750" y2="1620" class="connector" />
+  <rect x="738" y="1580" width="24" height="20" class="card-box" />
+  <text x="750" y="1590" class="card-text">M</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 8. PAYMENTS -->
+  <!-- ======================================================== -->
+  <line x1="750" y1="1645" x2="445" y2="1605" class="connector" />
+  <line x1="750" y1="1645" x2="305" y2="1645" class="connector" />
+  <line x1="750" y1="1645" x2="415" y2="1680" class="connector" />
+
+  <line x1="750" y1="1645" x2="1085" y2="1605" class="connector" />
+  <line x1="750" y1="1645" x2="1205" y2="1645" class="connector" />
+
+  <ellipse cx="445" cy="1605" rx="40" ry="20" class="attr-ellipse" />
+  <text x="445" y="1605" class="attr-text-pk">id</text>
+
+  <ellipse cx="305" cy="1645" rx="50" ry="20" class="attr-ellipse" />
+  <text x="305" y="1645" class="attr-text">amount</text>
+
+  <ellipse cx="415" cy="1680" rx="65" ry="20" class="attr-ellipse" />
+  <text x="415" y="1680" class="attr-text">transaction_id</text>
+
+  <ellipse cx="1085" cy="1605" rx="70" ry="20" class="attr-ellipse" />
+  <text x="1085" y="1605" class="attr-text">payment_method</text>
+
+  <ellipse cx="1205" cy="1645" rx="65" ry="20" class="attr-ellipse" />
+  <text x="1205" y="1645" class="attr-text">payment_date</text>
+
+  <rect x="620" y="1620" width="260" height="50" class="entity-rect" />
+  <text x="750" y="1645" class="entity-text">payments</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 9. AI VIRTUAL TRY-ON (Side Left) -->
+  <!-- ======================================================== -->
+  <polyline points="620,325 240,325 240,895" class="connector" />
+  <rect x="228" y="580" width="24" height="20" class="card-box" />
+  <text x="240" y="590" class="card-text">1</text>
+
+  <polygon points="240,870 305,895 240,920 175,895" class="rel-diamond" />
+  <text x="240" y="895" class="rel-text">saves</text>
+
+  <line x1="240" y1="920" x2="240" y2="960" class="connector" />
+  <rect x="228" y="930" width="24" height="20" class="card-box" />
+  <text x="240" y="940" class="card-text">M</text>
+
+  <ellipse cx="145" cy="1047" rx="38" ry="20" class="attr-ellipse" />
+  <text x="145" y="1047" class="attr-text-pk">id</text>
+
+  <ellipse cx="247" cy="1057" rx="55" ry="20" class="attr-ellipse" />
+  <text x="247" y="1057" class="attr-text">face_shape</text>
+
+  <ellipse cx="357" cy="1037" rx="55" ry="20" class="attr-ellipse" />
+  <text x="357" y="1037" class="attr-text">tryon_image</text>
+
+  <line x1="240" y1="985" x2="145" y2="1047" class="connector" />
+  <line x1="240" y1="985" x2="247" y2="1057" class="connector" />
+  <line x1="240" y1="985" x2="357" y2="1037" class="connector" />
+
+  <rect x="120" y="960" width="240" height="50" class="entity-rect" />
+  <text x="240" y="985" class="entity-text">virtual_try_on_history</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 10. FRAMES & LENSES (Bottom Side Entities) -->
+  <!-- ======================================================== -->
+  <line x1="220" y1="1645" x2="110" y2="1610" class="connector" />
+  <line x1="220" y1="1645" x2="110" y2="1650" class="connector" />
+  <line x1="220" y1="1645" x2="170" y2="1690" class="connector" />
+
+  <ellipse cx="110" cy="1610" rx="38" ry="20" class="attr-ellipse" />
+  <text x="110" y="1610" class="attr-text-pk">id</text>
+
+  <ellipse cx="110" cy="1650" rx="40" ry="20" class="attr-ellipse" />
+  <text x="110" y="1650" class="attr-text">brand</text>
+
+  <ellipse cx="170" cy="1690" rx="40" ry="20" class="attr-ellipse" />
+  <text x="170" y="1690" class="attr-text">price</text>
+
+  <rect x="220" y="1620" width="220" height="50" class="entity-rect" />
+  <text x="330" y="1645" class="entity-text">frames</text>
+
+  <line x1="1070" y1="1645" x2="1270" y2="1610" class="connector" />
+  <line x1="1070" y1="1645" x2="1285" y2="1650" class="connector" />
+  <line x1="1070" y1="1645" x2="1245" y2="1690" class="connector" />
+
+  <ellipse cx="1270" cy="1610" rx="38" ry="20" class="attr-ellipse" />
+  <text x="1270" y="1610" class="attr-text-pk">id</text>
+
+  <ellipse cx="1285" cy="1650" rx="50" ry="20" class="attr-ellipse" />
+  <text x="1285" y="1650" class="attr-text">lens_type</text>
+
+  <ellipse cx="1245" cy="1690" rx="48" ry="20" class="attr-ellipse" />
+  <text x="1245" y="1690" class="attr-text">coating</text>
+
+  <rect x="960" y="1620" width="220" height="50" class="entity-rect" />
+  <text x="1070" y="1645" class="entity-text">lenses</text>
+
+  <!-- Dashed connections to orders -->
+  <line x1="610" y1="1205" x2="330" y2="1620" class="dashed-connector" />
+  <line x1="890" y1="1205" x2="1070" y2="1620" class="dashed-connector" />
+
+</svg>
+
+</body>
+</html>

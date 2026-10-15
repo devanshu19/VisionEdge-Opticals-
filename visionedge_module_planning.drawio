@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-18T13:55:00.000Z" agent="VisionEdge" version="21.0.0" type="device">
+  <diagram id="visionedge_module_planning" name="VisionEdge Module Planning Architecture">
+    <mxGraphModel dx="1800" dy="1800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title Banner -->
+        <mxCell id="title_banner" value="VisionEdge: System Module Architecture &amp; Planning Diagram" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=18;verticalAlign=middle;align=center;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="500" y="30" width="1000" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ================= CONTAINER 1: USER PRESENTATION LAYER ================= -->
+        <mxCell id="box_presentation" value="1. FRONTEND PRESENTATION LAYER (Web Clients &amp; Portals)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=14;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="110" width="1880" height="190" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_cust_portal" value="&lt;b&gt;Customer Storefront &amp; Portal&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Catalog, Product Try-On, Wishlist, Checkout, Prescription History&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="160" width="540" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_staff_portal" value="&lt;b&gt;Staff &amp; Optometrist Portal&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;CRM Lookup, Eye Test Recording, AI OCR Scanner, POS Checkout&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="730" y="160" width="540" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_admin_portal" value="&lt;b&gt;Admin Management Portal&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Inventory Control, User RBAC, Analytics Dashboard, Financial Reports&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="160" width="540" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ================= CONTAINER 2: CORE BACKEND CONTROLLERS ================= -->
+        <mxCell id="box_backend" value="2. BACKEND API CONTROLLER LAYER (Flask RESTful Services)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=14;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="340" width="1880" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_01" value="&lt;b&gt;MOD-01: Auth &amp; RBAC&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;JWT Tokens, User Roles, Password Hashing&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="390" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_02" value="&lt;b&gt;MOD-02: Customer CRM&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Profiles, Eye Condition Logs, Medical Notes&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="390" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_03" value="&lt;b&gt;MOD-03: Clinical Eye Test&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;OD/OS SPH, CYL, AXIS, ADD &amp; PD Records&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="740" y="390" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_08" value="&lt;b&gt;MOD-08: Inventory Control&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Frames &amp; Lenses Stock, Alert Triggers&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="390" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_09" value="&lt;b&gt;MOD-09: Order Processing&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Sales Pipeline, Lab Fitting &amp; Fulfillment&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="390" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_10" value="&lt;b&gt;MOD-10: Billing &amp; Invoicing&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;GST Calculations, Payments, PDF Receipt&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="500" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_11" value="&lt;b&gt;MOD-11: Analytics Dashboard&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Revenue Metrics, Stock Trends, Reports&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="500" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_12" value="&lt;b&gt;MOD-12: Chatbot &amp; Alerts&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;AI Optical Assistant &amp; Event Notifications&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="740" y="500" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Core App Engine Sub-box -->
+        <mxCell id="app_core_hub" value="&lt;b&gt;Flask Application Core Hub&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Blueprint Routing, JWT Middleware, Request Dispatcher, Error Handlers&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;fontStyle=1;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="500" width="600" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Connectors -->
+        <mxCell id="e_pres_app" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="node_cust_portal" target="box_backend" />
+        <mxCell id="e_staff_app" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="node_staff_portal" target="box_backend" />
+        <mxCell id="e_admin_app" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="node_admin_portal" target="box_backend" />
+
+        <!-- ================= CONTAINER 3: AI & COMPUTER VISION SERVICES ================= -->
+        <mxCell id="box_ai_engine" value="3. AI &amp; COMPUTER VISION INTELLIGENCE LAYER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=14;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="760" width="1880" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_04" value="&lt;b&gt;MOD-04: AI Prescription OCR&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Google Gemini 1.5 Pro Multimodal Vision API parsing Rx images to diopters&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="820" width="420" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_05" value="&lt;b&gt;MOD-05: AI Face Frame Rec.&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Facial structure detection &amp; frame geometry compatibility algorithm&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="560" y="820" width="420" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_06" value="&lt;b&gt;MOD-06: AI Lens &amp; Coating Rec.&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Diopter power analysis recommending High-Index, Blue-Cut &amp; Anti-Reflective&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="820" width="420" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_07" value="&lt;b&gt;MOD-07: Virtual Try-On (VTO)&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;HTML5 Canvas &amp; MediaPipe FaceMesh overlaying frames live on webcam feed (&amp;ge;24 FPS)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1480" y="820" width="420" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_ai_back" style="endArrow=classic;startArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="box_backend" target="box_ai_engine" />
+
+        <!-- ================= CONTAINER 4: PERSISTENCE & EXTERNAL INTEGRATIONS ================= -->
+        <mxCell id="box_persistence" value="4. PERSISTENCE &amp; EXTERNAL SERVICES LAYER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=14;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1030" width="1880" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_relational" value="&lt;b&gt;Relational Database (SQLAlchemy)&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;MySQL / SQLite: User, Customer, EyeTest, Frame, Lens, Order, Invoice Tables&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1080" width="540" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="service_gemini" value="&lt;b&gt;Google Gemini 1.5 Pro AI Cloud API&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;Multimodal Vision OCR Service Endpoint for Optical Prescription Parsing&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="730" y="1080" width="540" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="service_pdf_media" value="&lt;b&gt;PDF Engine &amp; Media File Storage&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#333333&quot;&gt;ReportLab PDF Receipt Builder &amp; Local Static Media Storage (/uploads/)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1080" width="540" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_db_back" style="endArrow=classic;startArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="box_ai_engine" target="box_persistence" />
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

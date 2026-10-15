@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .timeline {
+            border-left: 2px solid #dee2e6;
+            padding-left: 20px;
+            position: relative;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #0d6efd;
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                    <div>
+                        <h2 class="mb-0 fw-bold">Order <span id="oNumber" class="text-primary"></span></h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="orders.html" class="text-decoration-none text-muted">Orders</a></li>
+                                <li class="breadcrumb-item active">Order Details</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div id="actionButtons" class="d-flex gap-2 mt-3 mt-md-0">
+                        <span id="oStatusBadge" class="badge bg-secondary d-flex align-items-center fs-6 px-3">Loading...</span>
+                        <button class="btn btn-outline-primary" onclick="openUpdateStatus()"><i class="bi bi-arrow-repeat me-2"></i>Update Status</button>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <!-- Customer & Info Card -->
+                        <div class="card mb-4 shadow-sm border-0">
+                            <div class="card-body p-4">
+                                <div class="row g-4">
+                                    <div class="col-md-6 border-end">
+                                        <h6 class="text-muted text-uppercase fw-bold mb-3">Customer Details</h6>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="fw-bold mb-0" id="oCustName">...</h5>
+                                                <p class="text-muted mb-0" id="oCustPhone">...</p>
+                                            </div>
+                                        </div>
+                                        <p class="mb-1"><i class="bi bi-envelope me-2 text-muted"></i><span id="oCustEmail">...</span></p>
+                                        <p class="mb-0"><i class="bi bi-geo-alt me-2 text-muted"></i><span id="oCustAddress">...</span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted text-uppercase fw-bold mb-3">Order Info</h6>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Order Date</span>
+                                            <span class="fw-medium" id="oDate">...</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Delivery Date</span>
+                                            <span class="fw-medium" id="oDelivery">...</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Priority</span>
+                                            <span class="fw-medium" id="oPriority">...</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-muted">Sales Person</span>
+                                            <span class="fw-medium" id="oSalesPerson">...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Prescription Info (If linked) -->
+                        <div class="card mb-4 shadow-sm border-0" id="rxCard" style="display:none;">
+                            <div class="card-header bg-transparent py-3">
+                                <h6 class="text-muted text-uppercase fw-bold mb-0">Linked Prescription <span id="rxNumber" class="text-primary ms-2"></span></h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered text-center mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Eye</th><th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="fw-bold">Right (OD)</td>
+                                                <td id="rxOdSph"></td><td id="rxOdCyl"></td><td id="rxOdAxis"></td><td id="rxOdAdd"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Left (OS)</td>
+                                                <td id="rxOsSph"></td><td id="rxOsCyl"></td><td id="rxOsAxis"></td><td id="rxOsAdd"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-transparent py-3">
+                                <h6 class="text-muted text-uppercase fw-bold mb-0">Ordered Items</h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Product</th>
+                                                <th>Type</th>
+                                                <th>Qty</th>
+                                                <th>Price</th>
+                                                <th>Disc</th>
+                                                <th class="text-end pe-4">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="oItemsBody">
+                                            <!-- Items generated by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row m-0 p-4 border-top">
+                                    <div class="col-md-6 offset-md-6">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Subtotal</span>
+                                            <span id="oSubtotal">₹0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Order Discount</span>
+                                            <span class="text-danger" id="oDiscount">- ₹0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+                                            <span class="text-muted">GST</span>
+                                            <span id="oGst">₹0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold fs-5">Grand Total</span>
+                                            <span class="fw-bold fs-5 text-primary" id="oTotal">₹0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Timeline & Billing -->
+                    <div class="col-lg-4">
+                        <!-- Billing Status (Placeholder) -->
+                        <div class="card mb-4 shadow-sm border-0 bg-light">
+                            <div class="card-body p-4 text-center">
+                                <i class="bi bi-receipt text-muted mb-2" style="font-size: 2rem;"></i>
+                                <h5 class="fw-bold">Payment Status</h5>
+                                <span class="badge bg-secondary fs-6 mb-3" id="oPaymentStatus">Pending</span>
+                                <p class="text-muted small mb-0">Billing & Invoicing capabilities will be unlocked in the upcoming Billing Module update.</p>
+                            </div>
+                        </div>
+
+                        <!-- Status Timeline -->
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-transparent py-3">
+                                <h6 class="text-muted text-uppercase fw-bold mb-0">Order Timeline</h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="timeline" id="oTimeline">
+                                    <!-- Timeline items generated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Order Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateStatusForm">
+                        <div class="mb-3">
+                            <label class="form-label">New Status</label>
+                            <select class="form-select" id="newStatus">
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Assembly">Assembly</option>
+                                <option value="Quality Check">Quality Check</option>
+                                <option value="Ready for Pickup">Ready for Pickup</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <div class="form-text text-danger" id="cancelWarning" style="display:none;">
+                                Warning: Cancelling this order will immediately restore reserved stock to inventory.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Remarks</label>
+                            <input type="text" class="form-control" id="statusRemarks" placeholder="Optional notes for timeline (e.g. 'Customer called to delay')">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitStatusUpdate()">Save Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/view-order.js"></script>
+</body>
+</html>

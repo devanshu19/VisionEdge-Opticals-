@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Lens Recommendation - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .page-header { background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 120px 0 60px; color: white; text-align: center; }
+        
+        .ai-wizard { background: white; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); padding: 3rem; margin-top: -40px; position: relative; z-index: 10; border-top: 5px solid var(--accent-color); }
+        
+        .wizard-step { display: none; }
+        .wizard-step.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .option-card { border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; height: 100%; }
+        .option-card:hover { border-color: var(--primary-color); background: rgba(37,99,235,0.02); }
+        .option-card.selected { border-color: var(--primary-color); background: rgba(37,99,235,0.05); }
+        .option-icon { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem; }
+        
+        .progress { height: 8px; border-radius: 4px; background-color: #e2e8f0; }
+        .progress-bar { background-color: var(--accent-color); transition: width 0.4s ease; }
+        
+        /* Result Card */
+        .result-card { background: linear-gradient(to right, #0F172A, #1E293B); color: white; border-radius: var(--border-radius); padding: 3rem; position: relative; overflow: hidden; }
+        .result-card::after { content: '\F4B4'; font-family: 'bootstrap-icons'; position: absolute; right: -20px; bottom: -40px; font-size: 15rem; opacity: 0.05; transform: rotate(-15deg); }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <header class="page-header">
+        <div class="container">
+            <h1 class="display-5 fw-bold mb-3" data-aos="fade-up"><i class="bi bi-cpu text-white opacity-75 me-2"></i> AI Lens Recommender</h1>
+            <p class="lead opacity-75 mx-auto" style="max-width: 600px;" data-aos="fade-up" data-aos-delay="100">Answer a few quick questions and our algorithm will scientifically calculate the perfect lens for your eyes.</p>
+        </div>
+    </header>
+
+    <section class="pb-5 bg-light">
+        <div class="container">
+            <div class="ai-wizard" data-aos="fade-up">
+                
+                <!-- Progress -->
+                <div class="mb-5" id="progressContainer">
+                    <div class="d-flex justify-content-between text-muted small fw-bold mb-2">
+                        <span>Step <span id="currentStep">1</span> of 4</span>
+                        <span id="progressText">25%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" id="progressBar" style="width: 25%"></div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form id="aiForm">
+                    
+                    <!-- Step 1: Age -->
+                    <div class="wizard-step active" id="step1">
+                        <h3 class="fw-bold mb-4 text-center">What is your age range?</h3>
+                        <p class="text-center text-muted mb-4 small">Age helps determine the likelihood of presbyopia (need for reading glasses).</p>
+                        
+                        <div class="row justify-content-center g-3">
+                            <div class="col-sm-4 col-md-3"><div class="option-card" onclick="selectOption(this, 'age', 'under40')"><h5 class="fw-bold mb-0">Under 40</h5></div></div>
+                            <div class="col-sm-4 col-md-3"><div class="option-card" onclick="selectOption(this, 'age', '40-55')"><h5 class="fw-bold mb-0">40 - 55</h5></div></div>
+                            <div class="col-sm-4 col-md-3"><div class="option-card" onclick="selectOption(this, 'age', 'over55')"><h5 class="fw-bold mb-0">Over 55</h5></div></div>
+                        </div>
+                        <input type="hidden" id="ageInput" required>
+                    </div>
+
+                    <!-- Step 2: Screen Time -->
+                    <div class="wizard-step" id="step2">
+                        <h3 class="fw-bold mb-4 text-center">Daily screen time?</h3>
+                        <p class="text-center text-muted mb-4 small">Phones, tablets, computers, and TVs.</p>
+                        
+                        <div class="row justify-content-center g-3">
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'screen', 'low')"><i class="bi bi-phone option-icon"></i><h6 class="fw-bold mb-0">&lt; 3 Hours</h6></div></div>
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'screen', 'med')"><i class="bi bi-laptop option-icon"></i><h6 class="fw-bold mb-0">3 - 6 Hours</h6></div></div>
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'screen', 'high')"><i class="bi bi-display option-icon"></i><h6 class="fw-bold mb-0">6+ Hours</h6></div></div>
+                        </div>
+                        <input type="hidden" id="screenInput" required>
+                    </div>
+
+                    <!-- Step 3: Outdoor -->
+                    <div class="wizard-step" id="step3">
+                        <h3 class="fw-bold mb-4 text-center">Do you spend time driving or outdoors?</h3>
+                        
+                        <div class="row justify-content-center g-3">
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'outdoor', 'indoor')"><i class="bi bi-house option-icon"></i><h6 class="fw-bold mb-0">Mostly Indoors</h6></div></div>
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'outdoor', 'mixed')"><i class="bi bi-brightness-alt-high option-icon"></i><h6 class="fw-bold mb-0">Mixed</h6></div></div>
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'outdoor', 'driving')"><i class="bi bi-car-front option-icon"></i><h6 class="fw-bold mb-0">Driving/Outdoors</h6></div></div>
+                        </div>
+                        <input type="hidden" id="outdoorInput" required>
+                    </div>
+
+                    <!-- Step 4: Budget -->
+                    <div class="wizard-step" id="step4">
+                        <h3 class="fw-bold mb-4 text-center">What is your budget preference?</h3>
+                        
+                        <div class="row justify-content-center g-3">
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'budget', 'standard')"><i class="bi bi-coin option-icon"></i><h6 class="fw-bold mb-0">Standard</h6><span class="small text-muted">Essential coatings</span></div></div>
+                            <div class="col-sm-4"><div class="option-card" onclick="selectOption(this, 'budget', 'premium')"><i class="bi bi-gem option-icon"></i><h6 class="fw-bold mb-0">Premium</h6><span class="small text-muted">Advanced coatings</span></div></div>
+                        </div>
+                        <input type="hidden" id="budgetInput" required>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="d-flex justify-content-between mt-5" id="navButtons">
+                        <button type="button" class="btn btn-outline-secondary px-4" id="prevBtn" onclick="nextPrev(-1)" style="display: none;">Back</button>
+                        <button type="button" class="btn btn-primary px-5 ms-auto fw-bold" id="nextBtn" onclick="nextPrev(1)" disabled>Next Step <i class="bi bi-arrow-right ms-2"></i></button>
+                    </div>
+                </form>
+
+                <!-- Processing Screen -->
+                <div class="text-center py-5 d-none" id="processingScreen">
+                    <div class="spinner-border text-primary" style="width: 4rem; height: 4rem; border-width: 0.3rem;" role="status"></div>
+                    <h3 class="fw-bold mt-4">AI Analyzing Data...</h3>
+                    <p class="text-muted">Calculating optimal lens geometry and coatings.</p>
+                </div>
+
+                <!-- Final Recommendation -->
+                <div class="wizard-step d-none" id="resultStep">
+                    <div class="text-center mb-4">
+                        <span class="badge bg-success rounded-pill px-3 py-2 mb-3"><i class="bi bi-check-circle-fill me-2"></i> Analysis Complete</span>
+                        <h2 class="fw-bold">Your Perfect Lens Match</h2>
+                    </div>
+                    
+                    <div class="result-card shadow-lg">
+                        <div class="row align-items-center">
+                            <div class="col-lg-8">
+                                <h6 class="text-accent fw-bold text-uppercase mb-2">Recommended</h6>
+                                <h3 class="display-6 fw-bold mb-3" id="recTitle">Premium Blue-Cut Progressive</h3>
+                                <p class="mb-4 opacity-75 fs-5" id="recDesc">Based on your high screen time and age group, you need a progressive lens with advanced blue-light filtering to reduce eye strain and provide seamless vision at all distances.</p>
+                                
+                                <h5 class="fw-bold mb-3">Included Add-ons:</h5>
+                                <ul class="list-unstyled mb-0" id="recAddons">
+                                    <li class="mb-2"><i class="bi bi-check2-circle text-accent me-2"></i> Anti-Reflective Coating</li>
+                                    <li class="mb-2"><i class="bi bi-check2-circle text-accent me-2"></i> Scratch Resistance</li>
+                                    <li class="mb-2"><i class="bi bi-check2-circle text-accent me-2"></i> Blue Light Filter</li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-4 text-center mt-4 mt-lg-0 border-start border-secondary">
+                                <h5 class="text-white opacity-75 mb-2">Estimated Cost</h5>
+                                <h2 class="fw-bold text-accent mb-4">$145</h2>
+                                <a href="frames.html" class="btn btn-light w-100 fw-bold py-3 text-primary shadow">Shop Frames with this Lens</a>
+                                <a href="#" class="btn btn-outline-light w-100 fw-bold mt-3" onclick="location.reload()">Start Over</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+        let currentTab = 0;
+        showTab(currentTab);
+
+        function selectOption(element, inputId, value) {
+            // Remove selected class from siblings
+            let siblings = element.closest('.row').querySelectorAll('.option-card');
+            siblings.forEach(el => el.classList.remove('selected'));
+            
+            // Add to clicked
+            element.classList.add('selected');
+            
+            // Set hidden input
+            document.getElementById(inputId + 'Input').value = value;
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function showTab(n) {
+            let x = document.getElementsByClassName("wizard-step");
+            if(n >= x.length) return; // Prevent out of bounds
+            
+            x[n].classList.add("active");
+            
+            if (n == 0) {
+                document.getElementById("prevBtn").style.display = "none";
+            } else {
+                document.getElementById("prevBtn").style.display = "inline-block";
+            }
+            
+            if (n == (x.length - 2)) { // -2 because last step is result
+                document.getElementById("nextBtn").innerHTML = "Analyze Results <i class='bi bi-magic ms-2'></i>";
+                document.getElementById("nextBtn").classList.add('btn-accent');
+            } else {
+                document.getElementById("nextBtn").innerHTML = "Next Step <i class='bi bi-arrow-right ms-2'></i>";
+            }
+            
+            // Update Progress
+            let current = n + 1;
+            let total = x.length - 1; // exclude result step
+            if(current <= total) {
+                document.getElementById('currentStep').innerText = current;
+                let pct = (current / total) * 100;
+                document.getElementById('progressText').innerText = pct + '%';
+                document.getElementById('progressBar').style.width = pct + '%';
+            }
+            
+            // Reset next button state based on current step selection
+            let inputs = ['age', 'screen', 'outdoor', 'budget'];
+            if(n < inputs.length && document.getElementById(inputs[n]+'Input').value === '') {
+                document.getElementById('nextBtn').disabled = true;
+            } else {
+                document.getElementById('nextBtn').disabled = false;
+            }
+        }
+
+        function nextPrev(n) {
+            let x = document.getElementsByClassName("wizard-step");
+            
+            x[currentTab].classList.remove("active");
+            currentTab = currentTab + n;
+            
+            if (currentTab >= x.length - 1) { // Process Results
+                document.getElementById('progressContainer').style.display = 'none';
+                document.getElementById('navButtons').style.display = 'none';
+                document.getElementById('processingScreen').classList.remove('d-none');
+                
+                // Simulate AI processing
+                setTimeout(() => {
+                    document.getElementById('processingScreen').classList.add('d-none');
+                    document.getElementById('resultStep').classList.remove('d-none');
+                    document.getElementById('resultStep').classList.add('active');
+                    generateRecommendation();
+                }, 2000);
+                return;
+            }
+            showTab(currentTab);
+        }
+
+        function generateRecommendation() {
+            let age = document.getElementById('ageInput').value;
+            let screen = document.getElementById('screenInput').value;
+            let outdoor = document.getElementById('outdoorInput').value;
+            let budget = document.getElementById('budgetInput').value;
+
+            let title = "";
+            let addons = "<li><i class='bi bi-check2-circle text-accent me-2'></i> Anti-Reflective Coating</li>";
+            let price = 50;
+
+            // Logic
+            if(age === '40-55' || age === 'over55') {
+                title = "Progressive Lenses";
+                price += 80;
+            } else {
+                title = "Single Vision Lenses";
+            }
+
+            if(screen === 'high' || screen === 'med') {
+                title = "Blue-Cut " + title;
+                addons += "<li><i class='bi bi-check2-circle text-accent me-2'></i> Digital Blue Light Filter</li>";
+                price += 30;
+            }
+
+            if(outdoor === 'driving' || outdoor === 'mixed') {
+                if(budget === 'premium') {
+                    title = "Photochromic " + title;
+                    addons += "<li><i class='bi bi-check2-circle text-accent me-2'></i> UV Transition Technology</li>";
+                    price += 60;
+                } else {
+                    addons += "<li><i class='bi bi-check2-circle text-accent me-2'></i> Basic UV Protection</li>";
+                    price += 15;
+                }
+            }
+
+            if(budget === 'premium') {
+                title = "Premium " + title;
+                addons += "<li><i class='bi bi-check2-circle text-accent me-2'></i> Scratch & Smudge Resistance</li>";
+                price += 25;
+            }
+
+            document.getElementById('recTitle').innerText = title;
+            document.getElementById('recAddons').innerHTML = addons;
+            document.getElementById('recDesc').innerText = "Based on your selections, this setup will provide maximum comfort for your daily routine while protecting your long-term eye health.";
+            
+            // Format price
+            document.querySelector('#resultStep h2.text-accent').innerText = "$" + price;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/tables.css">
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4" data-aos="fade-down">
+                    <div class="mb-3 mb-md-0">
+                        <h2 class="mb-0 fw-bold">User Management</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Users</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <i class="bi bi-person-plus-fill me-2"></i>Add System User
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Directory Card -->
+                <div class="card" data-aos="fade-up">
+                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3">
+                        <h5 class="mb-3 mb-md-0 fw-bold">System Users & Accounts</h5>
+                        
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <div class="input-group" style="max-width: 250px;">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="searchUser" placeholder="Search users...">
+                            </div>
+                            <select class="form-select w-auto" id="filterRole">
+                                <option value="all">All Roles</option>
+                                <option value="admin">Admin</option>
+                                <option value="staff">Staff</option>
+                                <option value="customer">Customer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">User ID</th>
+                                        <th>Name / Username</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Role</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add User Modal -->
+            <div class="modal fade" id="addUserModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold"><i class="bi bi-person-plus-fill text-primary me-2"></i>Add System User</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="addUserForm">
+                            <div class="modal-body">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">First Name</label>
+                                        <input type="text" class="form-control" id="userFirstName">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Last Name</label>
+                                        <input type="text" class="form-control" id="userLastName">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Username *</label>
+                                    <input type="text" class="form-control" id="userUsername" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Email Address *</label>
+                                    <input type="email" class="form-control" id="userEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Phone Number</label>
+                                    <input type="tel" class="form-control" id="userPhone">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Role *</label>
+                                    <select class="form-select" id="userRole" required>
+                                        <option value="staff">Staff</option>
+                                        <option value="admin">Administrator</option>
+                                        <option value="customer">Customer</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Password *</label>
+                                    <input type="password" class="form-control" id="userPassword" required minlength="6">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary px-4">Create User</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit User Modal -->
+            <div class="modal fade" id="editUserModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold">Edit System User</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="editUserForm">
+                            <input type="hidden" id="editUserId">
+                            <div class="modal-body">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">First Name</label>
+                                        <input type="text" class="form-control" id="editFirstName">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Last Name</label>
+                                        <input type="text" class="form-control" id="editLastName">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Email Address</label>
+                                    <input type="email" class="form-control" id="editEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Phone</label>
+                                    <input type="tel" class="form-control" id="editPhone">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Role</label>
+                                    <select class="form-select" id="editRole" required>
+                                        <option value="staff">Staff</option>
+                                        <option value="admin">Administrator</option>
+                                        <option value="customer">Customer</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">New Password (leave blank to keep current)</label>
+                                    <input type="password" class="form-control" id="editPassword" placeholder="••••••••">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({duration: 800, once: true});</script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/users.js"></script>
+</body>
+</html>

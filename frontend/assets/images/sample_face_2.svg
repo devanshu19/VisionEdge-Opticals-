@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <radialGradient id="faceShade2" cx="50%" cy="40%" r="50%">
+      <stop offset="60%" stop-color="#FED7AA"/>
+      <stop offset="100%" stop-color="#FDBA74"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="640" height="480" fill="url(#bgGrad2)"/>
+
+  <g transform="translate(0, 20)">
+    <!-- Long Hair Back -->
+    <path d="M 170 160 C 140 280, 160 420, 190 480 L 450 480 C 480 420, 500 280, 470 160 Z" fill="#451A03"/>
+
+    <!-- Shoulders & Outfit -->
+    <path d="M 170 440 Q 320 380 470 440 L 510 480 L 130 480 Z" fill="#BE185D"/>
+    <path d="M 270 380 Q 320 420 370 380 L 370 480 L 270 480 Z" fill="#FCE7F3"/>
+
+    <!-- Neck -->
+    <rect x="282" y="295" width="76" height="95" rx="15" fill="#FDBA74"/>
+
+    <!-- Head & Face Shape -->
+    <ellipse cx="320" cy="210" rx="108" ry="140" fill="url(#faceShade2)" stroke="#FB923C" stroke-width="2"/>
+
+    <!-- Front Hair Style -->
+    <path d="M 205 180 Q 240 80 320 85 Q 400 80 435 180 Q 380 100 320 115 Q 260 100 205 180 Z" fill="#78350F"/>
+
+    <!-- Eyebrows -->
+    <path d="M 240 170 Q 265 158 290 168" stroke="#451A03" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M 350 168 Q 375 158 400 170" stroke="#451A03" stroke-width="5" stroke-linecap="round" fill="none"/>
+
+    <!-- Eyes (Positioned at Y=195) -->
+    <!-- Left Eye -->
+    <ellipse cx="265" cy="195" rx="21" ry="13" fill="#FFFFFF" stroke="#475569" stroke-width="2"/>
+    <circle cx="265" cy="195" r="9" fill="#065F46"/>
+    <circle cx="262" cy="192" r="3" fill="#FFFFFF"/>
+
+    <!-- Right Eye -->
+    <ellipse cx="375" cy="195" rx="21" ry="13" fill="#FFFFFF" stroke="#475569" stroke-width="2"/>
+    <circle cx="375" cy="195" r="9" fill="#065F46"/>
+    <circle cx="372" cy="192" r="3" fill="#FFFFFF"/>
+
+    <!-- Nose -->
+    <path d="M 320 190 L 316 242 Q 320 248 324 242 Z" fill="#F97316" opacity="0.6"/>
+
+    <!-- Soft Lip Color -->
+    <path d="M 280 278 Q 320 305 360 278 Q 320 292 280 278 Z" fill="#E11D48"/>
+
+    <!-- Ears -->
+    <ellipse cx="206" cy="215" rx="12" ry="22" fill="#FDBA74"/>
+    <ellipse cx="434" cy="215" rx="12" ry="22" fill="#FDBA74"/>
+  </g>
+</svg>

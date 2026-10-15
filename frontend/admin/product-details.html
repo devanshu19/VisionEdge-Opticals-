@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                    <div>
+                        <h2 class="mb-0 fw-bold">Product Details</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="inventory-dashboard.html" class="text-decoration-none text-muted">Inventory</a></li>
+                                <li class="breadcrumb-item active" id="breadcrumbType">Product</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div id="actionButtons">
+                        <!-- Edit Button Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Product Info Card -->
+                    <div class="col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-4">
+                                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-box-seam text-primary fs-1" id="productIcon"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-1" id="pName">Loading...</h4>
+                                    <p class="text-muted mb-2" id="pCode">...</p>
+                                    <span class="badge bg-success mb-3" id="pStatus">...</span>
+                                </div>
+                                
+                                <h6 class="fw-bold border-bottom pb-2 mb-3">Inventory Status</h6>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Current Stock:</span>
+                                    <span class="fw-bold fs-5" id="pStock">...</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Min Stock:</span>
+                                    <span class="fw-bold" id="pMinStock">...</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">Location:</span>
+                                    <span class="fw-bold" id="pLocation">...</span>
+                                </div>
+                                
+                                <h6 class="fw-bold border-bottom pb-2 mb-3 mt-4">Pricing</h6>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Purchase Price:</span>
+                                    <span class="fw-bold" id="pPurchasePrice">...</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Selling Price:</span>
+                                    <span class="fw-bold text-success" id="pSellingPrice">...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specifications & History -->
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header bg-transparent py-3">
+                                <h5 class="fw-bold mb-0">Specifications</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3" id="specContainer">
+                                    <!-- Populated by JS based on Frame or Lens -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0">Stock History (Transactions)</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Date</th>
+                                                <th>Type</th>
+                                                <th>Qty</th>
+                                                <th>Reason</th>
+                                                <th>User</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="txHistoryBody">
+                                            <tr><td colspan="5" class="text-center py-4 text-muted">Loading history...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/product-details.js"></script>
+</body>
+</html>

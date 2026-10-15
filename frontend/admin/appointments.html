@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/tables.css">
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <!-- Page Header -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4" data-aos="fade-down">
+                    <div class="mb-3 mb-md-0">
+                        <h2 class="mb-0 fw-bold">Appointments</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Appointments</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#bookAppointmentModal">
+                            <i class="bi bi-calendar-plus me-2"></i>Book Appointment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Appointment KPI Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card border-0 shadow-sm bg-primary text-white">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="mb-1 text-white-50 small text-uppercase fw-bold">Total Appointments</p>
+                                        <h3 class="mb-0 fw-bold" id="kpiTotal">0</h3>
+                                    </div>
+                                    <div class="fs-1 text-white-50"><i class="bi bi-calendar-event"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+                        <div class="card border-0 shadow-sm bg-warning text-dark">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="mb-1 text-dark-50 small text-uppercase fw-bold">Pending</p>
+                                        <h3 class="mb-0 fw-bold" id="kpiPending">0</h3>
+                                    </div>
+                                    <div class="fs-1 text-dark-50"><i class="bi bi-hourglass-split"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card border-0 shadow-sm bg-info text-white">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="mb-1 text-white-50 small text-uppercase fw-bold">Confirmed</p>
+                                        <h3 class="mb-0 fw-bold" id="kpiConfirmed">0</h3>
+                                    </div>
+                                    <div class="fs-1 text-white-50"><i class="bi bi-check-circle"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="250">
+                        <div class="card border-0 shadow-sm bg-success text-white">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="mb-1 text-white-50 small text-uppercase fw-bold">Completed</p>
+                                        <h3 class="mb-0 fw-bold" id="kpiCompleted">0</h3>
+                                    </div>
+                                    <div class="fs-1 text-white-50"><i class="bi bi-person-check-fill"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointment List Card -->
+                <div class="card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3">
+                        <h5 class="mb-3 mb-md-0 fw-bold">Appointment Schedule</h5>
+                        
+                        <!-- Search and Filter -->
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <div class="input-group" style="max-width: 250px;">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="searchAppointment" placeholder="Search customer/doctor...">
+                            </div>
+                            <input type="date" class="form-control w-auto" id="filterDate">
+                            <select class="form-select w-auto" id="filterStatus">
+                                <option value="all">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">ID</th>
+                                        <th>Date & Time</th>
+                                        <th>Customer</th>
+                                        <th>Service Type</th>
+                                        <th>Doctor / Optometrist</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointmentTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book Appointment Modal -->
+            <div class="modal fade" id="bookAppointmentModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold"><i class="bi bi-calendar-plus text-primary me-2"></i>Book New Appointment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="bookAppointmentForm">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Select Customer *</label>
+                                    <select class="form-select" id="aptCustomerSelect" required>
+                                        <option value="">Loading customers...</option>
+                                    </select>
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Date *</label>
+                                        <input type="date" class="form-control" id="aptDate" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Time *</label>
+                                        <input type="time" class="form-control" id="aptTime" value="10:00" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Service / Appointment Type *</label>
+                                    <select class="form-select" id="aptType" required>
+                                        <option value="Eye Test">Comprehensive Eye Test</option>
+                                        <option value="Frame Trial">Frame Trial & Fitting</option>
+                                        <option value="Lens Consultation">Lens & Coating Consultation</option>
+                                        <option value="Follow Up">Follow-up Checkup</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Assigned Doctor / Specialist</label>
+                                    <input type="text" class="form-control" id="aptDoctor" value="Dr. Sharma (Optometrist)">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Notes / Special Instructions</label>
+                                    <textarea class="form-control" id="aptNotes" rows="2" placeholder="e.g. Mild astigmatism check"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary px-4">Book Appointment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Status Modal -->
+            <div class="modal fade" id="editStatusModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold">Update Appointment Status</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="editStatusForm">
+                            <input type="hidden" id="editAptId">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Status</label>
+                                    <select class="form-select" id="editAptStatus">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Confirmed">Confirmed</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Doctor Name</label>
+                                    <input type="text" class="form-control" id="editAptDoctor">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Notes</label>
+                                    <textarea class="form-control" id="editAptNotes" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/appointments.js"></script>
+</body>
+</html>

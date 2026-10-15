@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-16T16:22:00.000Z" agent="VisionEdge" version="21.0.0" type="device">
+  <diagram id="visionedge_system_flow" name="VisionEdge System Flow Diagram">
+    <mxGraphModel dx="1800" dy="1800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="2800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ================= TOP START NODE ================= -->
+        <mxCell id="node_landing" value="Landing Page / Home Page" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="850" y="40" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- User Action Decision -->
+        <mxCell id="dec_user_action" value="User Action" style="shape=rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="880" y="120" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_land_act" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="node_landing" target="dec_user_action" />
+
+        <!-- ================= NEW USER REGISTRATION PATH ================= -->
+        <mxCell id="act_register" value="Register" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="320" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="act_enter_details" value="Enter Details &amp; Password" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="390" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="db_reg_store" value="Store in DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="145" y="465" width="90" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_new_user" value="New User" style="endArrow=classic;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="dec_user_action" target="act_register">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="190" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_reg_det" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_register" target="act_enter_details" />
+        <mxCell id="e_det_db" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_enter_details" target="db_reg_store" />
+
+        <!-- ================= EXISTING USER LOGIN PATH ================= -->
+        <mxCell id="act_login" value="Login" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="890" y="210" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="act_auth" value="Authenticate User" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="890" y="280" width="140" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="dec_check_role" value="Check Role" style="shape=rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="890" y="350" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_exist_user" value="Existing User" style="endArrow=classic;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="dec_user_action" target="act_login" />
+        <mxCell id="e_log_auth" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_login" target="act_auth" />
+        <mxCell id="e_auth_role" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_auth" target="dec_check_role" />
+
+        <!-- ================= CONTAINER 1: ADMIN / OPTICIAN FLOW ================= -->
+        <mxCell id="box_admin_flow" value="Admin &amp; Optician Flow" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=center;fontStyle=1;fontSize=13;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="470" width="620" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_admin_login" value="Admin / Optician Login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="500" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_admin_dash" value="Admin Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="565" width="180" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Admin Options -->
+        <mxCell id="opt_m_inv" value="Manage Inventory (Frames/Lenses)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="340" y="640" width="105" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="opt_m_cust" value="Manage Customers" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="460" y="640" width="105" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="opt_m_orders" value="Manage Orders" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="580" y="640" width="105" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="opt_m_pay" value="Billing &amp; Payments" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="640" width="105" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="opt_appr_apt" value="Approve / Reject Appointment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="640" width="105" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_add_edit_del" value="Add / Edit / Delete Data" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="740" width="180" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_role_admin" value="Role: Admin" style="endArrow=classic;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="dec_check_role" target="act_admin_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ad_log_dash" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_admin_login" target="act_admin_dash" />
+        <mxCell id="e_ad_dash_inv" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_admin_dash" target="opt_m_inv" />
+        <mxCell id="e_ad_dash_cust" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_admin_dash" target="opt_m_cust" />
+        <mxCell id="e_ad_dash_ord" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_admin_dash" target="opt_m_orders" />
+        <mxCell id="e_ad_dash_pay" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_admin_dash" target="opt_m_pay" />
+        <mxCell id="e_ad_dash_appr" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_admin_dash" target="opt_appr_apt" />
+        
+        <mxCell id="e_inv_data" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_m_inv" target="act_add_edit_del" />
+        <mxCell id="e_cust_data" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_m_cust" target="act_add_edit_del" />
+        <mxCell id="e_ord_data" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_m_orders" target="act_add_edit_del" />
+        <mxCell id="e_pay_data" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_m_pay" target="act_add_edit_del" />
+        <mxCell id="e_appr_data" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_appr_apt" target="act_add_edit_del" />
+
+        <!-- ================= CONTAINER 2: CUSTOMER / PATIENT FLOW ================= -->
+        <mxCell id="box_cust_flow" value="Customer / Patient Flow" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=center;fontStyle=1;fontSize=13;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="980" y="470" width="600" height="480" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_cust_login" value="Customer Login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="500" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_cust_dash" value="Customer Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="565" width="180" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Customer Options -->
+        <mxCell id="opt_c_vto" value="Browse Frames &amp; VTO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="640" width="115" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="opt_c_book" value="Book Eye Test Appointment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="640" width="115" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="opt_c_orders" value="My Orders &amp; Prescriptions" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="640" width="115" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="opt_c_chat" value="AI Chatbot &amp; Notifications" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1435" y="640" width="115" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_sub_vto" value="Virtual Try-On Output" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="720" width="115" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_sub_apt" value="Appointment Request" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="720" width="115" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_sub_rx" value="Prescription Details" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="720" width="115" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_sub_chat" value="View Alerts &amp; Answers" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1435" y="720" width="115" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_cust_store" value="Booking &amp; Order Stored in DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="800" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_wait_fulfillment" value="Waiting for Order Fulfillment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="880" width="170" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_role_cust" value="Role: Customer" style="endArrow=classic;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="dec_check_role" target="act_cust_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1280" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_c_log_dash" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_cust_login" target="act_cust_dash" />
+        <mxCell id="e_c_dash_vto" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_cust_dash" target="opt_c_vto" />
+        <mxCell id="e_c_dash_book" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_cust_dash" target="opt_c_book" />
+        <mxCell id="e_c_dash_ord" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_cust_dash" target="opt_c_orders" />
+        <mxCell id="e_c_dash_chat" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_cust_dash" target="opt_c_chat" />
+
+        <mxCell id="e_vto_sub" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_c_vto" target="act_sub_vto" />
+        <mxCell id="e_book_sub" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_c_book" target="act_sub_apt" />
+        <mxCell id="e_ord_sub" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_c_orders" target="act_sub_rx" />
+        <mxCell id="e_chat_sub" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="opt_c_chat" target="act_sub_chat" />
+
+        <mxCell id="e_sub_apt_db" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_sub_apt" target="db_cust_store" />
+        <mxCell id="e_sub_rx_db" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_sub_rx" target="db_cust_store" />
+        <mxCell id="e_db_fulfillment" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="db_cust_store" target="act_wait_fulfillment" />
+
+        <!-- ================= CONTAINER 3: COMMON MODULES & DATABASE ================= -->
+        <mxCell id="box_common" value="Common Modules &amp; Central Database" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=center;fontStyle=1;fontSize=13;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="890" width="820" height="320" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_mysql" value="Database: XAMPP MySQL (visionedge_db)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="410" y="930" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_notification_sys" value="Notification System: Email / SMS / WhatsApp" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="1045" width="260" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_logout" value="Logout" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="470" y="1120" width="120" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Connecting Lines to Central DB -->
+        <mxCell id="e_reg_to_mysql" style="endArrow=classic;dashed=1;html=1;strokeColor=#000000;" edge="1" parent="1" source="db_reg_store" target="db_mysql">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="190" y="970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_admin_to_mysql" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_add_edit_del" target="db_mysql" />
+        <mxCell id="e_cust_to_mysql" style="endArrow=classic;dashed=1;html=1;strokeColor=#000000;" edge="1" parent="1" source="db_cust_store" target="db_mysql">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1250" y="970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_mysql_notif" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="db_mysql" target="act_notification_sys" />
+        <mxCell id="e_notif_logout" style="endArrow=classic;html=1;strokeColor=#000000;" edge="1" parent="1" source="act_notification_sys" target="act_logout" />
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Backend: Flask API (Port 5000)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/app.py",
+            "cwd": "${workspaceFolder}/backend",
+            "python": "${workspaceFolder}/backend/venv/Scripts/python.exe",
+            "console": "integratedTerminal",
+            "env": {
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"
+            }
+        },
+        {
+            "name": "Frontend: Web Server (Port 8000)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/frontend/server.py",
+            "cwd": "${workspaceFolder}/frontend",
+            "python": "${workspaceFolder}/backend/venv/Scripts/python.exe",
+            "console": "integratedTerminal"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "🚀 Run Full Website (Backend + Frontend)",
+            "configurations": [
+                "Backend: Flask API (Port 5000)",
+                "Frontend: Web Server (Port 8000)"
+            ],
+            "stopAll": true
+        }
+    ]
+}

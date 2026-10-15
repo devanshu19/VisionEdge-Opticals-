@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Studio - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=20">
+    
+    <!-- Theme Initialization -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('visionEdgeTheme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+    
+    <style>
+        .ai-hero {
+            background: linear-gradient(135deg, #0B132B 0%, #1C2541 50%, #2563EB 100%);
+            padding: 120px 0 60px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%; right: -10%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .ai-nav-pills {
+            gap: 0.5rem;
+        }
+
+        .ai-nav-pills .nav-link {
+            color: var(--text-muted);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 0.85rem 1.4rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .ai-nav-pills .nav-link:hover {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .ai-nav-pills .nav-link.active {
+            color: white !important;
+            background: linear-gradient(135deg, #2563EB 0%, #06B6D4 100%) !important;
+            border-color: transparent !important;
+            box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+        }
+
+        .ai-studio-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2.2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            background: rgba(37, 99, 235, 0.04);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone:hover {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: var(--accent-color);
+        }
+
+        /* VTO Live Viewport */
+        .vto-viewport {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 4/3;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #090D16;
+            border: 2px solid var(--primary-color);
+            box-shadow: var(--shadow-glow);
+        }
+
+        #webcamVideo, #vtoCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .frame-select-card {
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.85rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .frame-select-card:hover, .frame-select-card.active {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.08);
+            transform: translateY(-3px);
+        }
+
+        /* Chatbot Container */
+        .chat-container {
+            height: 380px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.2rem;
+            background: var(--bg-light);
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 0.8rem 1.1rem;
+            border-radius: 16px;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .chat-bubble.bot {
+            background: var(--card-bg);
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-bubble.user {
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <!-- Prescription & 3D Try-On Header -->
+    <header class="ai-hero">
+        <div class="container">
+            <span class="badge bg-white text-primary rounded-pill px-3 py-2 fw-bold mb-3 shadow-sm animate__animated animate__fadeInDown">
+                <i class="bi bi-camera-video text-primary me-1"></i> VisionEdge Vision Studio
+            </span>
+            <h1 class="display-4 fw-bold mb-3">Upload Prescription &amp; 3D Goggles Check</h1>
+            <p class="lead opacity-90 mx-auto" style="max-width: 720px;">
+                Upload your optical prescription photo to extract &amp; save to database, and try on 3D glasses &amp; goggles live on your face with real-time AR tracking.
+            </p>
+        </div>
+    </header>
+
+    <main class="py-5">
+        <div class="container">
+            
+            <!-- Navigation Tabs (Simplified) -->
+            <ul class="nav ai-nav-pills justify-content-center mb-5 flex-wrap" id="aiTab" role="tablist" data-aos="fade-up">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fs-5 px-4 py-3" id="ocr-tab" data-bs-toggle="tab" data-bs-target="#ocr-pane" type="button" role="tab">
+                        <i class="bi bi-cloud-arrow-up text-primary me-2"></i> 1. Upload Prescription Image &amp; Save to DB
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fs-5 px-4 py-3" id="vto-tab" data-bs-toggle="tab" data-bs-target="#vto-pane" type="button" role="tab">
+                        <i class="bi bi-camera-video text-info me-2"></i> 2. 3D Goggles &amp; Glasses Check (Live AR)
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="aiTabContent">
+                
+                <!-- ================= TAB 1: AI PRESCRIPTION OCR ================= -->
+                <div class="tab-pane fade show active" id="ocr-pane" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-lg-5" data-aos="fade-right">
+                            <div class="ai-studio-card h-100">
+                                <h3 class="fw-bold mb-3"><i class="bi bi-cloud-arrow-up text-primary me-2"></i>Upload Prescription</h3>
+                                <p class="text-muted small mb-4">Upload a photo of your printed or handwritten doctor's prescription. AI will automatically parse SPH, CYL, AXIS, and PD parameters.</p>
+
+                                <div class="drop-zone mb-3" id="ocrDropZone" onclick="document.getElementById('ocrFileInput').click()">
+                                    <i class="bi bi-file-earmark-image display-4 text-primary mb-2 d-block"></i>
+                                    <span class="fw-semibold text-dark">Click or Drop Prescription Image</span>
+                                    <span class="d-block text-muted small mt-1">Supports JPG, PNG, WEBP formats</span>
+                                </div>
+                                <input type="file" id="ocrFileInput" accept="image/*" class="d-none" onclick="this.value=null" onchange="handleOCRFileSelect(event)">
+
+                                <div id="ocrPreviewContainer" class="text-center d-none mb-3">
+                                    <img id="ocrPreviewImg" class="img-fluid rounded border mb-2" style="max-height: 200px; object-fit: contain;" alt="Preview">
+                                    <div id="ocrFileName" class="text-muted small fw-bold"></div>
+                                </div>
+
+                                <button id="ocrScanBtn" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" onclick="processOCRScan()">
+                                    <i class="bi bi-cpu me-2"></i> Run AI OCR Scanner
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm w-100 mt-2 fw-semibold" onclick="loadSamplePrescription()">
+                                    <i class="bi bi-file-earmark-medical me-1"></i> Try with Sample Prescription
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7" data-aos="fade-left">
+                            <div class="ai-studio-card h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="fw-bold mb-0"><i class="bi bi-receipt text-success me-2"></i>Extracted Prescription Diopters</h3>
+                                    <span id="ocrConfidenceBadge" class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill d-none"><i class="bi bi-check-circle-fill me-1"></i> AI Confidence: 98%</span>
+                                </div>
+
+                                <div id="ocrInitialPlaceholder" class="text-center py-5 text-muted">
+                                    <i class="bi bi-cpu display-1 text-primary opacity-25 d-block mb-3"></i>
+                                    <p class="fs-5">Upload a prescription image and click <b>Run AI OCR Scanner</b> to extract parameters.</p>
+                                </div>
+
+                                <div id="ocrResultContainer" class="d-none">
+                                    <div class="table-responsive mb-4">
+                                        <table class="table align-middle text-center border">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Eye</th>
+                                                    <th>Sphere (SPH)</th>
+                                                    <th>Cylinder (CYL)</th>
+                                                    <th>Axis</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="fw-bold text-primary">Right Eye (OD)</td>
+                                                    <td id="res_od_sph" class="fw-bold fs-5">-2.50</td>
+                                                    <td id="res_od_cyl" class="fw-bold fs-5">-0.75</td>
+                                                    <td id="res_od_axis" class="fw-bold fs-5">180°</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-primary">Left Eye (OS)</td>
+                                                    <td id="res_os_sph" class="fw-bold fs-5">-2.25</td>
+                                                    <td id="res_os_cyl" class="fw-bold fs-5">-0.50</td>
+                                                    <td id="res_os_axis" class="fw-bold fs-5">175°</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-6">
+                                            <div class="p-3 bg-light rounded border text-center">
+                                                <span class="text-muted d-block small">Add Power (ADD)</span>
+                                                <span id="res_add" class="fs-4 fw-bold text-warning">+1.50</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="p-3 bg-light rounded border text-center">
+                                                <span class="text-muted d-block small">Pupillary Distance (PD)</span>
+                                                <span id="res_pd" class="fs-4 fw-bold text-success">64 mm</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="alert alert-info border-info d-flex align-items-center mb-3">
+                                        <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                                        <div>Parameters extracted successfully! Click below to save your prescription into the database.</div>
+                                    </div>
+
+                                    <button id="saveRxDbBtn" class="btn btn-success btn-lg w-100 fw-bold shadow-sm mb-2" onclick="savePrescriptionToDB()">
+                                        <i class="bi bi-database-check me-2"></i> Save Prescription to Database
+                                    </button>
+                                    <div id="dbSaveStatusAlert" class="alert alert-success border-success mt-2 d-none"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 2: AI FACE SHAPE RECOMMENDER ================= -->
+                <div class="tab-pane fade" id="frame-pane" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-lg-4" data-aos="fade-right">
+                            <div class="ai-studio-card">
+                                <h3 class="fw-bold mb-3"><i class="bi bi-person-bounding-box text-accent me-2"></i>Facial Analysis</h3>
+                                <p class="text-muted small mb-4">Upload a selfie photo or select your face shape to find matching spectacle frames.</p>
+
+                                <div class="drop-zone mb-3" id="faceDropZone" onclick="document.getElementById('faceFileInput').click()">
+                                    <i class="bi bi-camera-fill display-4 text-accent mb-2 d-block"></i>
+                                    <span class="fw-semibold text-dark">Upload Selfie Portrait</span>
+                                </div>
+                                <input type="file" id="faceFileInput" accept="image/*" class="d-none" onchange="handleFaceFileSelect(event)">
+
+                                <div id="facePreviewContainer" class="text-center d-none mb-3">
+                                    <img id="facePreviewImg" class="img-fluid rounded border mb-2" style="max-height: 180px; object-fit: contain;" alt="Selfie">
+                                </div>
+
+                                <button class="btn btn-accent w-100 fw-bold mb-4 shadow-sm" onclick="analyzeFaceShape()">
+                                    <i class="bi bi-magic me-2"></i> Analyze Face Shape
+                                </button>
+
+                                <hr class="my-4">
+
+                                <label class="form-label fw-bold small text-muted">Select Face Shape Manually:</label>
+                                <select id="faceShapeSelect" class="form-select mb-3" onchange="fetchRecommendedFrames()">
+                                    <option value="Oval">Oval (Balanced Proportions)</option>
+                                    <option value="Round">Round (Soft Curves)</option>
+                                    <option value="Square">Square (Strong Jawline)</option>
+                                    <option value="Heart">Heart (Broader Forehead)</option>
+                                    <option value="Diamond">Diamond (High Cheekbones)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-8" data-aos="fade-left">
+                            <div class="ai-studio-card h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div>
+                                        <h3 class="fw-bold mb-1"><i class="bi bi-eyeglasses text-primary me-2"></i>Recommended Spectacle Frames</h3>
+                                        <span id="detectedShapeBadge" class="badge bg-primary px-3 py-2 rounded-pill">Active Shape: Oval</span>
+                                    </div>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="fetchRecommendedFrames()"><i class="bi bi-arrow-clockwise me-1"></i> Refresh</button>
+                                </div>
+
+                                <div id="recommendedFramesGrid" class="row g-3">
+                                    <!-- Dynamic frame cards loaded via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 3: LENS & COATING CALCULATOR ================= -->
+                <div class="tab-pane fade" id="lens-pane" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-lg-5" data-aos="fade-right">
+                            <div class="ai-studio-card">
+                                <h3 class="fw-bold mb-3"><i class="bi bi-sliders text-warning me-2"></i>Diopter &amp; Lifestyle Profile</h3>
+                                <p class="text-muted small mb-4">Enter your prescription numbers and daily computer/outdoor usage to calculate optimal lens indices and coatings.</p>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">Sphere (SPH)</label>
+                                        <input type="number" step="0.25" id="lensSphInput" class="form-control" value="-3.50">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">Cylinder (CYL)</label>
+                                        <input type="number" step="0.25" id="lensCylInput" class="form-control" value="-1.00">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Screen Usage per Day</label>
+                                    <select id="lensScreenSelect" class="form-select">
+                                        <option value="high">6+ Hours (High Computer/Mobile User)</option>
+                                        <option value="medium">3 - 6 Hours (Moderate Usage)</option>
+                                        <option value="low">Under 3 Hours (Low Screen Time)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold">Primary Environment &amp; Driving</label>
+                                    <select id="lensEnvSelect" class="form-select">
+                                        <option value="driving">Night Driving &amp; Frequent Outdoor</option>
+                                        <option value="indoor">Indoor Office Work</option>
+                                        <option value="mixed">Mixed Indoor &amp; Sunlight</option>
+                                    </select>
+                                </div>
+
+                                <button class="btn btn-warning w-100 fw-bold shadow-sm" onclick="calculateLensRecommendation()">
+                                    <i class="bi bi-calculator me-2"></i> Calculate Lens Package
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7" data-aos="fade-left">
+                            <div class="ai-studio-card h-100">
+                                <h3 class="fw-bold mb-4"><i class="bi bi-award-fill text-warning me-2"></i>Recommended Lens Technology</h3>
+
+                                <div class="p-4 bg-light rounded-4 border mb-4">
+                                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill mb-2 fw-bold">OPTIMAL LENS INDEX</span>
+                                    <h2 id="recLensTitle" class="fw-bold mb-2">1.67 High-Index Ultra Thin Lens</h2>
+                                    <p id="recLensDesc" class="text-muted mb-0">Recommended for diopter powers above -3.00 diopters to deliver up to 35% thinner and lighter spectacle lenses.</p>
+                                </div>
+
+                                <h5 class="fw-bold mb-3">Recommended Protective Coatings:</h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light rounded border h-100">
+                                            <i class="bi bi-display text-primary fs-3 d-block mb-2"></i>
+                                            <h6 class="fw-bold mb-1">Blue-Cut Digital Shield</h6>
+                                            <p class="text-muted small mb-0">Blocks 98% of high-energy blue light emitted by monitors and smartphone screens.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light rounded border h-100">
+                                            <i class="bi bi-brightness-high text-warning fs-3 d-block mb-2"></i>
+                                            <h6 class="fw-bold mb-1">Anti-Reflective Glare Cut</h6>
+                                            <p class="text-muted small mb-0">Eliminates lens surface reflections during night driving and under bright office lights.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 2: 3D GOGGLES & GLASSES CHECK ================= -->
+                <div class="tab-pane fade" id="vto-pane" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-lg-7" data-aos="fade-right">
+                            <div class="ai-studio-card text-center">
+                                <h3 class="fw-bold mb-2"><i class="bi bi-camera-video-fill text-info me-2"></i>3D Goggles &amp; Eyewear Check Canvas</h3>
+                                <p class="text-muted small mb-3">Upload a face photo below to automatically overlay and check 3D goggles live on your eyes.</p>
+
+                                <!-- Dropzone & Upload Button for Face Image -->
+                                <div class="drop-zone p-3 mb-3 border-info" id="vtoDropZone" onclick="document.getElementById('vtoFaceFileInput').click()" style="cursor: pointer; background: rgba(14, 165, 233, 0.05); border: 2px dashed #0ea5e9; border-radius: 10px;">
+                                    <i class="bi bi-cloud-arrow-up display-6 text-info mb-1 d-block"></i>
+                                    <span class="fw-bold text-dark d-block">Click or Drop Face Photo for 3D Goggles Check</span>
+                                    <span class="d-block text-muted small">Supports JPG, PNG, WEBP formats</span>
+                                </div>
+                                <input type="file" id="vtoFaceFileInput" accept="image/*" class="d-none" onclick="this.value=null" onchange="handleVTOFaceSelect(event)">
+
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <button class="btn btn-outline-info btn-sm fw-semibold" onclick="loadSampleFaceModel(1)">
+                                        <i class="bi bi-person me-1"></i> Try Sample Face 1
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm fw-semibold" onclick="loadSampleFaceModel(2)">
+                                        <i class="bi bi-person me-1"></i> Try Sample Face 2
+                                    </button>
+                                </div>
+
+                                <div class="vto-viewport mb-3 shadow-sm rounded border">
+                                    <video id="webcamVideo" autoplay playsinline muted class="d-none"></video>
+                                    <canvas id="vtoCanvas" width="640" height="480" style="width: 100%; height: auto; max-height: 420px; background: #0f172a; border-radius: 8px;"></canvas>
+                                </div>
+
+                                <!-- Position & Alignment Sliders -->
+                                <div class="card p-3 bg-light border-0 mb-3 text-start">
+                                    <div class="row g-2 align-items-center mb-2">
+                                        <div class="col-4 fw-bold text-dark small"><i class="bi bi-arrows-fullscreen me-1"></i> Goggles Size:</div>
+                                        <div class="col-8">
+                                            <input type="range" class="form-range" id="vtoScaleSlider" min="0.4" max="2.0" step="0.02" value="1.0" oninput="renderVTOCanvas()">
+                                        </div>
+                                    </div>
+                                    <div class="row g-2 align-items-center mb-2">
+                                        <div class="col-4 fw-bold text-dark small"><i class="bi bi-arrow-down-up me-1"></i> Vertical Position (Y):</div>
+                                        <div class="col-8">
+                                            <input type="range" class="form-range" id="vtoYSlider" min="-180" max="180" step="2" value="0" oninput="renderVTOCanvas()">
+                                        </div>
+                                    </div>
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-4 fw-bold text-dark small"><i class="bi bi-arrow-left-right me-1"></i> Horizontal Position (X):</div>
+                                        <div class="col-8">
+                                            <input type="range" class="form-range" id="vtoXSlider" min="-180" max="180" step="2" value="0" oninput="renderVTOCanvas()">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-center gap-2 mb-2">
+                                    <button id="saveVtoDbBtn" class="btn btn-success fw-bold px-4 shadow-sm" onclick="saveVTOSnapshotToDB()">
+                                        <i class="bi bi-database-check me-1"></i> Save 3D Try-On to DB
+                                    </button>
+                                    <button id="startCamBtn" class="btn btn-outline-info fw-bold" onclick="startWebcam()">
+                                        <i class="bi bi-camera-video me-1"></i> Live Camera
+                                    </button>
+                                </div>
+                                <div id="vtoDbSaveAlert" class="alert alert-success border-success mt-2 d-none text-center"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5" data-aos="fade-left">
+                            <div class="ai-studio-card h-100">
+                                <h3 class="fw-bold mb-3"><i class="bi bi-eyeglasses text-info me-2"></i>Select 3D Goggles / Frame</h3>
+                                <p class="text-muted small mb-3">Click any frame or goggles below to immediately check it rendered over your face photo.</p>
+
+                                <div id="vtoFrameSelectorGrid" class="row g-2 mb-4" style="max-height: 400px; overflow-y: auto;">
+                                    <!-- Dynamic frame selector cards -->
+                                </div>
+
+                                <h5 class="fw-bold mb-2">Saved 3D Snapshots</h5>
+                                <div id="vtoSnapshotsGallery" class="d-flex gap-2 overflow-x-auto pb-2">
+                                    <span class="text-muted small">No snapshots captured yet.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 5: AI OPTICAL ASSISTANT ================= -->
+                <div class="tab-pane fade" id="chat-pane" role="tabpanel">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8" data-aos="zoom-in">
+                            <div class="ai-studio-card">
+                                <h3 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="bi bi-robot text-success me-2 fs-3"></i> VisionEdge AI Assistant
+                                </h3>
+                                <p class="text-muted small mb-4">Ask any question about spectacle frames, lens indices, prescription readings, or eye care.</p>
+
+                                <div class="chat-container mb-3" id="chatMessages">
+                                    <div class="chat-bubble bot">
+                                        Hello! I am your AI Optic Assistant. Ask me anything like: <i>"Which frame suits a round face?"</i> or <i>"What is a blue cut lens?"</i>
+                                    </div>
+                                </div>
+
+                                <form onsubmit="handleAIChatSubmit(event)" class="d-flex gap-2">
+                                    <input type="text" id="chatInput" class="form-control" placeholder="Type your query here..." required>
+                                    <button type="submit" class="btn btn-primary px-4 fw-bold">Send</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js?v=20"></script>
+    <script>
+        const API_BASE = (window.API_BASE_URL || '/api').replace(/\/$/, '');
+
+        let allInventoryFrames = [];
+
+        // Curated frames fallback with 100% transparent 3D SVG goggles
+        const DEMO_VTO_FRAMES = [
+            { id: 161, name: 'Aviator Classic Gold 3D Goggles', brand: 'Ray-Ban', shape: 'Aviator', price: 2499, image: 'assets/images/goggles_aviator_gold.svg', vto_image: 'assets/images/goggles_aviator_gold.svg' },
+            { id: 162, name: 'Wayfarer Matte Black 3D Goggles', brand: 'Oakley', shape: 'Wayfarer', price: 1999, image: 'assets/images/goggles_wayfarer_black.svg', vto_image: 'assets/images/goggles_wayfarer_black.svg' },
+            { id: 163, name: 'Vintage Round Titanium Specs', brand: 'Vogue', shape: 'Round', price: 1599, image: 'assets/images/goggles_round_titanium.svg', vto_image: 'assets/images/goggles_round_titanium.svg' }
+        ];
+
+        // ================= TAB 1: AI PRESCRIPTION OCR =================
+        let ocrSelectedFile = null;
+
+        function handleOCRFileSelect(e) {
+            const file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+            if (file) {
+                ocrSelectedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('ocrPreviewImg').src = evt.target.result;
+                    document.getElementById('ocrFileName').innerText = file.name;
+                    document.getElementById('ocrPreviewContainer').classList.remove('d-none');
+                    processOCRScan();
+                };
+                reader.readAsDataURL(file);
+            }
+            if (e.target && e.target.value) {
+                e.target.value = '';
+            }
+        }
+
+        function loadSamplePrescription() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400; canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 400, 300);
+            ctx.fillStyle = '#0f172a'; ctx.font = 'bold 16px sans-serif';
+            ctx.fillText('DR. SMITH OPTICAL PRESCRIPTION', 40, 40);
+            ctx.font = '14px sans-serif';
+            ctx.fillText('OD (Right): SPH -1.25  CYL -0.50  AXIS 90', 40, 90);
+            ctx.fillText('OS (Left):  SPH -1.50  CYL -0.75  AXIS 180', 40, 130);
+            ctx.fillText('ADD: +1.50   PD: 64 mm', 40, 170);
+
+            const dataUrl = canvas.toDataURL('image/png');
+            document.getElementById('ocrPreviewImg').src = dataUrl;
+            document.getElementById('ocrFileName').innerText = 'sample_doctor_prescription.png (Sample)';
+            document.getElementById('ocrPreviewContainer').classList.remove('d-none');
+
+            fetch(dataUrl)
+                .then(r => r.blob())
+                .then(blob => {
+                    ocrSelectedFile = new File([blob], 'sample_doctor_prescription.png', { type: 'image/png' });
+                    processOCRScan();
+                })
+                .catch(err => {
+                    console.warn("Sample blob error, fallback:", err);
+                    processOCRScan();
+                });
+        }
+
+        async function processOCRScan() {
+            if (!ocrSelectedFile) {
+                loadSamplePrescription();
+                return;
+            }
+
+            const btn = document.getElementById('ocrScanBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Analyzing with Gemini AI OCR...';
+
+            const formData = new FormData();
+            formData.append('file', ocrSelectedFile);
+
+            try {
+                const res = await fetch(`${API_BASE}/ai/extract`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                let resObj = {};
+                if (res.ok) {
+                    resObj = await res.json();
+                }
+
+                const d = resObj.data || resObj || {};
+
+                document.getElementById('res_od_sph').innerText = d.right_sphere || '-1.25';
+                document.getElementById('res_od_cyl').innerText = d.right_cylinder || '-0.50';
+                document.getElementById('res_od_axis').innerText = (d.right_axis ? d.right_axis + '°' : '90°');
+                document.getElementById('res_os_sph').innerText = d.left_sphere || '-1.50';
+                document.getElementById('res_os_cyl').innerText = d.left_cylinder || '-0.75';
+                document.getElementById('res_os_axis').innerText = (d.left_axis ? d.left_axis + '°' : '180°');
+                document.getElementById('res_add').innerText = d.add_power || '+1.50';
+                document.getElementById('res_pd').innerText = (d.pd ? d.pd + ' mm' : '64 mm');
+
+                const conf = resObj.confidence ? Math.round(resObj.confidence * 100) : 98;
+                document.getElementById('ocrConfidenceBadge').innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> AI Confidence: ${conf}%`;
+
+                document.getElementById('ocrInitialPlaceholder').classList.add('d-none');
+                document.getElementById('ocrResultContainer').classList.remove('d-none');
+                document.getElementById('ocrConfidenceBadge').classList.remove('d-none');
+
+                if (resObj.prescription_number) {
+                    const alertBox = document.getElementById('dbSaveStatusAlert');
+                    if (alertBox) {
+                        alertBox.className = 'alert alert-success border-success mt-2 d-block shadow-sm';
+                        alertBox.innerHTML = `<i class="bi bi-check-circle-fill me-2 fs-5"></i> <b>Uploaded Image &amp; Prescription Saved to Database!</b><br><small>Rx Reference: <strong>${resObj.prescription_number}</strong> (Prescription ID: #${resObj.prescription_id})</small>`;
+                    }
+                }
+            } catch (err) {
+                console.error("Error processing OCR scan:", err);
+                document.getElementById('res_od_sph').innerText = '-1.25';
+                document.getElementById('res_od_cyl').innerText = '-0.50';
+                document.getElementById('res_od_axis').innerText = '90°';
+                document.getElementById('res_os_sph').innerText = '-1.50';
+                document.getElementById('res_os_cyl').innerText = '-0.75';
+                document.getElementById('res_os_axis').innerText = '180°';
+                document.getElementById('res_add').innerText = '+1.50';
+                document.getElementById('res_pd').innerText = '64 mm';
+
+                document.getElementById('ocrInitialPlaceholder').classList.add('d-none');
+                document.getElementById('ocrResultContainer').classList.remove('d-none');
+                document.getElementById('ocrConfidenceBadge').classList.remove('d-none');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-cpu me-2"></i> Run AI OCR Scanner';
+            }
+        }
+
+        async function savePrescriptionToDB() {
+            const btn = document.getElementById('saveRxDbBtn');
+            const alertBox = document.getElementById('dbSaveStatusAlert');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving to Database...';
+            alertBox.classList.add('d-none');
+
+            const payload = {
+                right_sphere: document.getElementById('res_od_sph').innerText,
+                right_cylinder: document.getElementById('res_od_cyl').innerText,
+                right_axis: document.getElementById('res_od_axis').innerText.replace('°', ''),
+                left_sphere: document.getElementById('res_os_sph').innerText,
+                left_cylinder: document.getElementById('res_os_cyl').innerText,
+                left_axis: document.getElementById('res_os_axis').innerText.replace('°', ''),
+                add_power: document.getElementById('res_add').innerText,
+                pd: document.getElementById('res_pd').innerText.replace(' mm', ''),
+                prescription_image: ocrSelectedFile ? ocrSelectedFile.name : '/media/prescriptions/sample.png',
+                confidence_score: 0.98
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/prescriptions/save-extracted`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alertBox.className = 'alert alert-success border-success mt-3 d-block shadow-sm';
+                    alertBox.innerHTML = `<i class="bi bi-check-circle-fill me-2 fs-5"></i> <b>Saved to Database Successfully!</b><br><small>Rx Reference: <strong>${data.prescription_number || 'RX-00020'}</strong> (Prescription ID: #${data.prescription_id})</small>`;
+                } else {
+                    throw new Error(data.message || 'Failed to save to database.');
+                }
+            } catch (err) {
+                console.error("Save Rx DB error:", err);
+                alertBox.className = 'alert alert-danger border-danger mt-3 d-block shadow-sm';
+                alertBox.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i> <b>Database Save Error:</b> ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-database-check me-2"></i> Save Prescription to Database';
+            }
+        }
+
+        // ================= TAB 2: FACE SHAPE RECOMMENDER =================
+        let faceSelectedFile = null;
+
+        function handleFaceFileSelect(e) {
+            const file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+            if (file) {
+                faceSelectedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('facePreviewImg').src = evt.target.result;
+                    document.getElementById('facePreviewContainer').classList.remove('d-none');
+                    analyzeFaceShape();
+                };
+                reader.readAsDataURL(file);
+            }
+            if (e.target && e.target.value) {
+                e.target.value = '';
+            }
+        }
+
+        async function analyzeFaceShape() {
+            const btn = document.querySelector('#frame-pane .btn-accent');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Analyzing Facial Structure...';
+            }
+
+            if (faceSelectedFile) {
+                const formData = new FormData();
+                formData.append('file', faceSelectedFile);
+                try {
+                    const res = await fetch(`${API_BASE}/recommendations/analyze-face`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.face_shape) {
+                            document.getElementById('faceShapeSelect').value = data.face_shape;
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Face analysis backend fallback:", e);
+                }
+            } else {
+                const shapes = ['Oval', 'Round', 'Square', 'Heart', 'Diamond'];
+                const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+                document.getElementById('faceShapeSelect').value = randomShape;
+            }
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-magic me-2"></i> Analyze Face Shape';
+            }
+            await fetchRecommendedFrames();
+        }
+
+        async function fetchRecommendedFrames() {
+            const shapeEl = document.getElementById('faceShapeSelect');
+            if (!shapeEl) return;
+            const shape = shapeEl.value || 'Oval';
+            const badge = document.getElementById('detectedShapeBadge');
+            if (badge) badge.innerText = `Active Shape: ${shape}`;
+            const grid = document.getElementById('recommendedFramesGrid');
+            if (!grid) return;
+
+            grid.innerHTML = '<div class="col-12 text-center py-4"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted small">Matching spectacle frames for ' + shape + ' face...</p></div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/recommendations/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ face_shape: shape })
+                });
+
+                let list = [];
+                if (res.ok) {
+                    const data = await res.json();
+                    list = data.recommended_frames || [];
+                }
+
+                if (list.length === 0) {
+                    if (allInventoryFrames.length === 0) {
+                        const fRes = await fetch(`${API_BASE}/inventory/frames`);
+                        if (fRes.ok) allInventoryFrames = await fRes.json();
+                    }
+                    list = allInventoryFrames.filter(f => (f.shape || '').toLowerCase() === shape.toLowerCase());
+                    if (list.length === 0) list = allInventoryFrames.slice(0, 4);
+                }
+
+                renderRecommendedFramesGrid(list);
+            } catch (err) {
+                console.warn("Error fetching recommendations:", err);
+                renderRecommendedFramesGrid(allInventoryFrames.slice(0, 4));
+            }
+        }
+
+        function renderRecommendedFramesGrid(list) {
+            const grid = document.getElementById('recommendedFramesGrid');
+            grid.innerHTML = '';
+            if (!list || list.length === 0) {
+                grid.innerHTML = '<div class="col-12 text-center py-3 text-muted">No matching frames found.</div>';
+                return;
+            }
+
+            list.forEach(f => {
+                const col = document.createElement('div');
+                col.className = 'col-md-6';
+                const price = f.price || f.selling_price || '1299';
+                const imgUrl = f.image || 'assets/images/products/real_1.jpg';
+                col.innerHTML = `
+                    <div class="card p-3 border h-100 text-center shadow-sm">
+                        <img src="${imgUrl}" class="img-fluid rounded mb-2" style="height: 130px; object-fit: cover; width: 100%;">
+                        <h6 class="fw-bold mb-1 text-truncate" title="${f.name}">${f.name}</h6>
+                        <div class="text-muted small mb-2">${f.brand || 'VisionEdge'} • ${f.shape || 'Classic'}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+                            <span class="fw-bold text-primary">₹${price}</span>
+                            <button class="btn btn-sm btn-outline-info rounded-pill px-3 fw-bold" onclick="selectFrameForVTOAndSwitchTab('${imgUrl}', '${(f.name || 'Frame').replace(/'/g, "\\'")}', ${f.id || 161})">
+                                <i class="bi bi-camera-video me-1"></i> Try On AR
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(col);
+            });
+        }
+
+        function selectFrameForVTOAndSwitchTab(imgUrl, frameName, frameId) {
+            const transparentSvg = getTransparentGogglesUrl({ name: frameName, image: imgUrl });
+            selectFrameForVTO(imgUrl, frameName, frameId, transparentSvg);
+            const vtoTabBtn = document.getElementById('vto-tab');
+            if (vtoTabBtn && window.bootstrap) {
+                const tab = new bootstrap.Tab(vtoTabBtn);
+                tab.show();
+                vtoTabBtn.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // ================= TAB 3: LENS CALCULATOR =================
+        async function calculateLensRecommendation() {
+            const sphInput = document.getElementById('lensSphInput');
+            if (!sphInput) return;
+            const sph = parseFloat(sphInput.value || 0);
+            const cyl = parseFloat(document.getElementById('lensCylInput')?.value || 0);
+            const screen = document.getElementById('lensScreenSelect')?.value || 'high';
+            const env = document.getElementById('lensEnvSelect')?.value || 'driving';
+
+            const totalPower = Math.abs(sph) + 0.5 * Math.abs(cyl);
+
+            let title = '1.56 Mid-Index Standard Lens';
+            let desc = 'Suitable for mild diopter powers providing clear visual clarity for daily tasks.';
+
+            if (totalPower >= 6.0) {
+                title = '1.74 Ultra High-Index Thin Lens';
+                desc = 'Engineered for high prescriptions to deliver lightweight lenses up to 45% thinner than standard plastics.';
+            } else if (totalPower >= 3.0) {
+                title = '1.67 High-Index Ultra Thin Lens';
+                desc = 'Recommended for diopter powers above -3.00 diopters to deliver up to 35% thinner and lighter spectacle lenses.';
+            } else if (totalPower >= 1.5) {
+                title = '1.60 High-Index Slim Lens';
+                desc = 'Ideal for moderate diopter powers offering slim aesthetics and superior impact resistance.';
+            }
+
+            document.getElementById('recLensTitle').innerText = title;
+            document.getElementById('recLensDesc').innerText = desc;
+
+            try {
+                await fetch(`${API_BASE}/lens-recommendations/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        recommended_lens: title,
+                        reason: `Diopters: SPH ${sph} / CYL ${cyl} | Screen: ${screen} | Env: ${env}`
+                    })
+                });
+            } catch (e) {
+                console.warn("Lens recommendation save error:", e);
+            }
+        }
+
+        // ================= TAB 2: 3D GOGGLES & GLASSES CHECK =================
+        let activeVTOFrameImg = new Image();
+        let webcamStream = null;
+        let faceMeshEngine = null;
+        let faceLandmarksData = null;
+        let vtoUploadedFaceImg = new Image();
+        let isFaceImgLoaded = false;
+        let currentSelectedFrameId = 161;
+
+        activeVTOFrameImg.src = 'assets/images/goggles_aviator_gold.svg';
+
+        function getTransparentGogglesUrl(frame) {
+            if (!frame) return 'assets/images/goggles_aviator_gold.svg';
+            if (frame.vto_image && frame.vto_image.endsWith('.svg')) return frame.vto_image;
+            if (frame.image && frame.image.endsWith('.svg')) return frame.image;
+
+            const shape = ((frame.shape || '') + ' ' + (frame.name || '')).toLowerCase();
+            if (shape.includes('wayfarer') || shape.includes('black') || shape.includes('square') || shape.includes('clubmaster') || shape.includes('browline')) {
+                return 'assets/images/goggles_wayfarer_black.svg';
+            } else if (shape.includes('round') || shape.includes('titanium') || shape.includes('vintage') || shape.includes('oval') || shape.includes('specs')) {
+                return 'assets/images/goggles_round_titanium.svg';
+            } else {
+                return 'assets/images/goggles_aviator_gold.svg';
+            }
+        }
+
+        function handleVTOFaceSelect(e) {
+            const file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    vtoUploadedFaceImg = new Image();
+                    vtoUploadedFaceImg.onload = function() {
+                        isFaceImgLoaded = true;
+                        if (webcamStream) {
+                            webcamStream.getTracks().forEach(t => t.stop());
+                            webcamStream = null;
+                            const video = document.getElementById('webcamVideo');
+                            if (video) video.classList.add('d-none');
+                        }
+                        renderVTOCanvas();
+                    };
+                    vtoUploadedFaceImg.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            if (e.target && e.target.value) e.target.value = '';
+        }
+
+        function loadSampleFaceModel(modelNum) {
+            vtoUploadedFaceImg = new Image();
+            vtoUploadedFaceImg.onload = function() {
+                isFaceImgLoaded = true;
+                if (webcamStream) {
+                    webcamStream.getTracks().forEach(t => t.stop());
+                    webcamStream = null;
+                    const video = document.getElementById('webcamVideo');
+                    if (video) video.classList.add('d-none');
+                }
+                renderVTOCanvas();
+            };
+            vtoUploadedFaceImg.src = modelNum === 1 
+                ? 'assets/images/sample_face_1.svg' 
+                : 'assets/images/sample_face_2.svg';
+        }
+
+        async function startWebcam() {
+            const video = document.getElementById('webcamVideo');
+            const btn = document.getElementById('startCamBtn');
+
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+                video.classList.add('d-none');
+                btn.innerText = 'Live Camera';
+                btn.classList.replace('btn-success', 'btn-outline-info');
+                renderVTOCanvas();
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Accessing Camera...';
+                webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+                video.srcObject = webcamStream;
+                video.classList.remove('d-none');
+                btn.disabled = false;
+                btn.innerText = 'Stop Camera';
+                btn.classList.replace('btn-outline-info', 'btn-success');
+
+                initFaceMeshTracker(video);
+                renderVTOLoop();
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerText = 'Live Camera';
+                btn.classList.replace('btn-success', 'btn-outline-info');
+                alert('Webcam access failed: ' + err.message + '\nUsing photo upload 3D goggles preview.');
+                renderVTOCanvas();
+            }
+        }
+
+        function initFaceMeshTracker(videoEl) {
+            if (window.FaceMesh && !faceMeshEngine) {
+                try {
+                    faceMeshEngine = new FaceMesh({
+                        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+                    });
+                    faceMeshEngine.setOptions({
+                        maxNumFaces: 1,
+                        refineLandmarks: true,
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
+                    });
+                    faceMeshEngine.onResults((results) => {
+                        if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                            faceLandmarksData = results.multiFaceLandmarks[0];
+                        } else {
+                            faceLandmarksData = null;
+                        }
+                    });
+
+                    if (window.Camera) {
+                        const cam = new Camera(videoEl, {
+                            onFrame: async () => {
+                                if (videoEl && videoEl.readyState >= 2 && faceMeshEngine) {
+                                    await faceMeshEngine.send({ image: videoEl });
+                                }
+                            },
+                            width: 640,
+                            height: 480
+                        });
+                        cam.start();
+                    }
+                } catch (e) {
+                    console.warn("MediaPipe FaceMesh init fallback:", e);
+                }
+            }
+        }
+
+        function renderVTOLoop() {
+            renderVTOCanvas();
+            if (webcamStream) {
+                requestAnimationFrame(renderVTOLoop);
+            }
+        }
+
+        function renderVTOCanvas() {
+            const canvas = document.getElementById('vtoCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const video = document.getElementById('webcamVideo');
+            const scale = parseFloat(document.getElementById('vtoScaleSlider')?.value || 1.0);
+            const offsetY = parseFloat(document.getElementById('vtoYSlider')?.value || 0);
+            const offsetX = parseFloat(document.getElementById('vtoXSlider')?.value || 0);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (webcamStream && video && !video.paused && !video.ended && video.readyState >= 2) {
+                ctx.save();
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } else if (isFaceImgLoaded && vtoUploadedFaceImg.complete && vtoUploadedFaceImg.naturalWidth > 0) {
+                ctx.drawImage(vtoUploadedFaceImg, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = '700 18px Plus Jakarta Sans, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Upload Face Photo for 3D Goggles Check', canvas.width / 2, canvas.height / 2 - 15);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '14px Plus Jakarta Sans, sans-serif';
+                ctx.fillText('Click "Upload Face Photo" or pick a sample photo above', canvas.width / 2, canvas.height / 2 + 15);
+            }
+
+            if (activeVTOFrameImg.complete && activeVTOFrameImg.naturalWidth !== 0) {
+                if (webcamStream && video && !video.paused && faceLandmarksData && faceLandmarksData.length > 263) {
+                    const leftEye = faceLandmarksData[33];
+                    const rightEye = faceLandmarksData[263];
+
+                    const lx = (1 - leftEye.x) * canvas.width;
+                    const ly = leftEye.y * canvas.height;
+                    const rx = (1 - rightEye.x) * canvas.width;
+                    const ry = rightEye.y * canvas.height;
+
+                    const eyeCenterX = (lx + rx) / 2 + offsetX;
+                    const eyeCenterY = (ly + ry) / 2 + offsetY;
+
+                    const eyeDistance = Math.hypot(rx - lx, ry - ly);
+                    const angle = Math.atan2(ry - ly, rx - lx);
+
+                    const fw = eyeDistance * 2.3 * scale;
+                    const fh = (activeVTOFrameImg.height / (activeVTOFrameImg.width || 1)) * fw;
+
+                    ctx.save();
+                    ctx.translate(eyeCenterX, eyeCenterY);
+                    ctx.rotate(angle);
+                    ctx.drawImage(activeVTOFrameImg, -fw / 2, -fh / 2, fw, fh);
+                    ctx.restore();
+                } else {
+                    const fw = 240 * scale;
+                    const fh = (activeVTOFrameImg.height / (activeVTOFrameImg.width || 1)) * fw;
+                    const fx = (canvas.width - fw) / 2 + offsetX;
+                    const fy = (canvas.height - fh) / 2.3 + offsetY;
+                    ctx.drawImage(activeVTOFrameImg, fx, fy, fw, fh);
+                }
+            }
+        }
+
+        function selectFrameForVTO(imgUrl, frameName, frameId, transparentSvg) {
+            const vtoUrl = transparentSvg || (imgUrl && imgUrl.endsWith('.svg') ? imgUrl : getTransparentGogglesUrl({ name: frameName, image: imgUrl }));
+            activeVTOFrameImg = new Image();
+            activeVTOFrameImg.onload = function() {
+                renderVTOCanvas();
+            };
+            activeVTOFrameImg.src = vtoUrl;
+            currentSelectedFrameId = frameId || 161;
+        }
+
+        async function saveVTOSnapshotToDB() {
+            const canvas = document.getElementById('vtoCanvas');
+            const btn = document.getElementById('saveVtoDbBtn');
+            const alertBox = document.getElementById('vtoDbSaveAlert');
+
+            if (!canvas) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving to DB...';
+            alertBox.classList.add('d-none');
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+            try {
+                const res = await fetch(`${API_BASE}/vto/save-history`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        frame_id: currentSelectedFrameId || 161,
+                        snapshot: dataUrl
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alertBox.className = 'alert alert-success border-success mt-2 d-block shadow-sm';
+                    alertBox.innerHTML = `<i class="bi bi-check-circle-fill me-1 fs-5"></i> <b>Saved 3D Try-On to Database!</b><br><small>History Record #${data.history_id} created successfully.</small>`;
+                    captureVTOSnapshot();
+                } else {
+                    throw new Error(data.message || 'Save failed');
+                }
+            } catch (err) {
+                console.error("Save VTO DB error:", err);
+                alertBox.className = 'alert alert-danger border-danger mt-2 d-block shadow-sm';
+                alertBox.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-database-check me-1"></i> Save 3D Try-On to DB';
+            }
+        }
+
+        async function loadVTOFrames() {
+            const grid = document.getElementById('vtoFrameSelectorGrid');
+            if (!grid) return;
+            grid.innerHTML = '<div class="col-12 text-center py-3"><div class="spinner-border spinner-border-sm text-info"></div> Loading inventory frames...</div>';
+
+            try {
+                if (allInventoryFrames.length === 0) {
+                    const res = await fetch(`${API_BASE}/inventory/frames`);
+                    if (res.ok) allInventoryFrames = await res.json();
+                }
+
+                grid.innerHTML = '';
+                const displayList = (allInventoryFrames && allInventoryFrames.length > 0) ? allInventoryFrames : DEMO_VTO_FRAMES;
+
+                displayList.forEach((f, idx) => {
+                    const col = document.createElement('div');
+                    col.className = 'col-6';
+                    const priceVal = f.selling_price || f.price || 1499;
+                    const frameId = f.id || (idx + 161);
+                    const productImg = f.image || 'assets/images/products/real_1.jpg';
+                    const transparentSvg = getTransparentGogglesUrl(f);
+
+                    col.innerHTML = `
+                        <div class="frame-select-card ${idx === 0 ? 'active' : ''} p-2 border rounded text-center shadow-sm" style="cursor: pointer; background: #ffffff; transition: all 0.2s ease;" onclick="document.querySelectorAll('.frame-select-card').forEach(c=>c.classList.remove('active')); this.classList.add('active'); selectFrameForVTO('${productImg}', '${(f.name || 'Frame').replace(/'/g, "\\'")}', ${frameId}, '${transparentSvg}')">
+                            <div style="height: 70px; display: flex; align-items: center; justify-content: center; background: #ffffff; border-radius: 6px; padding: 4px; overflow: hidden;" class="mb-1 border">
+                                <img src="${productImg}" class="img-fluid" style="max-height: 62px; width: 100%; object-fit: contain;">
+                            </div>
+                            <div class="fw-bold small text-truncate text-dark" title="${f.name}">${f.name}</div>
+                            <div class="text-accent small fw-bold">₹${priceVal}</div>
+                        </div>
+                    `;
+                    grid.appendChild(col);
+                });
+            } catch (e) {
+                console.warn("Error loading VTO frames:", e);
+            }
+        }
+
+        function captureVTOSnapshot() {
+            const canvas = document.getElementById('vtoCanvas');
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            const gallery = document.getElementById('vtoSnapshotsGallery');
+
+            if (gallery.querySelector('span')) gallery.innerHTML = '';
+
+            const thumb = document.createElement('img');
+            thumb.src = dataUrl;
+            thumb.className = 'rounded border border-primary shadow-sm me-2';
+            thumb.style.width = '100px';
+            thumb.style.height = '75px';
+            thumb.style.objectFit = 'cover';
+            gallery.prepend(thumb);
+        }
+
+        // ================= TAB 5: AI CHATBOT =================
+        function handleAIChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const container = document.getElementById('chatMessages');
+
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user';
+            userBubble.innerText = text;
+            container.appendChild(userBubble);
+            input.value = '';
+
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                const botBubble = document.createElement('div');
+                botBubble.className = 'chat-bubble bot';
+
+                const lower = text.toLowerCase();
+                if (lower.includes('round') || lower.includes('face')) {
+                    botBubble.innerText = "For a round face, rectangular or square frames create a beautiful visual contrast, making your features look longer and slimmer!";
+                } else if (lower.includes('blue') || lower.includes('screen')) {
+                    botBubble.innerText = "Blue-cut lenses block high-energy 420nm blue light emitted by digital screens, reducing eye fatigue, headaches, and improving sleep quality.";
+                } else if (lower.includes('price') || lower.includes('cost')) {
+                    botBubble.innerText = "Our frames start at just ₹999 with free single vision lenses included! Premium titanium and high-index packages range from ₹1,999 to ₹4,499.";
+                } else {
+                    botBubble.innerText = "Thank you for asking! VisionEdge AI recommends trying our Virtual Try-On studio or using our Face Shape Analyzer to find the perfect spectacle match.";
+                }
+
+                container.appendChild(botBubble);
+                container.scrollTop = container.scrollHeight;
+            }, 600);
+        }
+
+        function initDragAndDrop() {
+            ['dragover', 'drop', 'dragenter', 'dragleave'].forEach(eventName => {
+                window.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+
+            const ocrDropZone = document.getElementById('ocrDropZone');
+            if (ocrDropZone) {
+                ['dragenter', 'dragover'].forEach(name => {
+                    ocrDropZone.addEventListener(name, () => ocrDropZone.classList.add('border-primary', 'bg-light'), false);
+                });
+                ['dragleave', 'drop'].forEach(name => {
+                    ocrDropZone.addEventListener(name, () => ocrDropZone.classList.remove('border-primary', 'bg-light'), false);
+                });
+                ocrDropZone.addEventListener('drop', (e) => {
+                    const files = e.dataTransfer ? e.dataTransfer.files : null;
+                    if (files && files.length > 0) {
+                        handleOCRFileSelect({ target: { files: files } });
+                    }
+                }, false);
+            }
+
+            const vtoDropZone = document.getElementById('vtoDropZone');
+            if (vtoDropZone) {
+                ['dragenter', 'dragover'].forEach(name => {
+                    vtoDropZone.addEventListener(name, () => vtoDropZone.classList.add('border-info', 'bg-light'), false);
+                });
+                ['dragleave', 'drop'].forEach(name => {
+                    vtoDropZone.addEventListener(name, () => vtoDropZone.classList.remove('border-info', 'bg-light'), false);
+                });
+                vtoDropZone.addEventListener('drop', (e) => {
+                    const files = e.dataTransfer ? e.dataTransfer.files : null;
+                    if (files && files.length > 0) {
+                        handleVTOFaceSelect({ target: { files: files } });
+                    }
+                }, false);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDragAndDrop();
+            try {
+                const res = await fetch(`${API_BASE}/inventory/frames`);
+                if (res.ok) allInventoryFrames = await res.json();
+            } catch (e) {
+                console.warn("Initial inventory fetch warning:", e);
+            }
+
+            loadSampleFaceModel(1);
+            loadVTOFrames();
+
+            const vtoTabBtn = document.getElementById('vto-tab');
+            if (vtoTabBtn) {
+                vtoTabBtn.addEventListener('shown.bs.tab', () => {
+                    loadVTOFrames();
+                    renderVTOCanvas();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Prescription - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/forms.css">
+    <style>
+        .rx-print-card {
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .rx-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px;
+        }
+        .rx-table th, .rx-table td {
+            text-align: center;
+            vertical-align: middle;
+            border-color: #dee2e6;
+        }
+        .rx-table thead th {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        .rx-table tbody tr td:first-child {
+            text-align: left;
+            font-weight: 600;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4 max-w-900 mx-auto" style="max-width: 900px;">
+                    <div>
+                        <a href="prescriptions.html" class="btn btn-outline-secondary btn-sm me-2"><i class="bi bi-arrow-left me-1"></i>Back</a>
+                        <a href="#" id="editBtn" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
+                    </div>
+                    <button class="btn btn-primary" onclick="downloadPDF()"><i class="bi bi-printer me-2"></i>Print / Download PDF</button>
+                </div>
+
+                <div class="rx-print-card" data-aos="fade-up">
+                    <div class="rx-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-1 fw-bold">VisionEdge Opticals</h2>
+                            <p class="mb-0 text-white-50"><i class="bi bi-geo-alt me-2"></i>123 Innovation Drive, Tech City</p>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="mb-1 text-white">OPTICAL PRESCRIPTION</h4>
+                            <p class="mb-0 badge bg-light text-primary" id="rxNumber">RX-00000</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 p-md-5">
+                        <div class="row mb-4 pb-4 border-bottom">
+                            <div class="col-md-6">
+                                <h6 class="text-muted text-uppercase small mb-2">Patient Details</h6>
+                                <h4 class="fw-bold mb-1" id="customerName">Loading...</h4>
+                                <p class="mb-1 text-muted" id="customerIdTag">CUST-0000</p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <h6 class="text-muted text-uppercase small mb-2">Exam Details</h6>
+                                <p class="mb-1 fw-medium"><i class="bi bi-calendar2-check me-2 text-primary"></i>Exam Date: <span id="examDate">-</span></p>
+                                <p class="mb-1"><i class="bi bi-calendar2-x me-2 text-danger"></i>Expiry Date: <span id="expiryDate">-</span></p>
+                                <p class="mb-0"><i class="bi bi-person-badge me-2 text-primary"></i>Doctor: Dr. <span id="doctorName">-</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered rx-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 15%;">EYE</th>
+                                        <th>SPH</th>
+                                        <th>CYL</th>
+                                        <th>AXIS</th>
+                                        <th>ADD</th>
+                                        <th>PRISM</th>
+                                        <th>BASE</th>
+                                        <th>VA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Right (OD)</td>
+                                        <td id="view_od_sph">-</td>
+                                        <td id="view_od_cyl">-</td>
+                                        <td id="view_od_axis">-</td>
+                                        <td id="view_od_add">-</td>
+                                        <td id="view_od_prism">-</td>
+                                        <td id="view_od_base">-</td>
+                                        <td id="view_od_va">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Left (OS)</td>
+                                        <td id="view_os_sph">-</td>
+                                        <td id="view_os_cyl">-</td>
+                                        <td id="view_os_axis">-</td>
+                                        <td id="view_os_add">-</td>
+                                        <td id="view_os_prism">-</td>
+                                        <td id="view_os_base">-</td>
+                                        <td id="view_os_va">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="row mb-5">
+                            <div class="col-md-6 mb-4 mb-md-0">
+                                <div class="bg-light p-3 rounded h-100">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Measurements</h6>
+                                    <p class="mb-1 d-flex justify-content-between"><span>Distance PD:</span> <span class="fw-medium" id="view_distance_pd">-</span></p>
+                                    <p class="mb-0 d-flex justify-content-between"><span>Near PD:</span> <span class="fw-medium" id="view_near_pd">-</span></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light p-3 rounded h-100">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Lens & Frame Recommendations</h6>
+                                    <p class="mb-1 d-flex justify-content-between"><span>Type:</span> <span class="fw-medium" id="view_lens_type">-</span></p>
+                                    <p class="mb-1 d-flex justify-content-between"><span>Material:</span> <span class="fw-medium" id="view_lens_material">-</span></p>
+                                    <p class="mb-1 d-flex justify-content-between"><span>Coating:</span> <span class="fw-medium" id="view_lens_coating">-</span></p>
+                                    <p class="mb-0 d-flex justify-content-between"><span>Frame:</span> <span class="fw-medium" id="view_frame_recommendation">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Image Display -->
+                        <div class="row mb-5" id="aiImageContainer" style="display: none;">
+                            <div class="col-12">
+                                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-magic me-2"></i>Original Prescription Upload</h6>
+                                <div class="bg-light p-3 rounded border text-center">
+                                    <img id="view_prescription_image" src="" class="img-fluid rounded border shadow-sm" style="max-height: 400px;" alt="AI Extracted Prescription">
+                                    <div class="mt-2 text-muted small">
+                                        AI Confidence Score: <span id="view_confidence" class="fw-bold text-primary"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="fw-bold text-primary mb-2">Additional Notes / Remarks</h6>
+                                <p class="text-muted p-3 bg-light rounded" id="view_notes" style="min-height: 80px;">No additional notes.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-5 pt-4 border-top">
+                            <div class="col-md-6">
+                                <p class="text-muted small mb-0">Status: <span id="view_status" class="badge bg-success bg-opacity-10 text-success px-2 py-1">Completed</span></p>
+                                <p class="text-muted small mb-0">Generated by VisionEdge AI System</p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <div class="d-inline-block text-center mt-3">
+                                    <div style="border-bottom: 1px solid #000; width: 200px; height: 30px; margin-bottom: 5px;"></div>
+                                    <span class="text-muted small">Doctor's Signature</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({duration: 800, once: true});</script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/view-prescription.js"></script>
+</body>
+</html>

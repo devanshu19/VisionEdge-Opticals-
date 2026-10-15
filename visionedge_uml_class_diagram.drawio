@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-16T15:11:00.000Z" agent="VisionEdge" version="21.0.0" type="device">
+  <diagram id="visionedge_uml_class" name="VisionEdge Class Diagram">
+    <mxGraphModel dx="1600" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="2400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ======================================================== -->
+        <!-- BASE CLASS: User -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_user" value="User&#xa;--&#xa;- userId : int&#xa;- username : String&#xa;- email : String&#xa;- passwordHash : String&#xa;- role : String&#xa;--&#xa;+ login() : boolean&#xa;+ register() : User" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="800" y="60" width="200" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- SUBCLASS 1: Admin -->
+        <mxCell id="cls_admin" value="Admin&#xa;--&#xa;- adminId : int&#xa;--&#xa;+ manageInventory()&#xa;+ viewReports()&#xa;+ manageUsers()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="480" y="270" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- SUBCLASS 2: Optician -->
+        <mxCell id="cls_optician" value="Optician&#xa;--&#xa;- opticianId : int&#xa;- doctorName : String&#xa;--&#xa;+ recordEyeTest()&#xa;+ issuePrescription()&#xa;+ manageAppointments()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="800" y="270" width="200" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- SUBCLASS 3: Customer -->
+        <mxCell id="cls_customer" value="Customer&#xa;--&#xa;- customerId : int&#xa;- customerCode : String&#xa;- phone : String&#xa;- age : int&#xa;--&#xa;+ bookAppointment()&#xa;+ placeOrder()&#xa;+ runVirtualTryOn()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="270" width="200" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Inheritance Arrows (Hollow Triangle pointing to User) -->
+        <mxCell id="e_inh_admin" style="endArrow=block;endSize=16;endFill=0;html=1;strokeColor=#000000;" edge="1" parent="1" source="cls_admin" target="cls_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_inh_opt" style="endArrow=block;endSize=16;endFill=0;html=1;strokeColor=#000000;" edge="1" parent="1" source="cls_optician" target="cls_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_inh_cust" style="endArrow=block;endSize=16;endFill=0;html=1;strokeColor=#000000;" edge="1" parent="1" source="cls_customer" target="cls_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: CustomerProfile -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_cust_profile" value="CustomerProfile&#xa;--&#xa;- profileId : int&#xa;- bloodGroup : String&#xa;- eyeConditions : String&#xa;--&#xa;+ updateProfile()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="270" width="190" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cust_prof" value="has&#xa;1        1" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_customer" target="cls_cust_profile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: Appointment -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_appointment" value="Appointment&#xa;--&#xa;- appointmentId : int&#xa;- appointmentDate : Date&#xa;- appointmentTime : Time&#xa;- status : String&#xa;--&#xa;+ schedule()&#xa;+ cancel()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="490" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cust_apt" value="schedules&#xa;1        0..*" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_customer" target="cls_appointment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: EyeTest -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_eyetest" value="EyeTest&#xa;--&#xa;- testId : int&#xa;- rightSphere : String&#xa;- leftSphere : String&#xa;- pdValue : String&#xa;--&#xa;+ saveTestReadings()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="800" y="490" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_apt_test" value="undergoes&#xa;1        1" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_appointment" target="cls_eyetest">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: Prescription -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_prescription" value="Prescription&#xa;--&#xa;- prescriptionId : int&#xa;- prescriptionNo : String&#xa;- addPower : String&#xa;- confidenceScore : float&#xa;--&#xa;+ extractAIParameters()&#xa;+ savePrescription()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="800" y="700" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="e_test_rx" value="produces&#xa;1        1" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_eyetest" target="cls_prescription">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: Order -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_order" value="Order&#xa;--&#xa;- orderId : int&#xa;- orderNumber : String&#xa;- totalAmount : float&#xa;- status : String&#xa;--&#xa;+ createOrder()&#xa;+ updateStatus()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="800" y="930" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rx_order" value="attachedTo&#xa;1        0..*" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_prescription" target="cls_order">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: OrderItem -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_order_item" value="OrderItem&#xa;--&#xa;- itemId : int&#xa;- productType : String&#xa;- quantity : int&#xa;- price : float&#xa;--&#xa;+ calculateTotal()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="930" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_order_item" value="contains&#xa;1        1..*" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_order" target="cls_order_item">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: Billing -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_billing" value="Billing&#xa;--&#xa;- billingId : int&#xa;- invoiceNumber : String&#xa;- totalAmount : float&#xa;- paymentStatus : String&#xa;--&#xa;+ generateInvoice()&#xa;+ downloadPDF()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1140" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_order_bill" value="generates&#xa;1        1" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_order" target="cls_billing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- CLASS: Payment -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_payment" value="Payment&#xa;--&#xa;- paymentId : int&#xa;- amount : float&#xa;- transactionId : String&#xa;- paymentMethod : String&#xa;--&#xa;+ processPayment()&#xa;+ verifyReceipt()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1350" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_bill_pay" value="settledBy&#xa;1        0..*" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_billing" target="cls_payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- INVENTORY CLASSES: Frame & Lens -->
+        <!-- ======================================================== -->
+        <mxCell id="cls_frame" value="Frame&#xa;--&#xa;- frameId : int&#xa;- brand : String&#xa;- price : float&#xa;- stock : int&#xa;--&#xa;+ updateStock()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="480" y="930" width="190" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_lens" value="Lens&#xa;--&#xa;- lensId : int&#xa;- type : String&#xa;- price : float&#xa;- stock : int&#xa;--&#xa;+ updateStock()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="480" y="1140" width="190" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Notification Class -->
+        <mxCell id="cls_notif" value="Notification&#xa;--&#xa;- notificationId : int&#xa;- message : String&#xa;- date : Date&#xa;--&#xa;+ sendNotification()" style="swipeable=0;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;align=center;verticalAlign=top;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="1350" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pay_notif" value="triggers&#xa;1        0..*" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;fontColor=#000000;fontStyle=1;" edge="1" parent="1" source="cls_payment" target="cls_notif">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

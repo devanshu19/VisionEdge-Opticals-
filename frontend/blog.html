@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .page-header { background: var(--secondary-color); padding: 120px 0 60px; color: white; text-align: center; }
+        .blog-card { border-radius: var(--border-radius); overflow: hidden; background: white; box-shadow: var(--shadow-sm); transition: transform 0.3s; height: 100%; border: none;}
+        .blog-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+        .blog-img { height: 220px; object-fit: cover; width: 100%; }
+        .blog-category { position: absolute; top: 15px; left: 15px; background: var(--accent-color); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <header class="page-header">
+        <div class="container">
+            <h1 class="display-5 fw-bold mb-3" data-aos="fade-up">Eye Care Blog</h1>
+            <p class="lead opacity-75" data-aos="fade-up" data-aos-delay="100">Tips, trends, and technology in the world of optics.</p>
+        </div>
+    </header>
+
+    <section class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="row g-4">
+                
+                <!-- Blog 1 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card blog-card position-relative">
+                        <span class="blog-category">Eye Health</span>
+                        <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=600&q=80" class="blog-img" alt="Blog">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="text-muted small mb-2"><i class="bi bi-calendar3 me-2"></i> Oct 12, 2026</div>
+                            <h5 class="card-title fw-bold mb-3">Why You Need Blue Light Glasses Right Now</h5>
+                            <p class="card-text text-muted small flex-grow-1">Discover how screen time is affecting your sleep cycle and why blue cut lenses are the ultimate solution for digital eye strain.</p>
+                            <a href="#" class="text-primary fw-bold text-decoration-none mt-3">Read More <i class="bi bi-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog 2 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card blog-card position-relative">
+                        <span class="blog-category bg-primary">Trends</span>
+                        <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=80" class="blog-img" alt="Blog">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="text-muted small mb-2"><i class="bi bi-calendar3 me-2"></i> Oct 05, 2026</div>
+                            <h5 class="card-title fw-bold mb-3">Top 5 Frame Styles for Winter 2026</h5>
+                            <p class="card-text text-muted small flex-grow-1">From clear acetates to retro aviators, explore the most fashionable eyewear trends hitting the streets this season.</p>
+                            <a href="#" class="text-primary fw-bold text-decoration-none mt-3">Read More <i class="bi bi-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog 3 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card blog-card position-relative">
+                        <span class="blog-category" style="background: var(--secondary-color);">Technology</span>
+                        <img src="https://images.unsplash.com/photo-1591076482161-42ce6da69f67?w=600&q=80" class="blog-img" alt="Blog">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="text-muted small mb-2"><i class="bi bi-calendar3 me-2"></i> Sep 28, 2026</div>
+                            <h5 class="card-title fw-bold mb-3">How AI is Revolutionizing Lens Selection</h5>
+                            <p class="card-text text-muted small flex-grow-1">A deep dive into VisionEdge's proprietary AI engine that perfectly calculates the exact lens geometry and coating for your eyes.</p>
+                            <a href="#" class="text-primary fw-bold text-decoration-none mt-3">Read More <i class="bi bi-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="text-center mt-5">
+                <button class="btn btn-outline-primary px-4">Load More Articles</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

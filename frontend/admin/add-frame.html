@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Frame - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-0 fw-bold" id="pageTitle">Add New Frame</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="frames.html" class="text-decoration-none text-muted">Frames</a></li>
+                                <li class="breadcrumb-item active" id="breadcrumbActive">Add Frame</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body p-4">
+                        <form id="frameForm" class="row g-4">
+                            <!-- Basic Info -->
+                            <div class="col-12">
+                                <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">Basic Information</h5>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Frame Code *</label>
+                                <input type="text" class="form-control" id="fCode" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Frame Name *</label>
+                                <input type="text" class="form-control" id="fName" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Brand</label>
+                                <select class="form-select" id="fBrand"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" id="fCategory"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" id="fGender">
+                                    <option value="Unisex">Unisex</option>
+                                    <option value="Men">Men</option>
+                                    <option value="Women">Women</option>
+                                    <option value="Kids">Kids</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Specifications -->
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">Specifications</h5>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Shape</label>
+                                <select class="form-select" id="fShape">
+                                    <option value="">Select Shape</option>
+                                    <option value="Rectangle">Rectangle</option>
+                                    <option value="Round">Round</option>
+                                    <option value="Oval">Oval</option>
+                                    <option value="Square">Square</option>
+                                    <option value="Cat Eye">Cat Eye</option>
+                                    <option value="Aviator">Aviator</option>
+                                    <option value="Wayfarer">Wayfarer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Material</label>
+                                <select class="form-select" id="fMaterial">
+                                    <option value="">Select Material</option>
+                                    <option value="Metal">Metal</option>
+                                    <option value="Plastic">Plastic</option>
+                                    <option value="Titanium">Titanium</option>
+                                    <option value="Acetate">Acetate</option>
+                                    <option value="TR90">TR90</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Size</label>
+                                <select class="form-select" id="fSize">
+                                    <option value="Medium">Medium</option>
+                                    <option value="Small">Small</option>
+                                    <option value="Large">Large</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Color</label>
+                                <input type="text" class="form-control" id="fColor">
+                            </div>
+
+                            <!-- Pricing & Stock -->
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">Pricing & Inventory</h5>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Purchase Price</label>
+                                <input type="number" class="form-control" id="fPurchasePrice" step="0.01" value="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Selling Price *</label>
+                                <input type="number" class="form-control" id="fSellingPrice" step="0.01" required>
+                            </div>
+                            <div class="col-md-3" id="stockGroup">
+                                <label class="form-label">Initial Stock</label>
+                                <input type="number" class="form-control" id="fStock" value="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Minimum Stock Alert</label>
+                                <input type="number" class="form-control" id="fMinStock" value="5">
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Supplier</label>
+                                <select class="form-select" id="fSupplier"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Location (Shelf/Bin)</label>
+                                <input type="text" class="form-control" id="fLocation">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="fStatus">
+                                    <option value="Available">Available</option>
+                                    <option value="Out of Stock">Out of Stock</option>
+                                    <option value="Discontinued">Discontinued</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Product Images -->
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-image me-2"></i>Product Image & AR Try-On</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Upload Main Product Image</label>
+                                <input type="file" class="form-control" id="fImageFile" accept="image/*">
+                                <small class="text-muted">Select an image file (JPG, PNG, WebP) from your device.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Image URL / Path</label>
+                                <input type="text" class="form-control" id="fImageUrl" placeholder="e.g. /media/products/frame1.jpg or https://...">
+                                <small class="text-muted">Auto-filled upon upload, or enter a custom web URL.</small>
+                            </div>
+                            <div class="col-12 text-center" id="imgPreviewWrapper" style="display: none;">
+                                <div class="p-3 border rounded bg-light d-inline-block position-relative">
+                                    <p class="small text-muted mb-2">Main Image Preview</p>
+                                    <img id="imgPreview" src="" alt="Frame Image Preview" style="max-height: 180px; max-width: 100%; border-radius: 8px; object-fit: contain;">
+                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle" id="removeImgBtn" title="Remove Image"><i class="bi bi-x"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-medium">Virtual Try-On (VTO) Overlay Image URL</label>
+                                <input type="text" class="form-control" id="fVtoImageUrl" placeholder="e.g. /media/frames/rayban_vto.png">
+                                <small class="text-muted">Transparent PNG front-facing frame cutout used for AR try-on.</small>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-12 mt-4">
+                                <label class="form-label">Notes / Description</label>
+                                <textarea class="form-control" id="fNotes" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="col-12 mt-5 text-end border-top pt-4">
+                                <a href="frames.html" class="btn btn-light me-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary px-5 shadow-sm">Save Frame</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/add-frame.js"></script>
+</body>
+</html>

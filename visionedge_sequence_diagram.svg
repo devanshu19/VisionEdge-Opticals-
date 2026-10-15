@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2200 1650" width="2200" height="1650" style="background-color: #ffffff; font-family: Arial, sans-serif;">
+<text x="1100" y="45" font-size="22" font-weight="bold" fill="#000000" text-anchor="middle">VisionEdge: System Sequence Diagram (AI Exam, VTO &amp; POS Billing Flow)</text>
+<defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#000000" stroke-width="1.5" />
+        </marker>
+    </defs>
+<line x1="120" y1="140" x2="120" y2="1540" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,6" />
+<rect x="35" y="80" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="120" y="113" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">Customer / Staff</text>
+<rect x="35" y="1540" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="120" y="1573" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">Customer / Staff</text>
+<line x1="480" y1="140" x2="480" y2="1540" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,6" />
+<rect x="395" y="80" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="480" y="104" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">System Interface</text>
+<text x="480" y="122" font-size="12" fill="#475569" text-anchor="middle">(Web UI)</text>
+<rect x="395" y="1540" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="480" y="1564" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">System Interface</text>
+<text x="480" y="1582" font-size="12" fill="#475569" text-anchor="middle">(Web UI)</text>
+<line x1="880" y1="140" x2="880" y2="1540" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,6" />
+<rect x="795" y="80" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="880" y="104" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">API Controller</text>
+<text x="880" y="122" font-size="12" fill="#475569" text-anchor="middle">(Flask Backend)</text>
+<rect x="795" y="1540" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="880" y="1564" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">API Controller</text>
+<text x="880" y="1582" font-size="12" fill="#475569" text-anchor="middle">(Flask Backend)</text>
+<line x1="1320" y1="140" x2="1320" y2="1540" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,6" />
+<rect x="1235" y="80" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="1320" y="104" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">AI & CV Engine</text>
+<text x="1320" y="122" font-size="12" fill="#475569" text-anchor="middle">(Gemini / MediaPipe)</text>
+<rect x="1235" y="1540" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="1320" y="1564" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">AI & CV Engine</text>
+<text x="1320" y="1582" font-size="12" fill="#475569" text-anchor="middle">(Gemini / MediaPipe)</text>
+<line x1="1720" y1="140" x2="1720" y2="1540" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,6" />
+<rect x="1635" y="80" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="1720" y="104" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">Database</text>
+<text x="1720" y="122" font-size="12" fill="#475569" text-anchor="middle">(MySQL / SQLAlchemy)</text>
+<rect x="1635" y="1540" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="1720" y="1564" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">Database</text>
+<text x="1720" y="1582" font-size="12" fill="#475569" text-anchor="middle">(MySQL / SQLAlchemy)</text>
+<line x1="2060" y1="140" x2="2060" y2="1540" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,6" />
+<rect x="1975" y="80" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="2060" y="104" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">POS & Invoice Engine</text>
+<text x="2060" y="122" font-size="12" fill="#475569" text-anchor="middle">(PDF / Tax Generator)</text>
+<rect x="1975" y="1540" width="170" height="55" rx="8" ry="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+<text x="2060" y="1564" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">POS & Invoice Engine</text>
+<text x="2060" y="1582" font-size="12" fill="#475569" text-anchor="middle">(PDF / Tax Generator)</text>
+<line x1="125" y1="170" x2="475" y2="170" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="138" cy="170" r="11" fill="#1e293b" />
+<text x="138" y="174" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+<text x="300.0" y="162" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Request available eye test slots & catalog</text>
+<line x1="485" y1="225" x2="875" y2="225" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="498" cy="225" r="11" fill="#1e293b" />
+<text x="498" y="229" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+<text x="680.0" y="217" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Fetch appointments & frame list (GET /api/appointments)</text>
+<line x1="885" y1="280" x2="1715" y2="280" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="898" cy="280" r="11" fill="#1e293b" />
+<text x="898" y="284" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+<text x="1300.0" y="272" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Query doctor schedules & frame inventory</text>
+<line x1="1715" y1="335" x2="885" y2="335" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="1702" cy="335" r="11" fill="#1e293b" />
+<text x="1702" y="339" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">4</text>
+<text x="1300.0" y="327" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Return slot availability & frame stock records</text>
+<line x1="875" y1="390" x2="485" y2="390" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="862" cy="390" r="11" fill="#1e293b" />
+<text x="862" y="394" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">5</text>
+<text x="680.0" y="382" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Send schedules & frame catalog JSON</text>
+<line x1="475" y1="445" x2="125" y2="445" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="462" cy="445" r="11" fill="#1e293b" />
+<text x="462" y="449" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">6</text>
+<text x="300.0" y="437" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Display appointment calendar & frame options</text>
+<line x1="125" y1="500" x2="475" y2="500" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="138" cy="500" r="11" fill="#1e293b" />
+<text x="138" y="504" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">7</text>
+<text x="300.0" y="492" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Upload physical prescription scan image</text>
+<line x1="485" y1="555" x2="875" y2="555" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="498" cy="555" r="11" fill="#1e293b" />
+<text x="498" y="559" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">8</text>
+<text x="680.0" y="547" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Initiate AI extraction (POST /api/ai/extract)</text>
+<line x1="885" y1="610" x2="1315" y2="610" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="898" cy="610" r="11" fill="#1e293b" />
+<text x="898" y="614" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">9</text>
+<text x="1100.0" y="602" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Transmit image payload to Google Gemini 1.5 Pro AI</text>
+<line x1="1315" y1="665" x2="885" y2="665" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="1302" cy="665" r="11" fill="#1e293b" />
+<text x="1302" y="669" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">10</text>
+<text x="1100.0" y="657" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Return parsed diopters JSON (OD/OS SPH, CYL, AXIS, PD)</text>
+<line x1="885" y1="720" x2="1715" y2="720" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="898" cy="720" r="11" fill="#1e293b" />
+<text x="898" y="724" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">11</text>
+<text x="1300.0" y="712" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Save EyeTest & Prescription records</text>
+<line x1="1715" y1="775" x2="885" y2="775" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="1702" cy="775" r="11" fill="#1e293b" />
+<text x="1702" y="779" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">12</text>
+<text x="1300.0" y="767" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Confirm record creation (Prescription ID)</text>
+<line x1="875" y1="830" x2="485" y2="830" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="862" cy="830" r="11" fill="#1e293b" />
+<text x="862" y="834" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">13</text>
+<text x="680.0" y="822" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Return auto-filled prescription & lens recommendations</text>
+<line x1="125" y1="885" x2="475" y2="885" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="138" cy="885" r="11" fill="#1e293b" />
+<text x="138" y="889" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">14</text>
+<text x="300.0" y="877" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Launch 3D Virtual Try-On & select frame</text>
+<line x1="485" y1="940" x2="1315" y2="940" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="498" cy="940" r="11" fill="#1e293b" />
+<text x="498" y="944" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">15</text>
+<text x="900.0" y="932" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Detect facial landmarks via MediaPipe & position frame PNG</text>
+<line x1="1315" y1="995" x2="485" y2="995" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="1302" cy="995" r="11" fill="#1e293b" />
+<text x="1302" y="999" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">16</text>
+<text x="900.0" y="987" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Render live 3D frame overlay on webcam canvas</text>
+<line x1="125" y1="1050" x2="475" y2="1050" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="138" cy="1050" r="11" fill="#1e293b" />
+<text x="138" y="1054" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">17</text>
+<text x="300.0" y="1042" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Confirm frame & lens selection (Proceed to POS Checkout)</text>
+<line x1="485" y1="1105" x2="875" y2="1105" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="498" cy="1105" r="11" fill="#1e293b" />
+<text x="498" y="1109" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">18</text>
+<text x="680.0" y="1097" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Initiate billing transaction (POST /api/billing/create-invoice)</text>
+<line x1="885" y1="1160" x2="2055" y2="1160" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="898" cy="1160" r="11" fill="#1e293b" />
+<text x="898" y="1164" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">19</text>
+<text x="1470.0" y="1152" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Calculate 18% GST tax, discounts & compile PDF invoice</text>
+<line x1="2055" y1="1215" x2="1725" y2="1215" stroke="#000000" stroke-width="1.8"  marker-end="url(#arrow)" />
+<circle cx="2042" cy="1215" r="11" fill="#1e293b" />
+<text x="2042" y="1219" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">20</text>
+<text x="1890.0" y="1207" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Deduct frame/lens inventory stock & store invoice record</text>
+<line x1="1725" y1="1270" x2="2055" y2="1270" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="1738" cy="1270" r="11" fill="#1e293b" />
+<text x="1738" y="1274" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">21</text>
+<text x="1890.0" y="1262" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Invoice transaction committed (Invoice ID)</text>
+<line x1="2055" y1="1325" x2="885" y2="1325" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="2042" cy="1325" r="11" fill="#1e293b" />
+<text x="2042" y="1329" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">22</text>
+<text x="1470.0" y="1317" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Return PDF invoice URL & payment status</text>
+<line x1="875" y1="1380" x2="485" y2="1380" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="862" cy="1380" r="11" fill="#1e293b" />
+<text x="862" y="1384" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">23</text>
+<text x="680.0" y="1372" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Send order completion payload</text>
+<line x1="475" y1="1435" x2="125" y2="1435" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,5" marker-end="url(#arrow-open)" />
+<circle cx="462" cy="1435" r="11" fill="#1e293b" />
+<text x="462" y="1439" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">24</text>
+<text x="300.0" y="1427" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Display order success message & PDF invoice download button</text>
+</svg>

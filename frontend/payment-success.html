@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - VisionEdge</title>
+    <meta name="description" content="Your payment was successful. Thank you for shopping with VisionEdge!">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 20% 50%, #0d1b4b 0%, #0a0e1e 60%, #0d1b2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ─── Particle stars ─── */
+        .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            animation: twinkle var(--d, 3s) ease-in-out infinite;
+            opacity: 0;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: var(--o, 0.8); transform: scale(1); }
+        }
+
+        /* ─── Main card ─── */
+        .success-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 28px;
+            padding: 3rem 2.5rem;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 60px rgba(108,99,255,0.15);
+            animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Check circle ─── */
+        .check-circle {
+            width: 110px; height: 110px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 0 0 16px rgba(34,197,94,0.12), 0 0 0 32px rgba(34,197,94,0.06);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 16px rgba(34,197,94,0.12), 0 0 0 32px rgba(34,197,94,0.06); }
+            50%       { box-shadow: 0 0 0 20px rgba(34,197,94,0.18), 0 0 0 40px rgba(34,197,94,0.08); }
+        }
+        .check-circle i { font-size: 3.2rem; color: #fff; }
+
+        /* ─── Typography ─── */
+        .success-title { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+        .success-sub   { font-size: 1rem; color: rgba(255,255,255,0.6); margin-bottom: 2rem; }
+
+        /* ─── Detail rows ─── */
+        .detail-box {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: .45rem 0;
+            font-size: .9rem;
+        }
+        .detail-row + .detail-row { border-top: 1px solid rgba(255,255,255,0.07); }
+        .detail-label { color: rgba(255,255,255,0.5); }
+        .detail-value { color: #fff; font-weight: 600; }
+        .detail-value.amount { color: #4ade80; font-size: 1.1rem; }
+        .detail-value.invoice { font-family: monospace; color: #a78bfa; }
+
+        /* ─── Buttons ─── */
+        .btn-go-orders {
+            display: block;
+            width: 100%;
+            padding: .9rem 1rem;
+            background: linear-gradient(135deg, #6c63ff, #3b5bdb);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            margin-bottom: .75rem;
+            transition: opacity .2s, transform .2s;
+        }
+        .btn-go-orders:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+
+        .btn-continue {
+            display: block;
+            width: 100%;
+            padding: .75rem 1rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.18);
+            color: rgba(255,255,255,0.75);
+            border-radius: 14px;
+            font-weight: 500;
+            font-size: .95rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s, color .2s;
+        }
+        .btn-continue:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+        /* ─── COD badge ─── */
+        .cod-note {
+            background: rgba(251,191,36,0.12);
+            border: 1px solid rgba(251,191,36,0.25);
+            border-radius: 10px;
+            padding: .6rem 1rem;
+            color: #fbbf24;
+            font-size: .82rem;
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        /* ─── Confetti ─── */
+        .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+        .confetti-piece {
+            position: absolute;
+            width: 10px; height: 10px;
+            top: -20px;
+            animation: confettiFall var(--fall, 4s) ease-in forwards;
+            animation-delay: var(--delay, 0s);
+        }
+        @keyframes confettiFall {
+            0%   { transform: translateX(0) rotate(0deg); opacity: 1; top: -20px; }
+            100% { transform: translateX(var(--drift, 40px)) rotate(720deg); opacity: 0; top: 110vh; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="stars" id="starsContainer"></div>
+
+<!-- Confetti -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<div class="success-card">
+    <div class="check-circle">
+        <i class="bi bi-check-lg"></i>
+    </div>
+
+    <h1 class="success-title">Payment Successful!</h1>
+    <p class="success-sub" id="successSubtext">Your order has been confirmed. Thank you for shopping with VisionEdge!</p>
+
+    <!-- COD notice (shown only for COD) -->
+    <div class="cod-note d-none" id="codNote">
+        <i class="bi bi-truck me-2"></i>
+        <strong>Cash on Delivery:</strong> Please keep the exact amount ready when your order arrives.
+    </div>
+
+    <!-- Order Details -->
+    <div class="detail-box">
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-receipt me-1"></i> Invoice No.</span>
+            <span class="detail-value invoice" id="detInvoice">—</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-bag me-1"></i> Order ID</span>
+            <span class="detail-value" id="detOrder">—</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-hash me-1"></i> Transaction ID</span>
+            <span class="detail-value" id="detTxn" style="font-size:.82rem;">—</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-credit-card me-1"></i> Payment Method</span>
+            <span class="detail-value" id="detMethod">Credit Card</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-currency-rupee me-1"></i> Amount Paid</span>
+            <span class="detail-value amount" id="detAmount">—</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-clock me-1"></i> Date & Time</span>
+            <span class="detail-value" id="detDate" style="font-size:.82rem;">—</span>
+        </div>
+    </div>
+
+    <a href="orders.html" class="btn-go-orders">
+        <i class="bi bi-bag-check me-2"></i>View My Orders
+    </a>
+    <a href="products.html" class="btn-continue">
+        <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+    </a>
+</div>
+
+<script>
+    // Ensure cart is cleared after completed payment
+    try {
+        localStorage.setItem('visionEdgeCart', JSON.stringify([]));
+        localStorage.setItem('cart', JSON.stringify([]));
+    } catch(e) {}
+
+    // Parse URL params
+    const params = new URLSearchParams(window.location.search);
+    const txnid   = params.get('txnid')   || '';
+    const orderId = params.get('order')   || '';
+    const invoice = params.get('invoice') || '';
+    const amount  = params.get('amount')  || '';
+    const isCod   = params.get('cod')     === '1';
+    const method  = params.get('method')  || (isCod ? 'Cash on Delivery' : 'Credit Card');
+
+    // Fill details
+    document.getElementById('detInvoice').textContent = invoice || '—';
+    document.getElementById('detOrder').textContent   = orderId ? `#${orderId}` : '—';
+    document.getElementById('detTxn').textContent     = txnid   || (isCod ? 'N/A (COD)' : '—');
+    document.getElementById('detMethod').textContent  = method;
+    document.getElementById('detAmount').textContent  = amount  ? `₹${parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits:2})}` : '—';
+    document.getElementById('detDate').textContent    = new Date().toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+    if (isCod) {
+        document.getElementById('codNote').classList.remove('d-none');
+        document.getElementById('successSubtext').textContent =
+            'Your order has been placed successfully! Pay with cash upon delivery.';
+    }
+
+    // ── Stars ──────────────────────────────────────────────────────────────
+    const starsEl = document.getElementById('starsContainer');
+    for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const sz = Math.random() * 2.5 + .5;
+        s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--o:${(Math.random()*.6+.2).toFixed(2)};animation-delay:${(Math.random()*5).toFixed(1)}s`;
+        starsEl.appendChild(s);
+    }
+
+    // ── Confetti ──────────────────────────────────────────────────────────
+    const colors = ['#6c63ff','#22c55e','#f59e0b','#ef4444','#3b82f6','#ec4899','#fff'];
+    const confEl = document.getElementById('confettiContainer');
+    for (let i = 0; i < 80; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti-piece';
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = Math.random() > 0.5 ? '50%' : '0%';
+        c.style.cssText = `
+            left:${Math.random()*100}%;
+            background:${color};
+            border-radius:${shape};
+            --fall:${(Math.random()*3+2.5).toFixed(1)}s;
+            --delay:${(Math.random()*2).toFixed(2)}s;
+            --drift:${((Math.random()-0.5)*200).toFixed(0)}px;
+            width:${Math.random()*8+6}px;
+            height:${Math.random()*8+6}px;`;
+        confEl.appendChild(c);
+    }
+</script>
+</body>
+</html>

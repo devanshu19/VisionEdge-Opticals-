@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lenses - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .page-header { background: var(--secondary-color); padding: 120px 0 60px; color: white; text-align: center; }
+        .lens-feature-card { border-radius: var(--border-radius); overflow: hidden; background: white; box-shadow: var(--shadow-sm); border: none; height: 100%; transition: transform 0.3s;}
+        .lens-feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+        .lens-icon { width: 60px; height: 60px; background: rgba(6, 182, 212, 0.1); color: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <header class="page-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-3" data-aos="fade-up">Precision Lenses</h1>
+            <p class="lead opacity-75 mx-auto" style="max-width: 600px;" data-aos="fade-up" data-aos-delay="100">Experience world-class optics. From advanced blue-light filtering to digital progressives.</p>
+        </div>
+    </header>
+
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="row g-4">
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card lens-feature-card p-4">
+                        <div class="lens-icon"><i class="bi bi-display"></i></div>
+                        <h4 class="fw-bold mb-3">Blue Cut Lenses</h4>
+                        <p class="text-muted small mb-4 flex-grow-1">Blocks 98% of harmful blue light emitted from digital screens. Reduces eye strain, headaches, and improves sleep quality.</p>
+                        <div class="mt-auto"><span class="fw-bold text-primary fs-5">+$30</span></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card lens-feature-card p-4">
+                        <div class="lens-icon"><i class="bi bi-brightness-high"></i></div>
+                        <h4 class="fw-bold mb-3">Photochromic Lenses</h4>
+                        <p class="text-muted small mb-4 flex-grow-1">Intelligently transitions from clear indoors to dark outdoors based on UV exposure. The perfect 2-in-1 solution.</p>
+                        <div class="mt-auto"><span class="fw-bold text-primary fs-5">+$60</span></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card lens-feature-card p-4">
+                        <div class="lens-icon"><i class="bi bi-arrows-collapse"></i></div>
+                        <h4 class="fw-bold mb-3">High Index Lenses</h4>
+                        <p class="text-muted small mb-4 flex-grow-1">Up to 40% thinner and lighter than standard lenses. Ideal for high prescriptions to avoid the "coke-bottle" effect.</p>
+                        <div class="mt-auto"><span class="fw-bold text-primary fs-5">+$45</span></div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card lens-feature-card p-4">
+                        <div class="lens-icon"><i class="bi bi-eye"></i></div>
+                        <h4 class="fw-bold mb-3">Single Vision</h4>
+                        <p class="text-muted small mb-4 flex-grow-1">Standard corrective lenses optimized for a single focal length—either distance or reading.</p>
+                        <div class="mt-auto"><span class="fw-bold text-primary fs-5">Included</span></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="card lens-feature-card p-4">
+                        <div class="lens-icon"><i class="bi bi-hr"></i></div>
+                        <h4 class="fw-bold mb-3">Progressive Lenses</h4>
+                        <p class="text-muted small mb-4 flex-grow-1">Seamless transition between near, intermediate, and distance vision without any visible lines on the lens.</p>
+                        <div class="mt-auto"><span class="fw-bold text-primary fs-5">+$120</span></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="card lens-feature-card p-4">
+                        <div class="lens-icon"><i class="bi bi-shield-slash"></i></div>
+                        <h4 class="fw-bold mb-3">Anti-Glare Coating</h4>
+                        <p class="text-muted small mb-4 flex-grow-1">Eliminates reflections from the front and back of your lenses. Improves vision during night driving and flash photography.</p>
+                        <div class="mt-auto"><span class="fw-bold text-primary fs-5">+$15</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to action -->
+    <section class="py-5 bg-white text-center">
+        <div class="container py-4" data-aos="zoom-in">
+            <h2 class="fw-bold mb-3">Not sure which lens you need?</h2>
+            <p class="text-muted mb-4 mx-auto" style="max-width: 600px;">Our AI engine can analyze your prescription, age, and daily habits to recommend the perfect lens combination for your eyes.</p>
+            <a href="lens-recommendation.html" class="btn btn-primary btn-lg px-5 shadow">Try AI Recommendation</a>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

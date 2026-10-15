@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300">
+  <g transform="translate(100, 20)">
+    <!-- Bridge -->
+    <path d="M 160 85 Q 190 78 220 85" stroke="#0F172A" stroke-width="12" fill="none" stroke-linecap="square"/>
+
+    <!-- Left Frame Rim -->
+    <path d="M 50 70 L 165 75 C 160 145, 140 170, 105 170 C 65 170, 50 135, 50 70 Z" 
+          fill="rgba(30, 41, 59, 0.4)" stroke="#0F172A" stroke-width="12" stroke-linejoin="round"/>
+
+    <!-- Left Glare -->
+    <path d="M 65 82 L 115 84 C 105 110, 80 110, 65 82 Z" fill="rgba(255, 255, 255, 0.25)"/>
+
+    <!-- Right Frame Rim -->
+    <path d="M 215 75 L 330 70 C 330 135, 315 170, 275 170 C 240 170, 220 145, 215 75 Z" 
+          fill="rgba(30, 41, 59, 0.4)" stroke="#0F172A" stroke-width="12" stroke-linejoin="round"/>
+
+    <!-- Right Glare -->
+    <path d="M 230 84 L 280 82 C 290 110, 265 110, 230 84 Z" fill="rgba(255, 255, 255, 0.25)"/>
+
+    <!-- Silver Metal Studs -->
+    <ellipse cx="58" cy="80" rx="4" ry="2" fill="#E2E8F0"/>
+    <ellipse cx="322" cy="80" rx="4" ry="2" fill="#E2E8F0"/>
+
+    <!-- Temples -->
+    <path d="M 50 78 Q 20 70 -5 65" stroke="#0F172A" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M 330 78 Q 360 70 385 65" stroke="#0F172A" stroke-width="10" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

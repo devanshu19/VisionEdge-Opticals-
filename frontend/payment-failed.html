@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed - VisionEdge</title>
+    <meta name="description" content="Your payment could not be processed. Please try again.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 20% 50%, #1a0a0a 0%, #0e0c0c 60%, #160a0a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ─── Particles ─── */
+        .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(239,68,68,0.3);
+            animation: float var(--d, 6s) ease-in-out infinite;
+            opacity: 0;
+        }
+        @keyframes float {
+            0%, 100% { opacity: 0; transform: translateY(0) scale(1); }
+            50%       { opacity: 1; transform: translateY(-20px) scale(1.2); }
+        }
+
+        /* ─── Main card ─── */
+        .fail-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 28px;
+            padding: 3rem 2.5rem;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(239,68,68,0.08);
+            animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── X circle ─── */
+        .x-circle {
+            width: 110px; height: 110px;
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 0 0 16px rgba(239,68,68,0.12), 0 0 0 32px rgba(239,68,68,0.06);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 16px rgba(239,68,68,0.12), 0 0 0 32px rgba(239,68,68,0.06); }
+            50%       { box-shadow: 0 0 0 20px rgba(239,68,68,0.2), 0 0 0 40px rgba(239,68,68,0.09); }
+        }
+        .x-circle i { font-size: 3.2rem; color: #fff; }
+
+        /* ─── Typography ─── */
+        .fail-title { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+        .fail-sub   { font-size: 1rem; color: rgba(255,255,255,0.55); margin-bottom: 2rem; }
+
+        /* ─── Error reason box ─── */
+        .reason-box {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            color: #fca5a5;
+            font-size: .88rem;
+        }
+        .reason-box strong { color: #f87171; display: block; margin-bottom: .25rem; }
+
+        /* ─── Detail rows ─── */
+        .detail-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 1.1rem 1.4rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: .4rem 0;
+            font-size: .88rem;
+        }
+        .detail-row + .detail-row { border-top: 1px solid rgba(255,255,255,0.07); }
+        .detail-label { color: rgba(255,255,255,0.45); }
+        .detail-value { color: #fff; font-weight: 600; font-size: .82rem; }
+
+        /* ─── Buttons ─── */
+        .btn-retry {
+            display: block; width: 100%;
+            padding: .9rem 1rem;
+            background: linear-gradient(135deg, #6c63ff, #3b5bdb);
+            color: #fff; border: none; border-radius: 14px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            text-decoration: none; margin-bottom: .75rem;
+            transition: opacity .2s, transform .2s;
+        }
+        .btn-retry:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+
+        .btn-home {
+            display: block; width: 100%;
+            padding: .75rem 1rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.65);
+            border-radius: 14px; font-weight: 500; font-size: .95rem;
+            cursor: pointer; text-decoration: none;
+            transition: background .2s, color .2s;
+        }
+        .btn-home:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+        /* ─── Help note ─── */
+        .help-note {
+            margin-top: 1.5rem;
+            font-size: .78rem;
+            color: rgba(255,255,255,0.35);
+        }
+        .help-note a { color: rgba(255,255,255,0.55); text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="fail-card">
+    <div class="x-circle">
+        <i class="bi bi-x-lg"></i>
+    </div>
+
+    <h1 class="fail-title">Payment Failed</h1>
+    <p class="fail-sub">We could not process your payment. No amount has been deducted.</p>
+
+    <!-- Failure reason -->
+    <div class="reason-box" id="reasonBox">
+        <strong><i class="bi bi-exclamation-triangle me-1"></i> What went wrong?</strong>
+        <span id="reasonText">Payment was cancelled or declined by the bank.</span>
+    </div>
+
+    <!-- Transaction details -->
+    <div class="detail-box">
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-hash me-1"></i> Transaction Ref</span>
+            <span class="detail-value" id="detTxn">—</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label"><i class="bi bi-clock me-1"></i> Attempted At</span>
+            <span class="detail-value" id="detDate">—</span>
+        </div>
+    </div>
+
+    <a href="checkout.html" class="btn-retry">
+        <i class="bi bi-arrow-clockwise me-2"></i>Retry Payment
+    </a>
+    <a href="products.html" class="btn-home">
+        <i class="bi bi-house me-2"></i>Back to Store
+    </a>
+
+    <p class="help-note">
+        Need help? <a href="contact.html">Contact our support team</a> or call us at <strong style="color:rgba(255,255,255,.5);">1800-XXX-XXXX</strong>
+    </p>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const txnid  = params.get('txnid')  || '';
+    const reason = params.get('reason') || 'Payment was cancelled or declined by the bank.';
+
+    document.getElementById('detTxn').textContent  = txnid || 'N/A';
+    document.getElementById('detDate').textContent  = new Date().toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    document.getElementById('reasonText').textContent = decodeURIComponent(reason).replace(/_/g, ' ');
+
+    // Specific user-friendly reason messages
+    const r = reason.toLowerCase();
+    if (r.includes('hash_mismatch'))   document.getElementById('reasonText').textContent = 'Security verification failed. Please try again.';
+    if (r.includes('server_error'))    document.getElementById('reasonText').textContent = 'A server error occurred while recording your payment. Please contact support.';
+    if (r.includes('cancel'))          document.getElementById('reasonText').textContent = 'You cancelled the payment. You can retry anytime.';
+
+    // ── Floating particles ─────────────────────────────────────────────
+    const pEl = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const sz = Math.random() * 6 + 4;
+        p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*5+4).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s`;
+        pEl.appendChild(p);
+    }
+</script>
+</body>
+</html>

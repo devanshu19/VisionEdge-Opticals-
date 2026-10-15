@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .page-header { background: var(--secondary-color); padding: 120px 0 60px; color: white; text-align: center; }
+        .accordion-item { border: none; margin-bottom: 1rem; border-radius: var(--border-radius) !important; box-shadow: var(--shadow-sm); overflow: hidden; }
+        .accordion-button { font-weight: 600; padding: 1.25rem 1.5rem; color: var(--text-dark); background-color: white; box-shadow: none !important; }
+        .accordion-button:not(.collapsed) { color: var(--primary-color); background-color: #f8fafc; }
+        .accordion-button::after { background-size: 1rem; }
+        .accordion-body { padding: 1.5rem; color: var(--text-muted); line-height: 1.7; background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <header class="page-header">
+        <div class="container">
+            <h1 class="display-5 fw-bold mb-3" data-aos="fade-up">Frequently Asked Questions</h1>
+            <p class="lead opacity-75" data-aos="fade-up" data-aos-delay="100">Find answers to common questions about our products and services.</p>
+        </div>
+    </header>
+
+    <section class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8" data-aos="fade-up">
+                    <div class="accordion" id="faqAccordion">
+                        <!-- FAQ 1 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    How does the AI Lens Recommendation work?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Our AI engine analyzes factors like your age, daily screen time, prescription strength, and primary usage (e.g., driving, reading, computer work) to suggest the mathematically perfect lens type. It recommends whether you need Blue Cut, Progressives, or Anti-Glare coatings.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 2 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Do I need a prescription to buy frames?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    No! You can buy frames with zero-power (plano) lenses just for style or blue-light protection. If you need corrective lenses, you can either upload your existing prescription or book a free eye test with us.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    How long does shipping take?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Standard orders are processed and shipped within 48 hours. Custom prescription lenses may take an additional 1-2 business days to manufacture. Standard delivery usually takes 3-5 business days.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 4 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    What is your return policy?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    We offer a 14-day no-questions-asked return policy for all non-prescription frames. For prescription lenses, if there is a manufacturing defect or prescription error on our end, we will replace them completely free of charge.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5 pt-4" data-aos="fade-up">
+                <h5 class="fw-bold mb-3">Still have questions?</h5>
+                <a href="contact.html" class="btn btn-outline-primary px-4">Contact Support</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

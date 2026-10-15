@@ -1,0 +1,48 @@
+<footer class="mt-auto py-3 text-center text-muted border-top border-light">
+    <div class="container-fluid">
+        <small>&copy; 2026 VisionEdge Opticals Management System. Final Year Project.</small>
+    </div>
+</footer>
+
+<!-- Floating Chatbot Widget -->
+<div id="ai-chatbot-widget" class="chatbot-widget position-fixed bottom-0 end-0 m-4" style="z-index: 1050; display: none;">
+    <!-- Chat Icon Button -->
+    <button id="chatbot-toggle-btn" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; transition: transform 0.3s;">
+        <i class="bi bi-robot fs-3"></i>
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chatbot-window" class="card shadow-lg border-0 d-none" style="width: 350px; height: 500px; position: absolute; bottom: 70px; right: 0; border-radius: 12px; overflow: hidden; flex-direction: column;">
+        
+        <!-- Header -->
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center border-0">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-robot fs-4 me-2"></i>
+                <h6 class="mb-0 fw-bold">VisionEdge AI</h6>
+            </div>
+            <button id="chatbot-close-btn" class="btn btn-sm btn-link text-white p-0"><i class="bi bi-x-lg"></i></button>
+        </div>
+        
+        <!-- Messages Area -->
+        <div id="chatbot-messages" class="card-body bg-light p-3 overflow-auto" style="flex: 1;">
+            <!-- Welcome Message -->
+            <div class="d-flex mb-3">
+                <div class="bg-white p-2 rounded shadow-sm" style="max-width: 85%; font-size: 0.9rem;">
+                    Hello! I'm the VisionEdge AI Assistant. How can I help you today?
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="card-footer bg-white border-top p-2">
+            <div class="input-group">
+                <input type="text" id="chatbot-input" class="form-control border-0 bg-light rounded-start" placeholder="Ask about lenses, orders..." style="box-shadow: none;">
+                <button id="chatbot-send-btn" class="btn btn-light text-primary border-0 rounded-end bg-light">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/chatbot.js"></script>

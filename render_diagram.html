@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; padding: 0; background: #ffffff; display: flex; justify-content: center; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 2300" width="1400" height="2300" style="background-color: #ffffff;">
+  <style>
+    .entity-rect { fill: #ffffff; stroke: #000000; stroke-width: 2.5; rx: 6; ry: 6; }
+    .entity-text { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    
+    .attr-ellipse { fill: #ffffff; stroke: #000000; stroke-width: 1.8; }
+    .attr-text { font-family: Arial, sans-serif; font-size: 14px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .attr-text-pk { font-family: Arial, sans-serif; font-size: 14px; fill: #000000; font-weight: bold; text-decoration: underline; text-anchor: middle; dominant-baseline: central; }
+    
+    .rel-diamond { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+    .rel-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    
+    .connector { stroke: #000000; stroke-width: 1.8; fill: none; }
+    .dashed-connector { stroke: #000000; stroke-width: 1.8; stroke-dasharray: 6,6; fill: none; }
+    
+    .card-text { font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+  </style>
+
+  <!-- Title -->
+  <text x="700" y="30" font-family="Arial" font-size="22" font-weight="bold" fill="#000000" text-anchor="middle">VisionEdge - Chen Entity Relationship (ER) Diagram</text>
+
+  <!-- ======================================================== -->
+  <!-- 1. USERS -->
+  <!-- ======================================================== -->
+  <!-- Attributes for USERS -->
+  <line x1="700" y1="100" x2="220" y2="50" class="connector" />
+  <line x1="700" y1="100" x2="360" y2="45" class="connector" />
+  <line x1="700" y1="100" x2="510" y2="45" class="connector" />
+  <line x1="700" y1="100" x2="890" y2="45" class="connector" />
+  <line x1="700" y1="100" x2="1030" y2="45" class="connector" />
+  <line x1="700" y1="100" x2="1170" y2="50" class="connector" />
+
+  <ellipse cx="220" cy="50" rx="45" ry="22" class="attr-ellipse" />
+  <text x="220" y="50" class="attr-text-pk">id</text>
+
+  <ellipse cx="360" cy="45" rx="60" ry="22" class="attr-ellipse" />
+  <text x="360" y="45" class="attr-text">full_name</text>
+
+  <ellipse cx="510" cy="45" rx="55" ry="22" class="attr-ellipse" />
+  <text x="510" y="45" class="attr-text">email</text>
+
+  <ellipse cx="890" cy="45" rx="50" ry="22" class="attr-ellipse" />
+  <text x="890" y="45" class="attr-text">phone</text>
+
+  <ellipse cx="1030" cy="45" rx="50" ry="22" class="attr-ellipse" />
+  <text x="1030" y="45" class="attr-text">role</text>
+
+  <ellipse cx="1170" cy="50" rx="60" ry="22" class="attr-ellipse" />
+  <text x="1170" y="50" class="attr-text">password</text>
+
+  <ellipse cx="1200" cy="100" rx="65" ry="22" class="attr-ellipse" />
+  <line x1="700" y1="100" x2="1200" y2="100" class="connector" />
+  <text x="1200" y="100" class="attr-text">created_at</text>
+
+  <!-- USERS Entity Box -->
+  <rect x="580" y="75" width="240" height="50" class="entity-rect" />
+  <text x="700" y="100" class="entity-text">users</text>
+
+  <!-- Connector: USERS -> [makes] -->
+  <line x1="700" y1="125" x2="700" y2="185" class="connector" />
+  <rect x="688" y="145" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="155" class="card-text">1</text>
+
+  <!-- Diamond: makes -->
+  <polygon points="700,185 770,210 700,235 630,210" class="rel-diamond" />
+  <text x="700" y="210" class="rel-text">makes</text>
+
+  <!-- Connector: [makes] -> ROOMS/CUSTOMERS -->
+  <line x1="700" y1="235" x2="700" y2="295" class="connector" />
+  <rect x="688" y="255" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="265" class="card-text">M</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 2. ROOMS / CUSTOMERS -->
+  <!-- ======================================================== -->
+  <!-- Attributes for CUSTOMERS -->
+  <line x1="700" y1="320" x2="180" y2="280" class="connector" />
+  <line x1="700" y1="320" x2="160" y2="340" class="connector" />
+  <line x1="700" y1="320" x2="310" y2="360" class="connector" />
+  <line x1="700" y1="320" x2="460" y2="365" class="connector" />
+  <line x1="700" y1="320" x2="940" y2="365" class="connector" />
+  <line x1="700" y1="320" x2="1080" y2="350" class="connector" />
+  <line x1="700" y1="320" x2="1220" y2="310" class="connector" />
+
+  <ellipse cx="180" cy="280" rx="45" ry="22" class="attr-ellipse" />
+  <text x="180" y="280" class="attr-text-pk">id</text>
+
+  <ellipse cx="160" cy="340" rx="70" ry="22" class="attr-ellipse" />
+  <text x="160" y="340" class="attr-text">sharing_type</text>
+
+  <ellipse cx="310" cy="360" rx="65" ry="22" class="attr-ellipse" />
+  <text x="310" y="360" class="attr-text">room_name</text>
+
+  <ellipse cx="460" cy="365" rx="60" ry="22" class="attr-ellipse" />
+  <text x="460" y="365" class="attr-text">category</text>
+
+  <ellipse cx="940" cy="365" rx="75" ry="22" class="attr-ellipse" />
+  <text x="940" y="365" class="attr-text">monthly_rent</text>
+
+  <ellipse cx="1080" cy="350" rx="55" ry="22" class="attr-ellipse" />
+  <text x="1080" y="350" class="attr-text">status</text>
+
+  <ellipse cx="1220" cy="310" rx="65" ry="22" class="attr-ellipse" />
+  <text x="1220" y="310" class="attr-text">room_no</text>
+
+  <!-- CUSTOMERS Box -->
+  <rect x="570" y="295" width="260" height="50" class="entity-rect" />
+  <text x="700" y="320" class="entity-text">rooms</text>
+
+  <!-- Connector: ROOMS -> [reserved via] -->
+  <line x1="700" y1="345" x2="700" y2="405" class="connector" />
+  <rect x="688" y="365" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="375" class="card-text">1</text>
+
+  <!-- Diamond: reserved via -->
+  <polygon points="700,405 780,430 700,455 620,430" class="rel-diamond" />
+  <text x="700" y="430" class="rel-text">reserved via</text>
+
+  <!-- Connector: [reserved via] -> BOOKINGS -->
+  <line x1="700" y1="455" x2="700" y2="515" class="connector" />
+  <rect x="688" y="475" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="485" class="card-text">M</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 3. BOOKINGS -->
+  <!-- ======================================================== -->
+  <!-- Attributes for BOOKINGS -->
+  <line x1="700" y1="540" x2="190" y2="510" class="connector" />
+  <line x1="700" y1="540" x2="230" y2="570" class="connector" />
+  <line x1="700" y1="540" x2="380" y2="590" class="connector" />
+  <line x1="700" y1="540" x2="1020" y2="585" class="connector" />
+  <line x1="700" y1="540" x2="1190" y2="540" class="connector" />
+
+  <ellipse cx="190" cy="510" rx="45" ry="22" class="attr-ellipse" />
+  <text x="190" y="510" class="attr-text-pk">id</text>
+
+  <ellipse cx="230" cy="570" rx="65" ry="22" class="attr-ellipse" />
+  <text x="230" y="570" class="attr-text">start_date</text>
+
+  <ellipse cx="380" cy="590" rx="60" ry="22" class="attr-ellipse" />
+  <text x="380" y="590" class="attr-text">duration</text>
+
+  <ellipse cx="1020" cy="585" rx="55" ry="22" class="attr-ellipse" />
+  <text x="1020" y="585" class="attr-text">status</text>
+
+  <ellipse cx="1190" cy="540" rx="65" ry="22" class="attr-ellipse" />
+  <text x="1190" y="540" class="attr-text">created_at</text>
+
+  <!-- BOOKINGS Box -->
+  <rect x="570" y="515" width="260" height="50" class="entity-rect" />
+  <text x="700" y="540" class="entity-text">bookings</text>
+
+  <!-- Connector: BOOKINGS -> [settled by] -->
+  <line x1="700" y1="565" x2="700" y2="625" class="connector" />
+  <rect x="688" y="585" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="595" class="card-text">1</text>
+
+  <!-- Diamond: settled by -->
+  <polygon points="700,625 770,650 700,675 630,650" class="rel-diamond" />
+  <text x="700" y="650" class="rel-text">settled by</text>
+
+  <!-- Connector: [settled by] -> PAYMENTS -->
+  <line x1="700" y1="675" x2="700" y2="735" class="connector" />
+  <rect x="688" y="695" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="705" class="card-text">M</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 4. PAYMENTS -->
+  <!-- ======================================================== -->
+  <!-- Attributes for PAYMENTS -->
+  <line x1="700" y1="760" x2="200" y2="720" class="connector" />
+  <line x1="700" y1="760" x2="220" y2="780" class="connector" />
+  <line x1="700" y1="760" x2="350" y2="810" class="connector" />
+  <line x1="700" y1="760" x2="1020" y2="805" class="connector" />
+  <line x1="700" y1="760" x2="1200" y2="760" class="connector" />
+
+  <ellipse cx="200" cy="720" rx="45" ry="22" class="attr-ellipse" />
+  <text x="200" y="720" class="attr-text-pk">id</text>
+
+  <ellipse cx="220" cy="780" rx="55" ry="22" class="attr-ellipse" />
+  <text x="220" y="780" class="attr-text">amount</text>
+
+  <ellipse cx="350" cy="810" rx="75" ry="22" class="attr-ellipse" />
+  <text x="350" y="810" class="attr-text">transaction_id</text>
+
+  <ellipse cx="1020" cy="805" rx="55" ry="22" class="attr-ellipse" />
+  <text x="1020" y="805" class="attr-text">status</text>
+
+  <ellipse cx="1200" cy="760" rx="70" ry="22" class="attr-ellipse" />
+  <text x="1200" y="760" class="attr-text">payment_date</text>
+
+  <!-- PAYMENTS Box -->
+  <rect x="570" y="735" width="260" height="50" class="entity-rect" />
+  <text x="700" y="760" class="entity-text">payments</text>
+
+  <!-- Connector: PAYMENTS -> [receives] -->
+  <line x1="700" y1="785" x2="700" y2="865" class="connector" />
+
+  <!-- Diamond: receives -->
+  <polygon points="700,865 770,890 700,915 630,890" class="rel-diamond" />
+  <text x="700" y="890" class="rel-text">receives</text>
+
+  <!-- Connector: [receives] -> NOTIFICATIONS -->
+  <line x1="700" y1="915" x2="700" y2="975" class="connector" />
+
+  <!-- ======================================================== -->
+  <!-- 5. NOTIFICATIONS -->
+  <!-- ======================================================== -->
+  <!-- Attributes for NOTIFICATIONS -->
+  <line x1="700" y1="1000" x2="820" y2="1060" class="connector" />
+  <line x1="700" y1="1000" x2="980" y2="1065" class="connector" />
+  <line x1="700" y1="1000" x2="1140" y2="1060" class="connector" />
+  <line x1="700" y1="1000" x2="1260" y2="1000" class="connector" />
+
+  <ellipse cx="820" cy="1060" rx="45" ry="22" class="attr-ellipse" />
+  <text x="820" y="1060" class="attr-text-pk">id</text>
+
+  <ellipse cx="980" cy="1065" rx="65" ry="22" class="attr-ellipse" />
+  <text x="980" y="1065" class="attr-text">message</text>
+
+  <ellipse cx="1140" cy="1060" rx="50" ry="22" class="attr-ellipse" />
+  <text x="1140" y="1060" class="attr-text">type</text>
+
+  <ellipse cx="1260" cy="1000" rx="55" ry="22" class="attr-ellipse" />
+  <text x="1260" y="1000" class="attr-text">is_seen</text>
+
+  <!-- NOTIFICATIONS Box -->
+  <rect x="560" y="975" width="280" height="50" class="entity-rect" />
+  <text x="700" y="1000" class="entity-text">notifications</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 6. COMPLAINTS (Side Left) -->
+  <!-- ======================================================== -->
+  <!-- Connector: USERS -> [raises] -> COMPLAINTS -->
+  <polyline points="580,100 80,100 80,950 160,950" class="connector" />
+  <rect x="70" y="480" width="24" height="20" fill="#ffffff" />
+  <text x="82" y="490" class="card-text">1</text>
+
+  <!-- Diamond: raises -->
+  <polygon points="160,950 220,970 160,990 100,970" class="rel-diamond" />
+  <text x="160" y="970" class="rel-text">raises</text>
+
+  <line x1="160" y1="990" x2="160" y2="1030" class="connector" />
+  <rect x="150" y="1000" width="24" height="20" fill="#ffffff" />
+  <text x="162" y="1010" class="card-text">M</text>
+
+  <!-- Attributes for COMPLAINTS -->
+  <line x1="160" y1="1055" x2="40" y2="1110" class="connector" />
+  <line x1="160" y1="1055" x2="140" y2="1125" class="connector" />
+  <line x1="160" y1="1055" x2="250" y2="1125" class="connector" />
+  <line x1="160" y1="1055" x2="350" y2="1105" class="connector" />
+  <line x1="160" y1="1055" x2="390" y2="1055" class="connector" />
+
+  <ellipse cx="40" cy="1110" rx="40" ry="22" class="attr-ellipse" />
+  <text x="40" y="1110" class="attr-text-pk">id</text>
+
+  <ellipse cx="140" cy="1125" rx="55" ry="22" class="attr-ellipse" />
+  <text x="140" y="1125" class="attr-text">subject</text>
+
+  <ellipse cx="250" cy="1125" rx="50" ry="22" class="attr-ellipse" />
+  <text x="250" y="1125" class="attr-text">detail</text>
+
+  <ellipse cx="350" cy="1105" rx="50" ry="22" class="attr-ellipse" />
+  <text x="350" y="1105" class="attr-text">status</text>
+
+  <ellipse cx="390" cy="1055" rx="65" ry="22" class="attr-ellipse" />
+  <text x="390" y="1055" class="attr-text">admin_reply</text>
+
+  <!-- COMPLAINTS Box -->
+  <rect x="50" y="1030" width="220" height="50" class="entity-rect" />
+  <text x="160" y="1055" class="entity-text">complaints</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 7. CHAT MESSAGES -->
+  <!-- ======================================================== -->
+  <!-- Connector: NOTIFICATIONS / PAYMENTS -> [sends] -> CHAT_MESSAGES -->
+  <line x1="700" y1="1025" x2="700" y2="1175" class="connector" />
+
+  <!-- Diamond: sends -->
+  <polygon points="700,1175 770,1200 700,1225 630,1200" class="rel-diamond" />
+  <text x="700" y="1200" class="rel-text">sends</text>
+
+  <line x1="700" y1="1225" x2="700" y2="1285" class="connector" />
+
+  <!-- Attributes for CHAT_MESSAGES -->
+  <line x1="700" y1="1310" x2="230" y2="1350" class="connector" />
+  <line x1="700" y1="1310" x2="410" y2="1375" class="connector" />
+  <line x1="700" y1="1310" x2="700" y2="1245" class="connector" />
+  <line x1="700" y1="1310" x2="990" y2="1375" class="connector" />
+  <line x1="700" y1="1310" x2="1170" y2="1350" class="connector" />
+
+  <ellipse cx="230" cy="1350" rx="45" ry="22" class="attr-ellipse" />
+  <text x="230" y="1350" class="attr-text-pk">id</text>
+
+  <ellipse cx="410" cy="1375" rx="75" ry="22" class="attr-ellipse" />
+  <text x="410" y="1375" class="attr-text">sender_id FK</text>
+
+  <ellipse cx="700" cy="1245" rx="60" ry="22" class="attr-ellipse" />
+  <text x="700" y="1245" class="attr-text">message</text>
+
+  <ellipse cx="990" cy="1375" rx="80" ry="22" class="attr-ellipse" />
+  <text x="990" y="1375" class="attr-text">receiver_id FK</text>
+
+  <ellipse cx="1170" cy="1350" rx="55" ry="22" class="attr-ellipse" />
+  <text x="1170" y="1350" class="attr-text">sent_at</text>
+
+  <!-- CHAT_MESSAGES Box -->
+  <rect x="560" y="1285" width="280" height="50" class="entity-rect" />
+  <text x="700" y="1310" class="entity-text">chat_messages</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 8. PASSWORD_RESETS -->
+  <!-- ======================================================== -->
+  <!-- Connector: CHAT_MESSAGES -> [requests] -->
+  <line x1="700" y1="1335" x2="700" y2="1425" class="connector" />
+  <rect x="688" y="1360" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="1370" class="card-text">1</text>
+
+  <!-- Diamond: requests -->
+  <polygon points="700,1425 780,1450 700,1475 620,1450" class="rel-diamond" />
+  <text x="700" y="1450" class="rel-text">requests</text>
+
+  <!-- Connector: [requests] -> PASSWORD_RESETS -->
+  <line x1="700" y1="1475" x2="700" y2="1535" class="connector" />
+  <rect x="688" y="1495" width="24" height="20" fill="#ffffff" />
+  <text x="700" y="1505" class="card-text">M</text>
+
+  <!-- Attributes for PASSWORD_RESETS -->
+  <line x1="700" y1="1560" x2="220" y2="1530" class="connector" />
+  <line x1="700" y1="1560" x2="310" y2="1585" class="connector" />
+  <line x1="700" y1="1560" x2="430" y2="1610" class="connector" />
+  <line x1="700" y1="1560" x2="970" y2="1585" class="connector" />
+  <line x1="700" y1="1560" x2="1080" y2="1530" class="connector" />
+
+  <ellipse cx="220" cy="1530" rx="45" ry="22" class="attr-ellipse" />
+  <text x="220" y="1530" class="attr-text-pk">id</text>
+
+  <ellipse cx="310" cy="1585" rx="50" ry="22" class="attr-ellipse" />
+  <text x="310" y="1585" class="attr-text">token</text>
+
+  <ellipse cx="430" cy="1610" rx="45" ry="22" class="attr-ellipse" />
+  <text x="430" y="1610" class="attr-text">otp</text>
+
+  <ellipse cx="970" cy="1585" rx="65" ry="22" class="attr-ellipse" />
+  <text x="970" y="1585" class="attr-text">expires_at</text>
+
+  <ellipse cx="1080" cy="1530" rx="45" ry="22" class="attr-ellipse" />
+  <text x="1080" y="1530" class="attr-text">used</text>
+
+  <!-- PASSWORD_RESETS Box -->
+  <rect x="550" y="1535" width="300" height="50" class="entity-rect" />
+  <text x="700" y="1560" class="entity-text">password_resets</text>
+
+
+  <!-- Dashed Line Connector to ADMIN / ADMIN_ROOMS -->
+  <polyline points="700,1585 700,1750 960,1750 960,1830" class="dashed-connector" />
+  <rect x="790" y="1740" width="100" height="20" fill="#ffffff" />
+  <text x="840" y="1750" class="card-text">has details</text>
+
+
+  <!-- ======================================================== -->
+  <!-- 9. ADMIN_ROOMS & ADMIN -->
+  <!-- ======================================================== -->
+  <!-- ADMIN_ROOMS Box (Bottom Left) -->
+  <line x1="380" y1="1855" x2="160" y2="1820" class="connector" />
+  <line x1="380" y1="1855" x2="180" y2="1885" class="connector" />
+  <line x1="380" y1="1855" x2="270" y2="1920" class="connector" />
+
+  <ellipse cx="160" cy="1820" rx="45" ry="22" class="attr-ellipse" />
+  <text x="160" y="1820" class="attr-text-pk">id</text>
+
+  <ellipse cx="180" cy="1885" rx="50" ry="22" class="attr-ellipse" />
+  <text x="180" y="1885" class="attr-text">label</text>
+
+  <ellipse cx="270" cy="1920" rx="50" ry="22" class="attr-ellipse" />
+  <text x="270" y="1920" class="attr-text">value</text>
+
+  <rect x="270" y="1830" width="220" height="50" class="entity-rect" />
+  <text x="380" y="1855" class="entity-text">admin_rooms</text>
+
+  <!-- Connector: admin_rooms to admin -->
+  <line x1="490" y1="1855" x2="840" y2="1855" class="connector" />
+
+  <!-- ADMIN Box (Bottom Right) -->
+  <line x1="950" y1="1855" x2="680" y2="1920" class="connector" />
+  <line x1="950" y1="1855" x2="1080" y2="1820" class="connector" />
+  <line x1="950" y1="1855" x2="1140" y2="1875" class="connector" />
+  <line x1="950" y1="1855" x2="1110" y2="1925" class="connector" />
+
+  <ellipse cx="680" cy="1920" rx="75" ry="22" class="attr-ellipse" />
+  <text x="680" y="1920" class="attr-text">room_id FK</text>
+
+  <ellipse cx="1080" cy="1820" rx="45" ry="22" class="attr-ellipse" />
+  <text x="1080" y="1820" class="attr-text-pk">id</text>
+
+  <ellipse cx="1140" cy="1875" rx="65" ry="22" class="attr-ellipse" />
+  <text x="1140" y="1875" class="attr-text">username</text>
+
+  <ellipse cx="1110" cy="1925" rx="65" ry="22" class="attr-ellipse" />
+  <text x="1110" y="1925" class="attr-text">password</text>
+
+  <rect x="840" y="1830" width="220" height="50" class="entity-rect" />
+  <text x="950" y="1855" class="entity-text">admin</text>
+
+  <!-- Cardinality N label -->
+  <rect x="805" y="1845" width="24" height="20" fill="#ffffff" />
+  <text x="817" y="1855" class="card-text">M</text>
+
+</svg>
+
+</body>
+</html>

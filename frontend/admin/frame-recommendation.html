@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Frame Recommendation - VisionEdge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .upload-area {
+            border: 2px dashed #0d6efd;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background-color: rgba(13, 110, 253, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-color: #0b5ed7;
+        }
+        .frame-card {
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+        .frame-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .frame-card.selected {
+            border-color: #198754;
+            background-color: rgba(25, 135, 84, 0.05);
+        }
+        
+        .face-scanner {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: #0d6efd;
+            box-shadow: 0 0 10px #0d6efd;
+            top: 0;
+            left: 0;
+            animation: scan 2s infinite linear;
+            display: none;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-0 fw-bold"><i class="bi bi-robot text-primary me-2"></i>AI Frame Recommendation</h2>
+                        <p class="text-muted mb-0">Get intelligent frame suggestions based on facial analysis and inventory</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Left Column: Input Form -->
+                    <div class="col-lg-5 mb-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white py-3 border-0">
+                                <h5 class="mb-0 fw-bold">Customer Profile & Face Scan</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="recommendationForm">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium">Select Customer *</label>
+                                        <select class="form-select" id="customerId" required>
+                                            <option value="" selected disabled>Loading...</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-medium">Budget</label>
+                                            <select class="form-select" id="budget">
+                                                <option value="Any">Any Budget</option>
+                                                <option value="1000-3000">₹1000 - ₹3000</option>
+                                                <option value="3000-7000">₹3000 - ₹7000</option>
+                                                <option value="7000+">₹7000+</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-medium">Frame Size</label>
+                                            <select class="form-select" id="size">
+                                                <option value="Any">Any Size</option>
+                                                <option value="Small">Small</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="Large">Large</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-medium">Primary Usage</label>
+                                        <select class="form-select" id="usage">
+                                            <option value="Daily Wear">Daily Wear</option>
+                                            <option value="Professional">Professional / Office</option>
+                                            <option value="Fashion">Fashion / Casual</option>
+                                            <option value="Sports">Sports / Active</option>
+                                        </select>
+                                    </div>
+
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Face Analysis</h6>
+                                    
+                                    <!-- Upload UI -->
+                                    <div id="uploadUi">
+                                        <div class="upload-area mb-3" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                                            <i class="bi bi-person-bounding-box fs-1 text-primary mb-2"></i>
+                                            <h6>Upload Face Image</h6>
+                                            <small class="text-muted">JPG, PNG for shape analysis</small>
+                                        </div>
+                                        <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" style="display: none;">
+                                    </div>
+
+                                    <!-- Preview & Shape UI -->
+                                    <div id="analysisUi" style="display: none;" class="text-center mb-4">
+                                        <div class="face-scanner mb-3 border rounded shadow-sm">
+                                            <img id="facePreview" src="" alt="Face" style="max-width: 100%; max-height: 250px;">
+                                            <div class="scan-line" id="scanLine"></div>
+                                        </div>
+                                        
+                                        <div id="shapeResult" style="display: none;" class="bg-light p-3 rounded">
+                                            <p class="mb-1 text-muted small">Detected Face Shape</p>
+                                            <h4 class="mb-0 text-primary fw-bold" id="detectedShape">Unknown</h4>
+                                            <small class="text-muted">Confidence: <span id="detectedConfidence">0%</span></small>
+                                            <input type="hidden" id="faceShapeValue" value="">
+                                            <input type="hidden" id="faceImageUrl" value="">
+                                        </div>
+                                        
+                                        <div class="mt-3">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" id="btnResetFace">Scan Different Face</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid mt-4">
+                                        <button type="submit" class="btn btn-primary fw-bold py-2" id="btnGenerate" disabled>
+                                            <i class="bi bi-magic me-2"></i>Generate AI Recommendations
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Results -->
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold">AI Suggestions</h5>
+                                <span class="badge bg-secondary" id="resultStatus">Waiting for input</span>
+                            </div>
+                            <div class="card-body bg-light" id="resultsContainer">
+                                
+                                <div class="text-center py-5 text-muted" id="emptyState">
+                                    <i class="bi bi-robot fs-1 mb-3 text-secondary opacity-50"></i>
+                                    <h5>No Recommendations Yet</h5>
+                                    <p>Select a customer and analyze their face to get tailored frame suggestions.</p>
+                                </div>
+
+                                <div id="loadingState" class="text-center py-5" style="display: none;">
+                                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                                    <h5>AI is analyzing inventory...</h5>
+                                    <p class="text-muted">Matching face shape rules with available stock.</p>
+                                </div>
+
+                                <div id="successState" style="display: none;">
+                                    <div class="alert alert-info border-0 shadow-sm mb-4">
+                                        <h6 class="fw-bold"><i class="bi bi-info-circle-fill me-2"></i>AI Reasoning</h6>
+                                        <p class="mb-0" id="aiReasoningText">Reasoning goes here.</p>
+                                    </div>
+                                    
+                                    <h6 class="fw-bold mb-3">Available In-Stock Matches</h6>
+                                    
+                                    <div class="row g-3" id="recommendedFramesGrid">
+                                        <!-- Rendered via JS -->
+                                    </div>
+                                    
+                                    <div class="mt-4 pt-3 border-top text-end" id="actionButtons" style="display: none;">
+                                        <button class="btn btn-success px-4" id="btnSaveSelection">
+                                            <i class="bi bi-check2-circle me-2"></i>Save Selection & Proceed
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Mock warning -->
+                                <div id="mockWarning" class="alert alert-warning mt-4 py-2" style="display: none;">
+                                    <small><i class="bi bi-exclamation-triangle-fill me-1"></i> Running in Mock Mode.</small>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="footer-container"></div>
+        </main>
+    </div>
+    
+    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/frame-recommendation.js"></script>
+</body>
+</html>

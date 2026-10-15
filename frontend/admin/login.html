@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VisionEdge Opticals</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0A1128 0%, #101F42 45%, #1C2541 75%, #0B132B 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            padding: 2.5rem;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(37, 99, 235, 0.15);
+            border-top: 5px solid #2563EB;
+        }
+        
+        .login-card .form-control {
+            border: 1.5px solid #E2E8F0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .login-card .form-control:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.2);
+        }
+        
+        .text-primary-custom {
+            color: #2563EB !important;
+        }
+
+        .btn-login-submit {
+            background-color: #2563EB !important;
+            border: none !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            border-radius: 10px !important;
+            padding: 12px !important;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .btn-login-submit:hover {
+            background-color: #1D4ED8 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(37, 99, 235, 0.6) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card animate__animated animate__fadeIn">
+        <div class="text-center mb-4">
+            <h2 class="text-primary-custom fw-bold mb-2 d-flex align-items-center justify-content-center">
+                <i class="bi bi-eyeglasses me-2 fs-1"></i>VisionEdge
+            </h2>
+            <p class="text-muted">Sign in to manage your optical shop</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <form id="loginForm" class="needs-validation" novalidate>
+            <div class="form-floating mb-4">
+                <input type="text" class="form-control text-dark fw-medium" id="username" placeholder="Username" required value="admin">
+                <label for="username" class="text-secondary"><i class="bi bi-person-fill me-2"></i>Username</label>
+                <div class="invalid-feedback">Please enter your username.</div>
+            </div>
+
+            <div class="form-floating mb-4 position-relative">
+                <input type="password" class="form-control text-dark fw-medium" id="password" placeholder="Password" required value="password123">
+                <label for="password" class="text-secondary"><i class="bi bi-lock-fill me-2"></i>Password</label>
+                <button type="button" class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y text-decoration-none pt-0" id="togglePassword">
+                    <i class="bi bi-eye-fill fs-5"></i>
+                </button>
+                <div class="invalid-feedback">Please enter your password.</div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check text-secondary">
+                    <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                    <label class="form-check-label small" for="rememberMe">Remember Me</label>
+                </div>
+                <a href="#" class="text-primary-custom text-decoration-none small hover-underline">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-login-submit w-100 py-2.5 fw-bold shadow-sm">
+                Login <i class="bi bi-box-arrow-in-right ms-2"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('expired') === 'true') {
+                const alertHtml = `
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Your session has expired. Please login again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+                document.getElementById('alertContainer').innerHTML = alertHtml;
+            }
+        });
+
+        // Password Visibility Toggle
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const password = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('bi-eye-fill');
+                icon.classList.add('bi-eye-slash-fill');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('bi-eye-slash-fill');
+                icon.classList.add('bi-eye-fill');
+            }
+        });
+
+        // Form Validation & Redirect
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            usernameInput.setCustomValidity('');
+            passwordInput.setCustomValidity('');
+            
+            if (!usernameInput.value) {
+                usernameInput.setCustomValidity('Invalid');
+            }
+            if (!passwordInput.value) {
+                passwordInput.setCustomValidity('Invalid');
+            }
+
+            if (form.checkValidity()) {
+                const btn = form.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Authenticating...';
+                btn.disabled = true;
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: usernameInput.value,
+                            password: passwordInput.value
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        setAuthData(data.access_token, data.user, rememberMe);
+                        // Redirect to dashboard (if staff, dashboard will redirect to unauthorized or another page)
+                        // Wait, dashboard is admin only. We should redirect to dashboard and let app.js handle it,
+                        // or redirect based on role.
+                        if (data.user.role === 'staff') {
+                            window.location.href = 'customers.html';
+                        } else {
+                            window.location.href = 'dashboard.html';
+                        }
+                    } else {
+                        passwordInput.setCustomValidity('Invalid');
+                        passwordInput.parentElement.querySelector('.invalid-feedback').textContent = data.message || 'Invalid username or password.';
+                        form.classList.add('was-validated');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                } catch (error) {
+                    passwordInput.setCustomValidity('Invalid');
+                    passwordInput.parentElement.querySelector('.invalid-feedback').textContent = 'Network error. Please try again later.';
+                    form.classList.add('was-validated');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } else {
+                form.classList.add('was-validated');
+            }
+        }, false);
+    </script>
+</body>
+</html>

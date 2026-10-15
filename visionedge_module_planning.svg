@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1300" width="2000" height="1300" style="background-color: #FFFFFF; font-family: Arial, Helvetica, sans-serif;">
+<defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
+        </marker>
+        <filter id="light-shadow" x="-2%" y="-2%" width="104%" height="104%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.1"/>
+        </filter>
+    </defs>
+<rect width="2000" height="1300" fill="#FFFFFF"/>
+<rect x="450" y="25" width="1100" height="60" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="2" filter="url(#light-shadow)"/>
+<text x="1000" y="63" font-size="22" font-weight="bold" fill="#000000" text-anchor="middle" letter-spacing="0.5">VISIONEDGE: SYSTEM MODULE ARCHITECTURE &amp; PLANNING</text>
+<rect x="50" y="110" width="1900" height="200" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="2" filter="url(#light-shadow)"/>
+<text x="75" y="142" font-size="15" font-weight="bold" fill="#000000" letter-spacing="0.5">1. FRONTEND PRESENTATION LAYER (Web Clients &amp; Portals)</text>
+<rect x="80" y="160" width="540" height="120" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="350" y="205" font-size="17" font-weight="bold" fill="#000000" text-anchor="middle">Customer Storefront & Portal</text>
+<text x="350" y="238" font-size="12" fill="#333333" text-anchor="middle">Catalog, Virtual Try-On, Wishlist, Checkout, Prescription History</text>
+<rect x="730" y="160" width="540" height="120" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1000" y="205" font-size="17" font-weight="bold" fill="#000000" text-anchor="middle">Staff & Optometrist Portal</text>
+<text x="1000" y="238" font-size="12" fill="#333333" text-anchor="middle">Customer CRM, Clinical Eye Test, AI OCR Scanner, POS Checkout</text>
+<rect x="1380" y="160" width="540" height="120" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1650" y="205" font-size="17" font-weight="bold" fill="#000000" text-anchor="middle">Admin Management Portal</text>
+<text x="1650" y="238" font-size="12" fill="#333333" text-anchor="middle">Inventory Control, Role Access (RBAC), Analytics & Financial Reports</text>
+<line x1="350" y1="280" x2="350" y2="340" stroke="#000000" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<line x1="1000" y1="280" x2="1000" y2="340" stroke="#000000" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<line x1="1650" y1="280" x2="1650" y2="340" stroke="#000000" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<rect x="50" y="340" width="1900" height="380" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="2" filter="url(#light-shadow)"/>
+<text x="75" y="372" font-size="15" font-weight="bold" fill="#000000" letter-spacing="0.5">2. BACKEND API CONTROLLER LAYER (Python Flask RESTful API)</text>
+<rect x="80" y="400" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="225" y="436" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-01: Auth & RBAC</text>
+<text x="225" y="460" font-size="11" fill="#333333" text-anchor="middle">JWT Tokens & Permissions</text>
+<rect x="390" y="400" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="535" y="436" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-02: Customer CRM</text>
+<text x="535" y="460" font-size="11" fill="#333333" text-anchor="middle">Profiles & Medical Logs</text>
+<rect x="700" y="400" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="845" y="436" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-03: Clinical Eye Test</text>
+<text x="845" y="460" font-size="11" fill="#333333" text-anchor="middle">OD/OS SPH, CYL, AXIS, PD</text>
+<rect x="1010" y="400" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1155" y="436" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-08: Inventory Control</text>
+<text x="1155" y="460" font-size="11" fill="#333333" text-anchor="middle">Frames & Lens Stock Alert</text>
+<rect x="1320" y="400" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1465" y="436" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-09: Order Processing</text>
+<text x="1465" y="460" font-size="11" fill="#333333" text-anchor="middle">Fulfillment Pipeline</text>
+<rect x="1630" y="400" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1775" y="436" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-10: Billing & Invoicing</text>
+<text x="1775" y="460" font-size="11" fill="#333333" text-anchor="middle">GST & PDF Receipts</text>
+<rect x="80" y="510" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="225" y="546" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-11: Analytics Dashboard</text>
+<text x="225" y="570" font-size="11" fill="#333333" text-anchor="middle">Revenue & Sales Trends</text>
+<rect x="390" y="510" width="290" height="85" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="535" y="546" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">MOD-12: Chatbot & Alerts</text>
+<text x="535" y="570" font-size="11" fill="#333333" text-anchor="middle">AI Assistant & Notifications</text>
+<rect x="700" y="510" width="1220" height="170" rx="6" fill="#F1F5F9" stroke="#000000" stroke-width="2"/>
+<text x="1310" y="555" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">Flask Application Dispatcher &amp; Middleware Engine</text>
+<text x="1310" y="590" font-size="13" fill="#1E293B" text-anchor="middle">RESTful JSON Route Blueprints • JWT Authorization Middleware • CORS &amp; Static Media Handler</text>
+<text x="1310" y="625" font-size="12" font-style="italic" fill="#475569" text-anchor="middle">Coordinates requests across Auth, CRM, Prescriptions, Inventory, Billing &amp; AI Microservices</text>
+<line x1="1000" y1="720" x2="1000" y2="760" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="50" y="760" width="1900" height="230" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="2" filter="url(#light-shadow)"/>
+<text x="75" y="792" font-size="15" font-weight="bold" fill="#000000" letter-spacing="0.5">3. AI &amp; COMPUTER VISION INTELLIGENCE LAYER</text>
+<rect x="80" y="820" width="440" height="140" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="300" y="865" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">MOD-04: AI Prescription OCR</text>
+<text x="300" y="900" font-size="12" fill="#333333" text-anchor="middle">Google Gemini 1.5 Pro Vision</text>
+<text x="300" y="925" font-size="12" fill="#333333" text-anchor="middle">API parsing paper prescription diopters</text>
+<rect x="540" y="820" width="440" height="140" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="760" y="865" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">MOD-05: AI Frame Recommendation</text>
+<text x="760" y="900" font-size="12" fill="#333333" text-anchor="middle">Facial structure geometry analysis</text>
+<text x="760" y="925" font-size="12" fill="#333333" text-anchor="middle">matching Oval, Round, Square shapes</text>
+<rect x="1000" y="820" width="440" height="140" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1220" y="865" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">MOD-06: AI Lens & Coating Rec.</text>
+<text x="1220" y="900" font-size="12" fill="#333333" text-anchor="middle">Prescription diopter power analysis</text>
+<text x="1220" y="925" font-size="12" fill="#333333" text-anchor="middle">for High-Index & Blue-Cut coatings</text>
+<rect x="1460" y="820" width="440" height="140" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1680" y="865" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">MOD-07: Virtual Try-On (VTO)</text>
+<text x="1680" y="900" font-size="12" fill="#333333" text-anchor="middle">HTML5 Canvas & MediaPipe FaceMesh overlaying</text>
+<text x="1680" y="925" font-size="12" fill="#333333" text-anchor="middle">frames live on webcam (24+ FPS)</text>
+<line x1="1000" y1="990" x2="1000" y2="1030" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="50" y="1030" width="1900" height="220" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="2" filter="url(#light-shadow)"/>
+<text x="75" y="1062" font-size="15" font-weight="bold" fill="#000000" letter-spacing="0.5">4. PERSISTENCE &amp; EXTERNAL SERVICES LAYER</text>
+<rect x="80" y="1085" width="540" height="130" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="350" y="1135" font-size="17" font-weight="bold" fill="#000000" text-anchor="middle">Relational Database (SQLAlchemy)</text>
+<text x="350" y="1170" font-size="12" fill="#333333" text-anchor="middle">MySQL / SQLite: User, Customer,</text>
+<text x="350" y="1192" font-size="12" fill="#333333" text-anchor="middle">EyeTest, Frame, Lens, Order, Invoice Tables</text>
+<rect x="730" y="1085" width="540" height="130" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1000" y="1135" font-size="17" font-weight="bold" fill="#000000" text-anchor="middle">Google Gemini 1.5 Pro AI Service</text>
+<text x="1000" y="1170" font-size="12" fill="#333333" text-anchor="middle">Multimodal REST Cloud API Endpoint</text>
+<text x="1000" y="1192" font-size="12" fill="#333333" text-anchor="middle">for OCR Prescription Image Extraction</text>
+<rect x="1380" y="1085" width="540" height="130" rx="6" fill="#F8FAFC" stroke="#000000" stroke-width="1.5"/>
+<text x="1650" y="1135" font-size="17" font-weight="bold" fill="#000000" text-anchor="middle">PDF Engine & Static Media Storage</text>
+<text x="1650" y="1170" font-size="12" fill="#333333" text-anchor="middle">ReportLab Invoice Generator & File</text>
+<text x="1650" y="1192" font-size="12" fill="#333333" text-anchor="middle">Storage (/uploads/ Prescriptions & Snapshots)</text>
+</svg>

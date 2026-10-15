@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300">
+  <g transform="translate(100, 20)">
+    <!-- Gold Aviator Double Bridge -->
+    <path d="M 170 80 Q 190 70 210 80" stroke="#D4AF37" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M 165 92 Q 190 85 215 92" stroke="#D4AF37" stroke-width="5" fill="none" stroke-linecap="round"/>
+    
+    <!-- Left Aviator Lens -->
+    <path d="M 70 85 C 70 85, 120 70, 165 90 C 170 120, 165 170, 125 185 C 80 195, 65 140, 70 85 Z" 
+          fill="rgba(15, 23, 42, 0.45)" stroke="#D4AF37" stroke-width="8"/>
+    <!-- Left Lens Glare -->
+    <path d="M 85 95 C 100 90, 130 85, 145 100 C 130 115, 100 110, 85 95 Z" fill="rgba(255, 255, 255, 0.3)"/>
+
+    <!-- Right Aviator Lens -->
+    <path d="M 215 90 C 260 70, 310 85, 310 85 C 315 140, 300 195, 255 185 C 215 170, 210 120, 215 90 Z" 
+          fill="rgba(15, 23, 42, 0.45)" stroke="#D4AF37" stroke-width="8"/>
+    <!-- Right Lens Glare -->
+    <path d="M 230 100 C 245 85, 275 90, 290 95 C 275 110, 245 115, 230 100 Z" fill="rgba(255, 255, 255, 0.3)"/>
+
+    <!-- Temples -->
+    <path d="M 70 95 Q 40 85 10 75" stroke="#D4AF37" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M 310 95 Q 340 85 370 75" stroke="#D4AF37" stroke-width="6" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

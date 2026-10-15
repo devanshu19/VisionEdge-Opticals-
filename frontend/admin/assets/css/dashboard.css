@@ -1,0 +1,78 @@
+/* Dashboard Specific Styles */
+.kpi-card {
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.kpi-primary { border-left-color: var(--primary-color); }
+.kpi-secondary { border-left-color: var(--secondary-color); }
+.kpi-success { border-left-color: var(--success-color); }
+.kpi-warning { border-left-color: var(--warning-color); }
+.kpi-danger { border-left-color: var(--danger-color); }
+.kpi-info { border-left-color: var(--accent-color); }
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Quick Actions */
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    height: 100%;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    background-color: var(--secondary-color);
+    color: white !important;
+    border-color: var(--secondary-color);
+}
+
+.quick-action-btn:hover .icon-wrapper {
+    background-color: rgba(255,255,255,0.2) !important;
+    color: white !important;
+}
+
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .kpi-card h3 {
+        font-size: 1.5rem;
+    }
+}

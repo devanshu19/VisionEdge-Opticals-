@@ -1,0 +1,92 @@
+/* Custom Form Styling */
+.form-control, .form-select {
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--secondary-color);
+    background-color: var(--card-bg);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1) !important;
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+/* Floating Labels customization */
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(3.5rem + 2px);
+    line-height: 1.25;
+}
+
+.form-floating > label {
+    padding: 1rem 1.25rem;
+    color: var(--text-muted);
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    color: var(--secondary-color);
+    transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
+    background-color: var(--card-bg);
+    padding: 0 8px;
+    height: auto;
+    border-radius: 4px;
+}
+
+/* Fix for Bootstrap 5.3 floating label background pseudo-element */
+.form-floating > label::after {
+    background-color: var(--card-bg) !important;
+    border-radius: 4px;
+}
+
+.input-group-text {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+}
+
+/* Dark mode inputs */
+[data-theme="dark"] .form-control, 
+[data-theme="dark"] .form-select {
+    border-color: var(--border-color);
+    color: var(--text-main);
+}
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted);
+}
+[data-theme="dark"] .input-group-text {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+}
+[data-theme="dark"] .form-floating > .form-control:focus ~ label,
+[data-theme="dark"] .form-floating > .form-control:not(:placeholder-shown) ~ label,
+[data-theme="dark"] .form-floating > .form-select ~ label {
+    background-color: var(--card-bg);
+}
+
+[data-theme="dark"] .form-floating > label::after {
+    background-color: var(--card-bg) !important;
+}
+
+/* Custom Checkbox / Radio */
+.form-check-input {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+    cursor: pointer;
+}
+.form-check-input:checked {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}

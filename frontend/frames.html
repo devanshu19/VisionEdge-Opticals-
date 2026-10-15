@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frames Collection - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .page-header { background: url('https://images.unsplash.com/photo-1582142407894-ec85a1260a46?w=1200&q=80') center/cover; position: relative; padding: 140px 0 80px; color: white; text-align: center; }
+        .page-header::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(15, 23, 42, 0.7); z-index: 1;}
+        .header-content { position: relative; z-index: 2; }
+        
+        .frame-material-card { background: white; border-radius: var(--border-radius); padding: 2rem; text-align: center; box-shadow: var(--shadow-sm); transition: transform 0.3s; height: 100%; border: none;}
+        .frame-material-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-bottom: 3px solid var(--accent-color);}
+        .material-icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="navbar-container"></div>
+
+    <header class="page-header">
+        <div class="container header-content">
+            <h2 class="display-4 fw-bold mb-3" data-aos="fade-up">Premium Frames Collection</h2>
+            <p class="lead opacity-75 mx-auto" style="max-width: 600px;" data-aos="fade-up" data-aos-delay="100">Handcrafted acetates, ultra-light titanium, and flexible TR90 materials. Discover frames that define you.</p>
+        </div>
+    </header>
+
+    <section class="py-5 bg-white">
+        <div class="container py-5">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h6 class="text-accent fw-bold text-uppercase mb-2">Materials</h6>
+                <h2 class="fw-bold display-6">Engineered for Comfort</h2>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="frame-material-card">
+                        <i class="bi bi-gem material-icon"></i>
+                        <h4 class="fw-bold mb-3">Titanium</h4>
+                        <p class="text-muted small mb-4">Aerospace-grade titanium that is 50% lighter than traditional alloys and completely hypoallergenic.</p>
+                        <a href="products.html" class="btn btn-outline-primary btn-sm rounded-pill px-4">Shop Titanium</a>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="frame-material-card">
+                        <i class="bi bi-layers material-icon"></i>
+                        <h4 class="fw-bold mb-3">Premium Acetate</h4>
+                        <p class="text-muted small mb-4">Hand-polished cellulose acetate offering rich, vibrant colors and extreme durability.</p>
+                        <a href="products.html" class="btn btn-outline-primary btn-sm rounded-pill px-4">Shop Acetate</a>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="frame-material-card">
+                        <i class="bi bi-wind material-icon"></i>
+                        <h4 class="fw-bold mb-3">TR90 Memory Flex</h4>
+                        <p class="text-muted small mb-4">Incredibly flexible and impact-resistant material that bends without breaking. Perfect for sports.</p>
+                        <a href="products.html" class="btn btn-outline-primary btn-sm rounded-pill px-4">Shop TR90</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotional Banner -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="card border-0 shadow-lg overflow-hidden" data-aos="zoom-in">
+                <div class="row g-0">
+                    <div class="col-lg-6 bg-primary text-white p-5 d-flex flex-column justify-content-center">
+                        <span class="badge bg-white text-primary rounded-pill w-auto align-self-start px-3 py-2 fw-bold mb-4">VIRTUAL TRY-ON</span>
+                        <h2 class="display-6 fw-bold mb-4">Try Frames Before You Buy</h2>
+                        <p class="fs-5 opacity-75 mb-4">Use your smartphone or webcam to see exactly how our frames look on your face in real-time 3D.</p>
+                        <a href="ai-suite.html" class="btn btn-light btn-lg text-primary fw-bold align-self-start shadow"><i class="bi bi-stars me-2"></i> Launch AI Studio &amp; Try On</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="assets/images/ar_vto_banner.png" alt="Virtual Try On" class="img-fluid h-100 object-fit-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

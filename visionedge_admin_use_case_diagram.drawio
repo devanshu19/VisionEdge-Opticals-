@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-16T16:32:00.000Z" agent="VisionEdge" version="21.0.0" type="device">
+  <diagram id="admin_side_use_case" name="VisionEdge Admin Use Case Diagram">
+    <mxGraphModel dx="1400" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- SYSTEM BOUNDARY BOX -->
+        <mxCell id="box_sys_admin" value="VisionEdge Admin &amp; Optician Management Portal" style="shape=rect;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;verticalAlign=top;align=center;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="480" height="880" as="geometry" />
+        </mxCell>
+
+        <!-- ACTOR: ADMIN -->
+        <mxCell id="actor_admin" value="System Admin / Optician" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="120" y="430" width="60" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- USE CASES -->
+        <mxCell id="uc_a1" value="Admin / Doctor Login" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="90" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a2" value="Manage Frame &amp; Lens Inventory" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="170" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a3" value="Manage Customer Records &amp; Profiles" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="250" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a4" value="Record Diagnostic Eye Test Readings" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="330" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a5" value="Issue Optical Prescriptions" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="410" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a6" value="Approve / Reject Appointments" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="490" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a7" value="Process Customer Orders &amp; Fulfillment" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="570" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a8" value="Generate Tax Invoices &amp; Billing Receipts" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="650" width="280" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_a9" value="View Sales, Revenue &amp; Audit Analytics" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="730" width="280" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- CONNECTIONS -->
+        <mxCell id="ea1" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a1" />
+        <mxCell id="ea2" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a2" />
+        <mxCell id="ea3" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a3" />
+        <mxCell id="ea4" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a4" />
+        <mxCell id="ea5" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a5" />
+        <mxCell id="ea6" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a6" />
+        <mxCell id="ea7" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a7" />
+        <mxCell id="ea8" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a8" />
+        <mxCell id="ea9" style="endArrow=none;html=1;strokeColor=#000000;" edge="1" parent="1" source="actor_admin" target="uc_a9" />
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

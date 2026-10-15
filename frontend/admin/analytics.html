@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics & Performance - VisionEdge Opticals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="sidebar-container"></div>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div id="navbar-container"></div>
+
+            <div class="container-fluid py-4">
+                <!-- Page Header -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4" data-aos="fade-down">
+                    <div class="mb-3 mb-md-0">
+                        <h2 class="mb-0 fw-bold">Business Analytics</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Analytics</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <select class="form-select w-auto" id="analyticsPeriod">
+                            <option value="this_month">This Month</option>
+                            <option value="this_quarter">This Quarter</option>
+                            <option value="this_year" selected>This Year</option>
+                        </select>
+                        <button class="btn btn-outline-primary" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print Report</button>
+                    </div>
+                </div>
+
+                <!-- KPI Summary Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card border-0 shadow-sm p-3 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 me-3 fs-3"><i class="bi bi-graph-up-arrow"></i></div>
+                                <div>
+                                    <p class="text-muted small mb-0 fw-bold text-uppercase">Sales Growth</p>
+                                    <h4 class="fw-bold mb-0 text-dark" id="statGrowth">+24.5%</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+                        <div class="card border-0 shadow-sm p-3 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 me-3 fs-3"><i class="bi bi-cart-check"></i></div>
+                                <div>
+                                    <p class="text-muted small mb-0 fw-bold text-uppercase">Avg Order Value</p>
+                                    <h4 class="fw-bold mb-0 text-dark" id="statAvgOrder">₹3,450</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card border-0 shadow-sm p-3 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 me-3 fs-3"><i class="bi bi-people"></i></div>
+                                <div>
+                                    <p class="text-muted small mb-0 fw-bold text-uppercase">Customer Retention</p>
+                                    <h4 class="fw-bold mb-0 text-dark" id="statRetention">78.2%</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="250">
+                        <div class="card border-0 shadow-sm p-3 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 me-3 fs-3"><i class="bi bi-eyeglasses"></i></div>
+                                <div>
+                                    <p class="text-muted small mb-0 fw-bold text-uppercase">Frame vs Lens Sales</p>
+                                    <h4 class="fw-bold mb-0 text-dark" id="statRatio">65 / 35 %</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-8" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="card-title fw-bold mb-0"><i class="bi bi-bar-chart-line text-primary me-2"></i>Revenue & Order Trends</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <canvas id="analyticsRevenueChart" style="max-height: 320px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="350">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="card-title fw-bold mb-0"><i class="bi bi-pie-chart text-success me-2"></i>Sales by Category</h5>
+                            </div>
+                            <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                                <canvas id="analyticsCategoryChart" style="max-height: 280px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Performing Brands & Customer Growth -->
+                <div class="row g-4">
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="card-title fw-bold mb-0"><i class="bi bi-award text-warning me-2"></i>Top Performing Eyewear Brands</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="list-group list-group-flush" id="topBrandsList">
+                                    <!-- Populated by JS -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="450">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="card-title fw-bold mb-0"><i class="bi bi-graph-up text-info me-2"></i>Monthly Customer Growth</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <canvas id="analyticsCustomerChart" style="max-height: 240px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer-container"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/analytics.js"></script>
+</body>
+</html>
