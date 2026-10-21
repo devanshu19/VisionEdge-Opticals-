@@ -1,6 +1,10 @@
-// checkout.js — VisionEdge Seamless Payment Integration
+// checkout.js — VisionEdge Production-Ready Payment & Razorpay Integration
 
+let checkoutCartSubtotal = 0;
+let checkoutTaxAmount = 0;
+let checkoutDiscountAmount = 0;
 let checkoutCartTotal = 0;
+let activeCouponCode = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = typeof getToken === 'function'
@@ -25,12 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setVal('co_phone',     user.phone);
     setVal('co_address',   user.address);
 
-    const cardNameEl = document.getElementById('card_name');
-    if (cardNameEl && !cardNameEl.value) {
-        const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'VisionEdge Customer';
-        cardNameEl.value = fullName;
-    }
-
     renderCheckoutCart();
     handlePaymentMethodChange();
 
@@ -38,121 +36,87 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) btn.addEventListener('click', handleUnifiedCheckout);
 });
 
-// ─── Fill Demo Test Card ─────────────────────────────────────────────────────
-function fillDemoCard() {
-    const numEl = document.getElementById('card_number');
-    const expEl = document.getElementById('card_expiry');
-    const cvvEl = document.getElementById('card_cvv');
-    const nameEl = document.getElementById('card_name');
-
-    if (numEl) numEl.value = '4532 8901 2345 6789';
-    if (expEl) expEl.value = '12/28';
-    if (cvvEl) cvvEl.value = '888';
-    if (nameEl && !nameEl.value) {
-        const u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-        nameEl.value = u ? `${u.first_name || ''} ${u.last_name || ''}`.trim() : 'VisionEdge Customer';
-    }
-}
-window.fillDemoCard = fillDemoCard;
-
-// ─── Handle payment method switch ────────────────────────────────────────────
-function handlePaymentMethodChange() {
-    const selectedPm = document.querySelector('input[name="paymentMethod"]:checked');
-    const pm = selectedPm ? selectedPm.value : 'Credit Card';
-
-    const cardDetails = document.getElementById('cardDetailsCard');
-    const bankDetails = document.getElementById('bankAccountCard');
-    const btn = document.getElementById('btnPlaceOrder');
-
-    if (cardDetails) {
-        cardDetails.classList.toggle('d-none', pm !== 'Credit Card');
-    }
-    if (bankDetails) {
-        bankDetails.classList.toggle('d-none', pm !== 'UPI / Bank Transfer');
-    }
-
-    if (btn) {
-        const totalStr = checkoutCartTotal > 0 ? `₹${checkoutCartTotal.toFixed(2)}` : '';
-        if (pm === 'Credit Card') {
-            btn.innerHTML = `<i class="bi bi-shield-check me-2"></i>Pay ${totalStr} Securely`;
-        } else if (pm === 'UPI / Bank Transfer') {
-            btn.innerHTML = `<i class="bi bi-qr-code me-2"></i>Confirm UPI Payment (${totalStr})`;
-        } else if (pm === 'Cash on Delivery') {
-            btn.innerHTML = `<i class="bi bi-box-seam me-2"></i>Place Order (Cash on Delivery) - ${totalStr}`;
-        } else if (pm === 'PayU Sandbox') {
-            btn.innerHTML = `<i class="bi bi-box-arrow-up-right me-2"></i>Pay via PayU Gateway (${totalStr})`;
-        }
-    }
-}
-window.handlePaymentMethodChange = handlePaymentMethodChange;
-
-// ─── Legacy compatibility toggle ─────────────────────────────────────────────
-function toggleBankDetails(show) {
-    handlePaymentMethodChange();
-}
-window.toggleBankDetails = toggleBankDetails;
-
-let checkoutCartSubtotal = 0;
-let checkoutDiscountAmount = 0;
-let activeCouponCode = null;
-
 // ─── Render cart summary & coupon calculation ─────────────────────────────────
 function renderCheckoutCart() {
     if (typeof cart === 'undefined' || !cart || cart.length === 0) {
-        alert('Your cart is empty. Redirecting to products page.');
+        // Try reload from localStorage
+        try {
+            const raw = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart') || '[]';
+            window.cart = JSON.parse(raw);
+        } catch (e) { window.cart = []; }
+    }
+
+    if (!window.cart || window.cart.length === 0) {
+        alert('Your cart is empty! Redirecting to products...');
         window.location.href = 'products.html';
         return;
     }
 
-    const container = document.getElementById('checkoutItemsList');
-    let html = '';
-    let subtotal = 0;
+    const itemsContainer = document.getElementById('orderSummaryItems');
+    if (!itemsContainer) return;
 
-    cart.forEach(item => {
-        const price    = item.price || item.unit_price || 0;
-        const qty      = item.quantity || 1;
-        const itemTotal = price * qty;
-        subtotal += itemTotal;
-        html += `
-            <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
-                <div style="width:50px;height:50px;background:#f8f9fa;border-radius:8px;overflow:hidden;"
-                     class="d-flex align-items-center justify-content-center me-3 flex-shrink-0">
-                    ${item.item_image
-                        ? `<img src="${item.item_image}" style="width:100%;height:100%;object-fit:cover;">`
-                        : `<i class="bi bi-eyeglasses fs-4 text-secondary"></i>`}
+    itemsContainer.innerHTML = '';
+    let subtotal = 0;
+    let totalTax = 0;
+
+    window.cart.forEach(item => {
+        const price = parseFloat(item.price || item.selling_price || 0);
+        const qty = parseInt(item.quantity || 1, 10);
+        const itemSubtotal = price * qty;
+        const taxRate = parseFloat(item.gst_percent || 18) / 100;
+        const itemTax = itemSubtotal * taxRate;
+
+        subtotal += itemSubtotal;
+        totalTax += itemTax;
+
+        const name = item.name || item.model_name || 'Eyewear Item';
+        const type = item.item_type || item.product_type || 'Frame';
+        const img = item.image || item.image_url || 'assets/images/placeholder.jpg';
+
+        itemsContainer.innerHTML += `
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center">
+                    <img src="${img}" alt="${name}" class="rounded me-3 border" style="width: 52px; height: 52px; object-fit: cover;">
+                    <div>
+                        <h6 class="mb-0 fw-bold small text-truncate" style="max-width: 170px;">${name}</h6>
+                        <small class="text-muted d-block">${type} × ${qty}</small>
+                    </div>
                 </div>
-                <div class="flex-grow-1">
-                    <h6 class="mb-0 fw-bold">${item.name || 'Product Item'}</h6>
-                    <div class="text-muted small">Qty: ${qty}</div>
+                <div class="text-end">
+                    <span class="fw-bold small">₹${itemSubtotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</span>
                 </div>
-                <div class="text-end fw-bold">₹${itemTotal.toFixed(2)}</div>
-            </div>`;
+            </div>
+        `;
     });
 
     checkoutCartSubtotal = subtotal;
-    if (container) container.innerHTML = html;
+    checkoutTaxAmount = totalTax;
 
-    // Check if an active coupon was copied from offers.html
-    const storedCoupon = localStorage.getItem('activeCoupon');
-    if (storedCoupon && !activeCouponCode) {
-        try {
-            const cObj = JSON.parse(storedCoupon);
+    // Check pre-applied coupon from cart page
+    try {
+        const savedCoupon = sessionStorage.getItem('appliedCoupon') || localStorage.getItem('appliedCoupon');
+        if (savedCoupon) {
+            const cObj = JSON.parse(savedCoupon);
             if (cObj && cObj.code) {
                 applyCouponCode(cObj.code, false);
                 return;
             }
-        } catch (e) { }
-    }
+        }
+    } catch (e) { }
+
     updateCheckoutTotals();
 }
 
-function applyCouponCode(manualCode) {
+function applyCouponCode(manualCode, showSuccessAlert = true) {
     const inputEl = document.getElementById('couponCodeInput');
     const feedbackEl = document.getElementById('couponFeedback');
     const code = (manualCode || (inputEl ? inputEl.value : '')).trim().toUpperCase();
 
     if (!code) {
-        if (feedbackEl) feedbackEl.innerHTML = '<span class="text-danger small">Please enter a promo code.</span>';
+        if (feedbackEl) {
+            feedbackEl.className = 'text-danger small mt-1';
+            feedbackEl.textContent = 'Please enter a valid coupon code.';
+        }
         return;
     }
 
@@ -169,67 +133,115 @@ function applyCouponCode(manualCode) {
         discount = checkoutCartSubtotal * 0.15;
         badgeText = '15% Student Discount';
     } else if (code === 'FREESHIP') {
-        discount = 0;
-        badgeText = 'Free Priority Shipping';
+        discount = Math.min(checkoutCartSubtotal, 100.0);
+        badgeText = 'Flat ₹100 Discount';
     } else {
-        if (feedbackEl) feedbackEl.innerHTML = `<span class="text-danger small">Invalid code "${code}". Try VISION30 or BOGO2026.</span>`;
+        if (feedbackEl) {
+            feedbackEl.className = 'text-danger small mt-1';
+            feedbackEl.textContent = 'Invalid promo code. Try VISION30, BOGO2026, or STUDENT15.';
+        }
         return;
     }
 
     checkoutDiscountAmount = Math.round(discount * 100) / 100;
     activeCouponCode = code;
 
-    localStorage.setItem('activeCoupon', JSON.stringify({
-        code: code,
-        discountPercent: discount > 0 ? (discount / checkoutCartSubtotal) * 100 : 0
-    }));
+    // Save coupon
+    try {
+        const payload = JSON.stringify({ code: code, discount: checkoutDiscountAmount });
+        sessionStorage.setItem('appliedCoupon', payload);
+        localStorage.setItem('appliedCoupon', payload);
+    } catch(e) {}
 
-    if (inputEl) inputEl.value = code;
+    const appliedContainer = document.getElementById('appliedCouponContainer');
+    const tagEl = document.getElementById('appliedCouponTag');
+    if (appliedContainer && tagEl) {
+        tagEl.innerHTML = `<i class="bi bi-tag-fill me-1"></i>${code} (${badgeText}) - ₹${checkoutDiscountAmount.toFixed(2)}`;
+        appliedContainer.classList.remove('d-none');
+    }
+
     if (feedbackEl) {
-        feedbackEl.innerHTML = `<span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Coupon "${code}" applied! <a href="javascript:void(0)" onclick="removeCouponCode()" class="text-danger small ms-1 text-decoration-none">[Remove]</a></span>`;
+        feedbackEl.className = 'text-success small mt-1';
+        feedbackEl.textContent = `Coupon ${code} applied successfully!`;
     }
 
     updateCheckoutTotals();
 }
-window.applyCouponCode = applyCouponCode;
 
 function removeCouponCode() {
-    activeCouponCode = null;
     checkoutDiscountAmount = 0;
-    localStorage.removeItem('activeCoupon');
-    const inputEl = document.getElementById('couponCodeInput');
+    activeCouponCode = null;
+    try {
+        sessionStorage.removeItem('appliedCoupon');
+        localStorage.removeItem('appliedCoupon');
+    } catch (e) {}
+
+    const appliedContainer = document.getElementById('appliedCouponContainer');
+    if (appliedContainer) appliedContainer.classList.add('d-none');
+
     const feedbackEl = document.getElementById('couponFeedback');
+    if (feedbackEl) {
+        feedbackEl.className = 'text-muted small mt-1';
+        feedbackEl.textContent = 'Coupon removed.';
+    }
+
+    const inputEl = document.getElementById('couponCodeInput');
     if (inputEl) inputEl.value = '';
-    if (feedbackEl) feedbackEl.innerHTML = '<span class="text-muted small">Coupon removed.</span>';
+
     updateCheckoutTotals();
 }
-window.removeCouponCode = removeCouponCode;
 
 function updateCheckoutTotals() {
-    const fmt = v => `₹${v.toFixed(2)}`;
+    const totalBeforeDiscount = checkoutCartSubtotal + checkoutTaxAmount;
+    checkoutCartTotal = Math.max(1.0, totalBeforeDiscount - checkoutDiscountAmount);
+
     const subEl = document.getElementById('co_subtotal');
-    const totEl = document.getElementById('co_total');
-    const discRow = document.getElementById('couponDiscountRow');
-    const discAmtEl = document.getElementById('co_discount');
-    const discBadgeEl = document.getElementById('appliedCouponBadge');
+    if (subEl) subEl.textContent = `₹${checkoutCartSubtotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-    if (subEl) subEl.textContent = fmt(checkoutCartSubtotal);
+    const taxEl = document.getElementById('co_tax');
+    if (taxEl) taxEl.textContent = `₹${checkoutTaxAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-    if (checkoutDiscountAmount > 0 && activeCouponCode) {
+    const discRow = document.getElementById('co_discountRow');
+    const discEl = document.getElementById('co_discount');
+    if (checkoutDiscountAmount > 0) {
         if (discRow) discRow.classList.remove('d-none');
-        if (discAmtEl) discAmtEl.textContent = `-${fmt(checkoutDiscountAmount)}`;
-        if (discBadgeEl) discBadgeEl.textContent = activeCouponCode;
+        if (discEl) discEl.textContent = `-₹${checkoutDiscountAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     } else {
         if (discRow) discRow.classList.add('d-none');
     }
 
-    checkoutCartTotal = Math.max(0, checkoutCartSubtotal - checkoutDiscountAmount);
-    if (totEl) totEl.textContent = fmt(checkoutCartTotal);
+    const totEl = document.getElementById('co_total');
+    if (totEl) totEl.textContent = `₹${checkoutCartTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
     handlePaymentMethodChange();
 }
 
-// ─── Unified Checkout Handler ────────────────────────────────────────────────
+// ─── Payment method toggling & dynamic button ─────────────────────────────────
+function handlePaymentMethodChange() {
+    const selectedPm = document.querySelector('input[name="paymentMethod"]:checked');
+    const pm = selectedPm ? selectedPm.value : 'Razorpay';
+
+    const btn = document.getElementById('btnPlaceOrder');
+    if (!btn) return;
+
+    const formattedAmount = `₹${checkoutCartTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+    if (pm === 'Razorpay' || pm === 'Credit Card') {
+        btn.innerHTML = `<i class="bi bi-shield-lock-fill me-2"></i>Pay ${formattedAmount} Securely with Razorpay`;
+        btn.className = 'btn btn-primary w-100 py-3 fw-bold shadow-sm';
+    } else if (pm === 'Cash on Delivery') {
+        btn.innerHTML = `<i class="bi bi-cash-stack me-2"></i>Place Cash on Delivery Order (${formattedAmount})`;
+        btn.className = 'btn btn-success w-100 py-3 fw-bold shadow-sm';
+    } else if (pm === 'PayU Sandbox') {
+        btn.innerHTML = `<i class="bi bi-box-arrow-up-right me-2"></i>Pay ${formattedAmount} via PayU Sandbox`;
+        btn.className = 'btn btn-info text-white w-100 py-3 fw-bold shadow-sm';
+    } else {
+        btn.innerHTML = `<i class="bi bi-lock-fill me-2"></i>Proceed to Pay ${formattedAmount}`;
+        btn.className = 'btn btn-primary w-100 py-3 fw-bold shadow-sm';
+    }
+}
+
+// ─── Master Unified Checkout Controller ───────────────────────────────────────
 async function handleUnifiedCheckout() {
     const form = document.getElementById('checkoutForm');
     if (form && !form.checkValidity()) { 
@@ -238,126 +250,181 @@ async function handleUnifiedCheckout() {
     }
 
     const selectedPm = document.querySelector('input[name="paymentMethod"]:checked');
-    const paymentMethod = selectedPm ? selectedPm.value : 'Credit Card';
+    const paymentMethod = selectedPm ? selectedPm.value : 'Razorpay';
 
     const btn = document.getElementById('btnPlaceOrder');
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing Payment...';
     }
 
-    // If PayU Sandbox Gateway was explicitly chosen, use PayU redirect flow
-    if (paymentMethod === 'PayU Sandbox') {
+    if (paymentMethod === 'Cash on Delivery') {
+        await handleCodCheckout(btn);
+    } else if (paymentMethod === 'PayU Sandbox') {
         await handlePayUSandboxFlow(btn);
-        return;
+    } else {
+        // Razorpay Standard Checkout
+        await handleRazorpayCheckout(btn);
     }
-
-    // If Credit Card, validate card inputs
-    if (paymentMethod === 'Credit Card') {
-        const cardNum = document.getElementById('card_number')?.value?.trim();
-        const cardExp = document.getElementById('card_expiry')?.value?.trim();
-        const cardCvv = document.getElementById('card_cvv')?.value?.trim();
-
-        if (!cardNum || cardNum.replace(/\s/g, '').length < 12) {
-            alert('Please enter a valid card number (or click "Fill Demo Card").');
-            if (btn) {
-                btn.disabled = false;
-                handlePaymentMethodChange();
-            }
-            return;
-        }
-        if (!cardExp || !cardExp.includes('/')) {
-            alert('Please enter a valid expiry date (MM/YY).');
-            if (btn) {
-                btn.disabled = false;
-                handlePaymentMethodChange();
-            }
-            return;
-        }
-        if (!cardCvv || cardCvv.length < 3) {
-            alert('Please enter a valid 3-digit CVV.');
-            if (btn) {
-                btn.disabled = false;
-                handlePaymentMethodChange();
-            }
-            return;
-        }
-    }
-
-    // Direct Instant Payment (Credit Card / UPI / COD)
-    await handleDirectPayment(paymentMethod, btn);
 }
 
-// ─── Direct Payment Execution ────────────────────────────────────────────────
-async function handleDirectPayment(paymentMethod, btn) {
+// ─── Razorpay Integration Flow ────────────────────────────────────────────────
+async function handleRazorpayCheckout(btn) {
     const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
     const token  = typeof getToken === 'function'
         ? getToken()
         : (localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken'));
 
-    const isCod = paymentMethod === 'Cash on Delivery';
-
-    // Show stylish payment overlay
-    showProcessingOverlay(paymentMethod, checkoutCartTotal);
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Initiating Secure Razorpay Session...';
+    }
 
     const payload = {
         phone:            document.getElementById('co_phone')?.value   || '',
         shipping_address: document.getElementById('co_address')?.value || '',
-        payment_method:   paymentMethod,
-        discount:         checkoutDiscountAmount,
         coupon_code:      activeCouponCode || '',
-        items: cart.map(item => ({
-            item_type: item.item_type || 'Frame',
-            item_id:   item.item_id  || item.id,
-            quantity:  item.quantity || 1
+        items: (window.cart || []).map(item => ({
+            item_type: item.item_type || item.product_type || 'Frame',
+            item_id:   item.item_id  || item.product_id || item.id,
+            quantity:  parseInt(item.quantity || 1, 10)
         }))
     };
 
+    let orderData = null;
     try {
-        const res  = await fetch(`${apiUrl}/orders/checkout`, {
-            method:  'POST',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${token}` 
+        const res = await fetch(`${apiUrl}/payment/razorpay/create-order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
-            body:    JSON.stringify(payload)
+            body: JSON.stringify(payload)
         });
 
-        const data = await res.json();
+        orderData = await res.json();
 
-        if (res.ok) {
-            // Clear cart from all stores
-            if (typeof cart !== 'undefined') {
-                cart.length = 0;
-            }
-            localStorage.setItem('visionEdgeCart', JSON.stringify([]));
-            localStorage.setItem('cart', JSON.stringify([]));
-            if (typeof updateCartBadge === 'function') updateCartBadge();
-
-            // Brief pause for visual confirmation then redirect
-            setTimeout(() => {
-                const totalAmt = data.total_amount || checkoutCartTotal || '';
-                const txnid = data.transaction_id || `VE-${Date.now().toString(36).toUpperCase()}`;
-                const inv = data.invoice_number || '';
-                const ord = data.order_id || '';
-                const codParam = isCod ? '&cod=1' : '';
-
-                window.location.href = `payment-success.html?order=${ord}&invoice=${inv}&amount=${totalAmt}&txnid=${txnid}&method=${encodeURIComponent(paymentMethod)}${codParam}`;
-            }, 900);
-
-        } else {
-            removeProcessingOverlay();
+        if (!res.ok) {
             if (res.status === 401) {
                 alert('Session expired. Please log in again.');
                 window.location.href = 'login.html?redirect=checkout.html';
                 return;
             }
-            throw new Error(data.message || 'Payment failed. Please try again.');
+            throw new Error(orderData.message || 'Failed to initiate Razorpay order');
+        }
+    } catch (err) {
+        alert(`Payment Initiation Error: ${err.message}`);
+        if (btn) {
+            btn.disabled = false;
+            handlePaymentMethodChange();
+        }
+        return;
+    }
+
+    // Ensure Razorpay SDK is loaded
+    if (typeof Razorpay === 'undefined') {
+        try {
+            await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+        } catch (scriptErr) {
+            alert('Could not load Razorpay checkout SDK. Please check your internet connection.');
+            if (btn) {
+                btn.disabled = false;
+                handlePaymentMethodChange();
+            }
+            return;
+        }
+    }
+
+    // Configure Razorpay Standard Options
+    const options = {
+        key: orderData.key_id,
+        amount: orderData.amount, // in paise
+        currency: orderData.currency || 'INR',
+        name: 'VisionEdge Opticals',
+        description: `Order #${orderData.order_number}`,
+        order_id: orderData.razorpay_order_id,
+        prefill: {
+            name: orderData.customer?.name || '',
+            email: orderData.customer?.email || '',
+            contact: orderData.customer?.phone || ''
+        },
+        theme: {
+            color: '#6c63ff'
+        },
+        handler: async function (response) {
+            // response.razorpay_payment_id
+            // response.razorpay_order_id
+            // response.razorpay_signature
+            await verifyAndCompleteRazorpayPayment(response, orderData, btn);
+        },
+        modal: {
+            ondismiss: function () {
+                // Customer closed Razorpay popup without paying
+                // Do NOT clear cart! Allow retry anytime.
+                if (btn) {
+                    btn.disabled = false;
+                    handlePaymentMethodChange();
+                }
+            }
+        }
+    };
+
+    const rzp = new Razorpay(options);
+
+    rzp.on('payment.failed', function (resp) {
+        const errorDesc = resp.error?.description || 'Payment was declined or failed.';
+        const failedPayId = resp.error?.metadata?.payment_id || '';
+        window.location.href = `payment-failed.html?order=${orderData.order_id}&txnid=${failedPayId}&reason=${encodeURIComponent(errorDesc)}`;
+    });
+
+    rzp.open();
+}
+
+// ─── Verify Payment on Server ─────────────────────────────────────────────────
+async function verifyAndCompleteRazorpayPayment(rzpResponse, orderData, btn) {
+    const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+    const token  = typeof getToken === 'function'
+        ? getToken()
+        : (localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken'));
+
+    showProcessingOverlay('Razorpay', orderData.total_amount);
+
+    try {
+        const verifyRes = await fetch(`${apiUrl}/payment/razorpay/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                razorpay_order_id:   rzpResponse.razorpay_order_id,
+                razorpay_payment_id: rzpResponse.razorpay_payment_id,
+                razorpay_signature:  rzpResponse.razorpay_signature,
+                order_id:            orderData.order_id
+            })
+        });
+
+        const verifyData = await verifyRes.json();
+
+        if (verifyRes.ok && verifyData.status === 'success') {
+            // Clear cart completely upon confirmed payment
+            clearCustomerCart();
+
+            // Redirect to verified payment success page
+            setTimeout(() => {
+                const ord = verifyData.order_id || orderData.order_id;
+                const inv = verifyData.invoice_number || orderData.invoice_number || '';
+                const amt = verifyData.amount || orderData.total_amount;
+                const txn = verifyData.transaction_id || rzpResponse.razorpay_payment_id;
+
+                window.location.href = `payment-success.html?order=${ord}&invoice=${inv}&amount=${amt}&txnid=${txn}&method=Razorpay`;
+            }, 800);
+        } else {
+            removeProcessingOverlay();
+            const reason = verifyData.message || 'Signature verification failed';
+            window.location.href = `payment-failed.html?order=${orderData.order_id}&txnid=${rzpResponse.razorpay_payment_id}&reason=${encodeURIComponent(reason)}`;
         }
     } catch (err) {
         removeProcessingOverlay();
-        console.error('Payment error:', err);
-        alert(`Payment Error: ${err.message}`);
+        alert(`Verification Network Error: ${err.message}. Please check Payment History.`);
         if (btn) {
             btn.disabled = false;
             handlePaymentMethodChange();
@@ -365,22 +432,93 @@ async function handleDirectPayment(paymentMethod, btn) {
     }
 }
 
-// ─── PayU Sandbox Flow ───────────────────────────────────────────────────────
+// ─── Cash on Delivery Execution ───────────────────────────────────────────────
+async function handleCodCheckout(btn) {
+    const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+    const token  = typeof getToken === 'function'
+        ? getToken()
+        : (localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken'));
+
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Confirming COD Order...';
+    }
+
+    showProcessingOverlay('Cash on Delivery', checkoutCartTotal);
+
+    const payload = {
+        phone:            document.getElementById('co_phone')?.value   || '',
+        shipping_address: document.getElementById('co_address')?.value || '',
+        payment_method:   'Cash on Delivery',
+        discount:         checkoutDiscountAmount,
+        coupon_code:      activeCouponCode || '',
+        items: (window.cart || []).map(item => ({
+            item_type: item.item_type || item.product_type || 'Frame',
+            item_id:   item.item_id  || item.product_id || item.id,
+            quantity:  parseInt(item.quantity || 1, 10)
+        }))
+    };
+
+    try {
+        const res = await fetch(`${apiUrl}/orders/checkout`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            clearCustomerCart();
+
+            setTimeout(() => {
+                const totalAmt = data.total_amount || checkoutCartTotal || '';
+                const txnid = data.transaction_id || `VE-COD-${Date.now().toString(36).toUpperCase()}`;
+                const inv = data.invoice_number || '';
+                const ord = data.order_id || '';
+
+                window.location.href = `payment-success.html?order=${ord}&invoice=${inv}&amount=${totalAmt}&txnid=${txnid}&method=Cash%20on%20Delivery&cod=1`;
+            }, 800);
+        } else {
+            removeProcessingOverlay();
+            if (btn) {
+                btn.disabled = false;
+                handlePaymentMethodChange();
+            }
+            alert(data.message || 'Could not place Cash on Delivery order.');
+        }
+    } catch (err) {
+        removeProcessingOverlay();
+        if (btn) {
+            btn.disabled = false;
+            handlePaymentMethodChange();
+        }
+        alert('Network error while placing order. Please try again.');
+    }
+}
+
+// ─── PayU Sandbox Flow (Safe Cart Preservation) ──────────────────────────────
 async function handlePayUSandboxFlow(btn) {
     const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
     const token  = typeof getToken === 'function'
         ? getToken()
         : (localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken'));
 
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Connecting to PayU...';
+    }
+
     const payload = {
         phone:            document.getElementById('co_phone')?.value   || '',
         shipping_address: document.getElementById('co_address')?.value || '',
         discount:         checkoutDiscountAmount,
         coupon_code:      activeCouponCode || '',
-        items: cart.map(item => ({
-            item_type: item.item_type || 'Frame',
-            item_id:   item.item_id  || item.id,
-            quantity:  item.quantity || 1
+        items: (window.cart || []).map(item => ({
+            item_type: item.item_type || item.product_type || 'Frame',
+            item_id:   item.item_id  || item.product_id || item.id,
+            quantity:  parseInt(item.quantity || 1, 10)
         }))
     };
 
@@ -402,79 +540,98 @@ async function handlePayUSandboxFlow(btn) {
             throw new Error(data.message || 'Failed to initiate PayU payment');
         }
 
-        // Clear cart before redirecting
-        if (typeof cart !== 'undefined') cart.length = 0;
-        localStorage.setItem('visionEdgeCart', JSON.stringify([]));
-        localStorage.setItem('cart', JSON.stringify([]));
-        if (typeof updateCartBadge === 'function') updateCartBadge();
-
-        submitPayUForm(data);
+        // NOTE: We intentionally DO NOT clear cart here so customer doesn't lose items if PayU cancels!
+        submitPayUForm(data.payu_url, data.params);
 
     } catch (err) {
-        console.error('PayU initiation error:', err);
-        alert(`PayU initiation failed: ${err.message}`);
         if (btn) {
             btn.disabled = false;
             handlePaymentMethodChange();
         }
+        alert(`PayU Error: ${err.message}`);
     }
 }
 
-function submitPayUForm(params) {
-    const existing = document.getElementById('__payuForm');
-    if (existing) existing.remove();
-
+function submitPayUForm(payuUrl, params) {
     const form = document.createElement('form');
-    form.id     = '__payuForm';
     form.method = 'POST';
-    form.action = params.payu_url;
+    form.action = payuUrl;
+    form.style.display = 'none';
 
-    const fields = [
-        'key', 'txnid', 'amount', 'productinfo', 'firstname',
-        'email', 'phone', 'surl', 'furl', 'hash',
-        'udf1', 'udf2', 'service_provider'
-    ];
-
-    fields.forEach(name => {
+    for (const [key, value] of Object.entries(params)) {
         const input = document.createElement('input');
         input.type  = 'hidden';
-        input.name  = name;
-        input.value = params[name] || '';
+        input.name  = key;
+        input.value = value;
         form.appendChild(input);
-    });
+    }
 
     document.body.appendChild(form);
-    showProcessingOverlay('PayU Gateway', params.total_amount);
-    setTimeout(() => form.submit(), 800);
+    form.submit();
 }
 
-// ─── Processing Overlay ──────────────────────────────────────────────────────
-function showProcessingOverlay(method, amount) {
+// ─── Helpers: Script loader, Cart clearing, Overlays ──────────────────────────
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) return resolve();
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+    });
+}
+
+function clearCustomerCart() {
+    if (typeof cart !== 'undefined' && Array.isArray(cart)) {
+        cart.length = 0;
+    }
+    window.cart = [];
+    try {
+        localStorage.setItem('visionEdgeCart', JSON.stringify([]));
+        localStorage.setItem('cart', JSON.stringify([]));
+        sessionStorage.removeItem('appliedCoupon');
+        localStorage.removeItem('appliedCoupon');
+    } catch (e) {}
+    if (typeof updateCartBadge === 'function') updateCartBadge();
+}
+
+function showProcessingOverlay(method, total) {
     removeProcessingOverlay();
-    const overlay = document.createElement('div');
-    overlay.id = '__payOverlay';
-    overlay.style.cssText = `
-        position:fixed;inset:0;background:rgba(10,14,30,0.94);
-        display:flex;flex-direction:column;align-items:center;justify-content:center;
-        z-index:99999;color:#fff;font-family:'Poppins',sans-serif;
+    const div = document.createElement('div');
+    div.id = 'directPaymentOverlay';
+    div.style.cssText = `
+        position: fixed; inset: 0; z-index: 99999;
+        background: rgba(10, 15, 30, 0.88);
+        backdrop-filter: blur(8px);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        color: #fff; font-family: inherit;
     `;
-    overlay.innerHTML = `
-        <div style="text-align:center;padding:2rem;max-width:440px;">
-            <div style="width:70px;height:70px;border:4px solid rgba(255,255,255,0.15);
-                border-top-color:#6c63ff;border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 1.5rem;">
+    div.innerHTML = `
+        <div class="text-center p-4 rounded-4" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); max-width: 420px; width: 90%;">
+            <div class="spinner-border text-primary mb-3" style="width: 3.5rem; height: 3.5rem; border-width: 0.3em;" role="status"></div>
+            <h5 class="fw-bold mb-1">Processing Payment</h5>
+            <p class="text-white-50 small mb-3">Connecting securely with ${method}...</p>
+            <div class="p-3 rounded-3 mb-3 text-start" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="d-flex justify-content-between small text-white-50 mb-1">
+                    <span>Amount</span>
+                    <strong class="text-white">₹${parseFloat(total || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</strong>
+                </div>
+                <div class="d-flex justify-content-between small text-white-50">
+                    <span>Security</span>
+                    <span class="text-success"><i class="bi bi-shield-check me-1"></i>256-Bit SSL Encrypted</span>
+                </div>
             </div>
-            <h3 style="font-size:1.35rem;font-weight:700;margin-bottom:.5rem;">Securing Transaction</h3>
-            <p style="opacity:.8;font-size:.9rem;line-height:1.5;">Authorizing ${method} payment & generating your official invoice...</p>
-            ${amount ? `<div style="margin-top:1rem;font-size:1.25rem;font-weight:700;color:#a78bfa;">Amount: ₹${parseFloat(amount).toFixed(2)}</div>` : ''}
-            <div style="margin-top:1.5rem;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:20px;font-size:.78rem;color:#4ade80;">
-                <i class="bi bi-shield-check"></i> 256-bit Bank Grade Encryption
-            </div>
+            <small class="text-white-50" style="font-size: 0.75rem;">
+                <i class="bi bi-info-circle me-1"></i>Please do not refresh or close this window.
+            </small>
         </div>
-        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-    document.body.appendChild(overlay);
+    `;
+    document.body.appendChild(div);
 }
 
 function removeProcessingOverlay() {
-    const el = document.getElementById('__payOverlay');
+    const el = document.getElementById('directPaymentOverlay');
     if (el) el.remove();
 }

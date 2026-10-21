@@ -16,7 +16,7 @@ backend/logs/
 *.sqlite3
 
 # Environment credentials
-# backend/.env
+.env
 
 # Node
 node_modules/

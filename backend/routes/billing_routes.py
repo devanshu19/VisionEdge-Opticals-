@@ -161,17 +161,28 @@ def get_all_payments():
         if b and b.order_rel and b.order_rel.customer:
             c = b.order_rel.customer
             customer_name = f"{c.first_name} {c.last_name}"
+        elif p.order_rel and p.order_rel.customer:
+            c = p.order_rel.customer
+            customer_name = f"{c.first_name} {c.last_name}"
             
         result.append({
             "id": p.id,
             "billing_id": p.billing_id,
+            "order_id": p.order_id,
             "invoice_number": invoice_no,
             "customer_name": customer_name,
-            "amount": p.amount,
+            "amount": float(p.amount) if p.amount is not None else 0.0,
             "payment_method": p.payment_method,
-            "transaction_id": p.transaction_id,
-            "payment_date": str(p.payment_date),
-            "status": b.payment_status if b else "Paid"
+            "gateway": p.gateway or "Razorpay",
+            "gateway_payment_id": p.gateway_payment_id,
+            "gateway_order_id": p.gateway_order_id,
+            "gateway_status": p.gateway_status or (b.payment_status if b else "Paid"),
+            "refund_status": p.refund_status,
+            "refunded_amount": float(p.refunded_amount or 0.0),
+            "refund_id": p.refund_id,
+            "transaction_id": p.gateway_payment_id or p.transaction_id,
+            "payment_date": p.payment_date.isoformat() if p.payment_date else None,
+            "status": b.payment_status if b else (p.gateway_status or "Paid")
         })
     return jsonify(result), 200
 

@@ -146,6 +146,67 @@
             </div>
 
             <div id="footer-container"></div>
+        
+            <!-- Process Refund Modal -->
+            <div class="modal fade" id="refundModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-light">
+                            <h5 class="modal-title fw-bold text-danger">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>Process Razorpay Refund
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="refundForm" onsubmit="handleRefundSubmit(event)">
+                            <div class="modal-body">
+                                <input type="hidden" id="refundPaymentId">
+                                <div class="p-3 bg-light rounded-3 mb-3 border">
+                                    <div class="d-flex justify-content-between small text-muted mb-1">
+                                        <span>Gateway Payment ID:</span>
+                                        <strong class="text-dark font-monospace" id="refundGatewayPayId">-</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between small text-muted mb-1">
+                                        <span>Original Amount:</span>
+                                        <strong class="text-dark" id="refundOriginalAmount">₹0.00</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between small text-muted">
+                                        <span>Max Refundable:</span>
+                                        <strong class="text-success" id="refundMaxAmount">₹0.00</strong>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Refund Type</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="refundType" id="refundFull" value="full" checked onchange="toggleRefundAmountInput()">
+                                            <label class="form-check-label" for="refundFull">Full Refund</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="refundType" id="refundPartial" value="partial" onchange="toggleRefundAmountInput()">
+                                            <label class="form-check-label" for="refundPartial">Partial Refund</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3 d-none" id="partialAmountGroup">
+                                    <label class="form-label fw-medium">Custom Refund Amount (₹) *</label>
+                                    <input type="number" step="0.01" min="1" class="form-control" id="refundCustomAmount" placeholder="Enter amount to refund">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">Reason for Refund *</label>
+                                    <textarea class="form-control" id="refundReason" rows="2" placeholder="e.g. Customer cancelled order / defective product reported" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger" id="btnConfirmRefund">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>Execute Razorpay Refund
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 

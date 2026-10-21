@@ -173,9 +173,9 @@
         </div>
     </div>
 
-    <a href="checkout.html" class="btn-retry">
-        <i class="bi bi-arrow-clockwise me-2"></i>Retry Payment
-    </a>
+    <button type="button" id="btnRetryPayment" class="btn-retry w-100 border-0" onclick="handleRetryPayment()">
+        <i class="bi bi-arrow-clockwise me-2"></i>Retry Payment with Razorpay
+    </button>
     <a href="products.html" class="btn-home">
         <i class="bi bi-house me-2"></i>Back to Store
     </a>
@@ -209,6 +209,103 @@
         p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*5+4).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s`;
         pEl.appendChild(p);
     }
+
+    const orderIdParam = params.get('order') || '';
+
+    async function handleRetryPayment() {
+        if (!orderIdParam) {
+            window.location.href = 'checkout.html';
+            return;
+        }
+
+        const btn = document.getElementById('btnRetryPayment');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Preparing Payment Retry...';
+
+        const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+        const token = localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken');
+
+        if (!token) {
+            window.location.href = 'checkout.html';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${apiUrl}/payment/razorpay/retry`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ order_id: orderIdParam })
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                alert(data.message || 'Retry failed. Redirecting to checkout.');
+                window.location.href = 'checkout.html';
+                return;
+            }
+
+            const options = {
+                key: data.key_id,
+                amount: data.amount,
+                currency: data.currency || 'INR',
+                name: 'VisionEdge Opticals',
+                description: `Retry Order #${data.order_number}`,
+                order_id: data.razorpay_order_id,
+                prefill: {
+                    name: data.customer?.name || '',
+                    email: data.customer?.email || '',
+                    contact: data.customer?.phone || ''
+                },
+                theme: { color: '#6c63ff' },
+                handler: async function (response) {
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Verifying Payment...';
+                    try {
+                        const vRes = await fetch(`${apiUrl}/payment/razorpay/verify`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id:   response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature:  response.razorpay_signature,
+                                order_id:            data.order_id
+                            })
+                        });
+                        const vData = await vRes.json();
+                        if (vRes.ok && vData.status === 'success') {
+                            window.location.href = `payment-success.html?order=${vData.order_id}&invoice=${vData.invoice_number || ''}&amount=${vData.amount}&txnid=${vData.transaction_id}&method=Razorpay`;
+                        } else {
+                            alert(vData.message || 'Verification failed. Please check payment history.');
+                            location.reload();
+                        }
+                    } catch(vErr) {
+                        alert('Verification error. Please check payment history.');
+                        location.reload();
+                    }
+                },
+                modal: {
+                    ondismiss: function () {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Retry Payment with Razorpay';
+                    }
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+
+        } catch (err) {
+            alert('Failed to connect to payment server.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Retry Payment with Razorpay';
+        }
+    }
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>

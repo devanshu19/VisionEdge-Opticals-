@@ -3,7 +3,7 @@
 
 This guide details how to deploy the VisionEdge backend API (Flask + Supabase PostgreSQL architecture) into a production environment.
 
-> **Important**: This backend is built on **Flask**, not Django. Standard Django commands (`manage.py runserver`, `collectstatic`, `wsgi.py`) have been replaced by robust Flask WSGI alternatives.
+> **Important**: This backend is built on **Flask**, not Django. It exposes its existing application factory through `backend/wsgi.py` for WSGI servers.
 
 ---
 
@@ -84,10 +84,14 @@ waitress-serve --port=5000 --call "app:create_app"
 
 ### Option 1: Render.com (Recommended PaaS)
 1. Link your GitHub repository to Render as a **Web Service**.
-2. **Environment**: Python
-3. **Build Command**: `pip install -r requirements.txt`
-4. **Start Command**: `gunicorn -c gunicorn_config.py "app:create_app()"`
-5. **Environment Variables**: Add `DATABASE_URL` (Supabase connection string), `SECRET_KEY`, `JWT_SECRET_KEY`, `DB_SSLMODE=require`, and `DEBUG=False` in Render's Secret Manager.
+2. Set **Root Directory** to `backend`.
+3. Set **Build Command** to `pip install -r requirements.txt`.
+4. Set **Start Command** to `gunicorn --bind 0.0.0.0:$PORT wsgi`.
+5. Set `APP_ENV=production`, `DB_SSLMODE=require`, `PYTHON_VERSION=3.13.1`, and the required secrets listed in `render.yaml` in Render's Environment settings.
+6. Set `FRONTEND_URL` to the deployed Netlify site origin (for example, `https://your-site.netlify.app`). Add any additional trusted HTTPS origins to `CORS_ALLOWED_ORIGINS` as a comma-separated list.
+7. Configure the Razorpay webhook URL as `https://<your-render-service>.onrender.com/api/payment/razorpay/webhook` and use the same webhook secret in Render.
+
+The existing `create_app()` factory is the only Flask application factory. The WSGI adapter does not create or register a second application. Production startup requires PostgreSQL and will fail rather than fall back to SQLite. Confirm the existing Supabase schema is already present before deploying; deployment does not create, migrate, or delete database data.
 
 ### Option 2: Ubuntu VPS (DigitalOcean, AWS EC2, Linode)
 1. Install Python and Nginx:

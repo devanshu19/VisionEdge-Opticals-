@@ -333,9 +333,9 @@
                 <td class="fw-bold text-dark">${amount}</td>
                 <td class="text-center">
                     ${o.payment_status === 'Pending'
-                        ? `<a href="checkout.html" class="btn btn-warning btn-sm rounded-pill px-3 fw-semibold">
+                        ? `<button type="button" class="btn btn-warning btn-sm rounded-pill px-3 fw-semibold" onclick="retryRazorpayPayment(${o.order_id}, '${o.order_number}')">
                                <i class="bi bi-lightning-fill me-1"></i>Pay Now
-                           </a>`
+                           </button>`
                         : `<a href="orders.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                                <i class="bi bi-eye me-1"></i>View
                            </a>`}
@@ -343,6 +343,79 @@
             </tr>`;
         }).join('');
     }
+    </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js">
+    async function retryRazorpayPayment(orderId, orderNum) {
+        const token = localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken');
+        if (!token) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+        try {
+            const res = await fetch(`${apiUrl}/payment/razorpay/retry`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ order_id: orderId })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                alert(data.message || 'Retry failed');
+                return;
+            }
+
+            const options = {
+                key: data.key_id,
+                amount: data.amount,
+                currency: data.currency || 'INR',
+                name: 'VisionEdge Opticals',
+                description: `Payment for Order #${data.order_number}`,
+                order_id: data.razorpay_order_id,
+                prefill: {
+                    name: data.customer?.name || '',
+                    email: data.customer?.email || '',
+                    contact: data.customer?.phone || ''
+                },
+                theme: { color: '#6c63ff' },
+                handler: async function (response) {
+                    try {
+                        const vRes = await fetch(`${apiUrl}/payment/razorpay/verify`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id:   response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature:  response.razorpay_signature,
+                                order_id:            data.order_id
+                            })
+                        });
+                        const vData = await vRes.json();
+                        if (vRes.ok && vData.status === 'success') {
+                            window.location.href = `payment-success.html?order=${vData.order_id}&invoice=${vData.invoice_number || ''}&amount=${vData.amount}&txnid=${vData.transaction_id}&method=Razorpay`;
+                        } else {
+                            alert(vData.message || 'Verification failed');
+                            location.reload();
+                        }
+                    } catch(e) {
+                        alert('Verification error. Please reload page.');
+                        location.reload();
+                    }
+                }
+            };
+            const rzp = new Razorpay(options);
+            rzp.open();
+        } catch(e) {
+            alert('Could not connect to payment server.');
+        }
+    }
+
     </script>
 </body>
 </html>

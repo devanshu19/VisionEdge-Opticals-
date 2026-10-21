@@ -373,17 +373,26 @@ def checkout():
         order.discount = discount_val
         order.total_amount = max(0.0, subtotal + gst_total - discount_val)
         
-        payment_method = data.get('payment_method', 'Credit Card')
-        is_cod = payment_method == 'Cash on Delivery'
-        payment_status = 'Pending' if is_cod else 'Paid'
-        order.status = 'Pending' if is_cod else 'Confirmed'
-        txn_id = f"VE-COD-{uuid.uuid4().hex[:8].upper()}" if is_cod else f"VE-{uuid.uuid4().hex[:10].upper()}"
+        payment_method = data.get('payment_method', 'Cash on Delivery')
+        is_cod = str(payment_method).strip().lower() in ('cash on delivery', 'cod')
+
+        if not is_cod:
+            # Online orders MUST go through verified gateway flow (/api/payment/razorpay/create-order)
+            return jsonify({
+                "message": "Online payments must be processed securely through the Razorpay gateway.",
+                "redirect_to": "/api/payment/razorpay/create-order"
+            }), 400
+
+        # Cash on Delivery flow
+        payment_status = 'Pending'
+        order.status = 'Pending'
+        txn_id = f"VE-COD-{uuid.uuid4().hex[:8].upper()}"
 
         # Initial status history
         history = OrderStatusHistory(
             order_id=order.id,
             status=order.status,
-            notes=f"Order placed online via {payment_method}. TxnID: {txn_id}" + (f" (Coupon Discount: ₹{discount_val:.2f})" if discount_val > 0 else "")
+            notes=f"Order placed online via Cash on Delivery. TxnID: {txn_id}" + (f" (Coupon Discount: ₹{discount_val:.2f})" if discount_val > 0 else "")
         )
         db.session.add(history)
         
@@ -397,20 +406,24 @@ def checkout():
             discount=discount_val,
             gst=gst_total,
             total_amount=order.total_amount,
-            payment_method=payment_method,
-            payment_status=payment_status
+            payment_method='Cash on Delivery',
+            payment_status='Pending'
         )
         db.session.add(billing)
         db.session.flush()
 
-        if payment_status == 'Paid':
-            payment = Payment(
-                billing_id=billing.id,
-                amount=order.total_amount,
-                transaction_id=txn_id,
-                payment_method=payment_method
-            )
-            db.session.add(payment)
+        payment = Payment(
+            billing_id=billing.id,
+            order_id=order.id,
+            amount=order.total_amount,
+            currency='INR',
+            transaction_id=txn_id,
+            payment_method='Cash on Delivery',
+            gateway='COD',
+            gateway_status='pending',
+            signature_verified=False
+        )
+        db.session.add(payment)
         
         db.session.commit()
         return jsonify({

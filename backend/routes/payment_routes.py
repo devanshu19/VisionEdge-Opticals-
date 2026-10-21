@@ -14,8 +14,8 @@ payment_bp = Blueprint('payment', __name__)
 # ---------------------------------------------------------------------------
 # PayU Config  (TEST credentials — replace with live keys via .env)
 # ---------------------------------------------------------------------------
-PAYU_KEY  = os.environ.get('PAYU_KEY',  'gtKFFx')         # test merchant key
-PAYU_SALT = os.environ.get('PAYU_SALT', 'eCwWELxi')       # test salt
+PAYU_KEY  = os.environ.get('PAYU_KEY', '').strip()
+PAYU_SALT = os.environ.get('PAYU_SALT', '').strip()
 PAYU_URL  = os.environ.get('PAYU_URL',  'https://test.payu.in/_payment')
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:8000')
 
@@ -65,6 +65,9 @@ def initiate_payment():
     Creates a pending Order + Billing record and returns the PayU params
     (including the hash) so the frontend can submit the payment form to PayU.
     """
+    if not PAYU_KEY or not PAYU_SALT:
+        return jsonify({"message": "PayU payments are not configured."}), 503
+
     current_user_id = get_jwt_identity()
     user = User.query.get(current_user_id)
     if not user:
@@ -387,6 +390,7 @@ def my_orders():
         pm_display = None
         if b and b.payment_method:
             pm_display = b.payment_method.split('|')[0]
+        p = o.order_payments[-1] if (hasattr(o, 'order_payments') and o.order_payments) else (b.payments[0] if (b and hasattr(b, 'payments') and b.payments) else None)
         result.append({
             "order_id":       o.id,
             "order_number":   o.order_number or o.order_id,
@@ -395,7 +399,12 @@ def my_orders():
             "created_at":     str(o.created_at),
             "invoice_number": b.invoice_number if b else None,
             "payment_status": b.payment_status if b else 'Pending',
-            "payment_method": pm_display,
+            "payment_method": p.payment_method if (p and p.payment_method) else (pm_display or 'Razorpay'),
+            "transaction_id": (p.gateway_payment_id or p.transaction_id) if p else None,
+            "gateway":        p.gateway if p else "Razorpay",
+            "gateway_status": p.gateway_status if p else (b.payment_status if b else 'Pending'),
+            "refund_status":  p.refund_status if p else None,
+            "refunded_amount": float(p.refunded_amount or 0.0) if p else 0.0,
             "billing_id":     b.id if b else None,
         })
 
@@ -431,6 +440,7 @@ def my_payment_history():
     result = []
     for b in billings:
         o = b.order_rel or Order.query.get(b.order_id)
+        p = b.payments[0] if (hasattr(b, 'payments') and b.payments) else Payment.query.filter_by(order_id=b.order_id).order_by(Payment.id.desc()).first()
         result.append({
             "billing_id":     b.id,
             "invoice_number": b.invoice_number,
@@ -440,8 +450,13 @@ def my_payment_history():
             "gst":            float(b.gst or 0),
             "discount":       float(b.discount or 0),
             "total_amount":   float(b.total_amount or 0),
-            "payment_method": (b.payment_method or '').split('|')[0],
+            "payment_method": (p.payment_method if (p and p.payment_method) else (b.payment_method or '')).split('|')[0],
             "payment_status": b.payment_status,
+            "transaction_id": (p.gateway_payment_id or p.transaction_id) if p else None,
+            "gateway":        p.gateway if p else "Razorpay",
+            "gateway_status": p.gateway_status if p else b.payment_status,
+            "refund_status":  p.refund_status if p else None,
+            "refunded_amount": float(p.refunded_amount or 0.0) if p else 0.0,
             "created_at":     str(b.created_at),
             "has_pdf":        bool(b.invoice_pdf),
         })

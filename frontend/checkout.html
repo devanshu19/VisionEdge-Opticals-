@@ -67,75 +67,34 @@
                 </div>
                 
                 <div class="checkout-card p-4">
-                    <h4 class="fw-bold mb-4"><i class="bi bi-credit-card-fill text-primary me-2"></i>Payment Method</h4>
+                    <h4 class="fw-bold mb-4"><i class="bi bi-shield-check text-primary me-2"></i>Select Payment Method</h4>
                     <div class="d-flex flex-column gap-3">
-                        <!-- Credit / Debit Card -->
-                        <div class="border rounded p-3">
-                            <label class="form-check d-flex align-items-center mb-0" style="cursor:pointer">
-                                <input class="form-check-input me-3 ms-1" type="radio" name="paymentMethod" value="Credit Card" checked onchange="handlePaymentMethodChange()">
-                                <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-credit-card me-1 text-primary"></i> Credit / Debit Card (Instant & Secure)</h6>
-                                    <small class="text-muted">Pay securely with fast authorization & instant invoice.</small>
-                                </div>
-                            </label>
-
-                            <!-- Inline Card Details Card -->
-                            <div id="cardDetailsCard" class="p-3 bg-light rounded border border-primary border-opacity-25 mt-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="small fw-bold text-primary"><i class="bi bi-shield-check me-1"></i> Card Information</span>
-                                    <button type="button" class="btn btn-outline-primary py-0 px-2 rounded-pill" onclick="fillDemoCard()" style="font-size:0.75rem;">
-                                        <i class="bi bi-magic me-1"></i>Fill Demo Card
-                                    </button>
-                                </div>
-                                <div class="row g-2 small">
-                                    <div class="col-12">
-                                        <label class="form-label text-muted mb-1" style="font-size:0.8rem;">Card Number</label>
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text bg-white"><i class="bi bi-credit-card"></i></span>
-                                            <input type="text" class="form-control" id="card_number" placeholder="4532 8901 2345 6789" maxlength="19" value="4532 8901 2345 6789">
+                        <!-- Razorpay Secure Payment (Primary) -->
+                        <div class="border rounded p-3 border-primary border-opacity-50 bg-light bg-opacity-25 shadow-sm">
+                            <label class="form-check d-flex align-items-start mb-0" style="cursor:pointer">
+                                <input class="form-check-input me-3 ms-1 mt-1" type="radio" name="paymentMethod" value="Razorpay" checked onchange="handlePaymentMethodChange()">
+                                <div class="w-100">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                        <h6 class="mb-0 fw-bold text-dark">
+                                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Razorpay Secure Checkout
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle ms-2" style="font-size:0.75rem;">Instant & Verified</span>
+                                        </h6>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="badge bg-white text-dark border" style="font-size:0.7rem;">UPI</span>
+                                            <span class="badge bg-white text-dark border" style="font-size:0.7rem;">Cards</span>
+                                            <span class="badge bg-white text-dark border" style="font-size:0.7rem;">NetBanking</span>
+                                            <span class="badge bg-white text-dark border" style="font-size:0.7rem;">Wallets</span>
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <label class="form-label text-muted mb-1" style="font-size:0.8rem;">Expiry Date</label>
-                                        <input type="text" class="form-control form-control-sm" id="card_expiry" placeholder="MM/YY" maxlength="5" value="12/28">
+                                    <p class="text-muted small mb-2 mt-1">
+                                        Pay securely via Google Pay, PhonePe, Paytm, Any UPI, Credit/Debit Card (Visa, MasterCard, RuPay), NetBanking, or Cred.
+                                    </p>
+                                    <div class="p-2 rounded bg-white border border-light-subtle d-flex align-items-center gap-2 small text-muted">
+                                        <i class="bi bi-shield-lock-fill text-primary fs-5"></i>
+                                        <span>256-bit bank-grade encryption powered by <strong>Razorpay Standard Checkout</strong>. Your card details are never saved on our servers.</span>
                                     </div>
-                                    <div class="col-6">
-                                        <label class="form-label text-muted mb-1" style="font-size:0.8rem;">CVV / CVC</label>
-                                        <input type="password" class="form-control form-control-sm" id="card_cvv" placeholder="•••" maxlength="4" value="888">
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label text-muted mb-1" style="font-size:0.8rem;">Cardholder Name</label>
-                                        <input type="text" class="form-control form-control-sm" id="card_name" placeholder="Name as on card">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- UPI / Direct Bank Transfer -->
-                        <div class="border rounded p-3">
-                            <label class="form-check d-flex align-items-center mb-0" style="cursor:pointer">
-                                <input class="form-check-input me-3 ms-1" type="radio" name="paymentMethod" id="pm_bank" value="UPI / Bank Transfer" onchange="handlePaymentMethodChange()">
-                                <div class="w-100">
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-bank text-primary me-1"></i> Direct Bank Transfer & UPI / QR</h6>
-                                    <small class="text-muted">Instant transfer via UPI ID, QR Code, or store account.</small>
                                 </div>
                             </label>
-
-                            <!-- Store Bank Account Details Card -->
-                            <div id="bankAccountCard" class="p-3 bg-light rounded border border-primary border-opacity-25 mt-3 d-none">
-                                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-shield-check me-1"></i> Store Bank Account & UPI Details</h6>
-                                <div class="row g-2 small text-dark">
-                                    <div class="col-sm-6"><strong>Bank Name:</strong> HDFC Bank</div>
-                                    <div class="col-sm-6"><strong>Account Holder:</strong> VisionEdge Opticals Pvt Ltd</div>
-                                    <div class="col-sm-6"><strong>Account Number:</strong> 50200098765432</div>
-                                    <div class="col-sm-6"><strong>IFSC Code:</strong> HDFC0001234</div>
-                                    <div class="col-sm-6"><strong>Branch:</strong> Tech Park Main Branch</div>
-                                    <div class="col-sm-6"><strong>UPI ID:</strong> <span class="badge bg-primary text-white">visionedge@hdfcbank</span></div>
-                                </div>
-                                <div class="mt-3 pt-2 border-top text-muted small">
-                                    <i class="bi bi-info-circle me-1"></i> Please mention your Phone Number in the transaction reference note.
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Cash on Delivery -->
@@ -143,19 +102,19 @@
                             <label class="form-check d-flex align-items-center mb-0" style="cursor:pointer">
                                 <input class="form-check-input me-3 ms-1" type="radio" name="paymentMethod" value="Cash on Delivery" onchange="handlePaymentMethodChange()">
                                 <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-cash me-1 text-primary"></i> Cash on Delivery</h6>
-                                    <small class="text-muted">Pay securely at your doorstep when you receive the order.</small>
+                                    <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-cash-stack text-success me-2"></i>Cash on Delivery (COD)</h6>
+                                    <small class="text-muted">Pay at doorstep with cash or delivery agent QR upon receiving your order.</small>
                                 </div>
                             </label>
                         </div>
 
-                        <!-- External PayU Sandbox Gateway -->
+                        <!-- Optional PayU Sandbox Fallback -->
                         <div class="border rounded p-3">
                             <label class="form-check d-flex align-items-center mb-0" style="cursor:pointer">
                                 <input class="form-check-input me-3 ms-1" type="radio" name="paymentMethod" value="PayU Sandbox" onchange="handlePaymentMethodChange()">
                                 <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-box-arrow-up-right me-1 text-primary"></i> PayU Payment Gateway (Sandbox Redirect)</h6>
-                                    <small class="text-muted">Redirect to PayU hosted checkout page.</small>
+                                    <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-box-arrow-up-right text-info me-2"></i>PayU Payment Gateway (Sandbox Alternate)</h6>
+                                    <small class="text-muted">Redirect to PayU sandbox hosted checkout.</small>
                                 </div>
                             </label>
                         </div>
@@ -204,7 +163,7 @@
                     <!-- PayU Pay Button -->
                     <button class="btn w-100 py-3 rounded-3 fw-bold shadow" id="btnPlaceOrder"
                         style="background:linear-gradient(135deg,#6c63ff,#3b5bdb);color:#fff;border:none;font-size:1rem;letter-spacing:.5px;">
-                        <i class="bi bi-lock-fill me-2"></i>Pay Securely with PayU
+                        <i class="bi bi-lock-fill me-2"></i>Pay Securely with Razorpay
                     </button>
 
                     <!-- Security badges -->
@@ -220,7 +179,7 @@
                         </span>
                     </div>
                     <p class="text-center mt-2 mb-0" style="font-size:.7rem;color:#bbb;">
-                        Powered by <strong>PayU India</strong>
+                        Powered by <strong>Razorpay</strong> & RBI Compliant
                     </p>
                 </div>
             </div>
@@ -236,6 +195,7 @@
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/cart.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="assets/js/checkout.js"></script>
 </body>
 </html>

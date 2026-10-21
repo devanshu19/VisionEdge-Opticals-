@@ -513,12 +513,98 @@ class Billing(db.Model):
         }
 
 class Payment(db.Model):
+    __tablename__ = 'payment'
+
     id = db.Column(db.Integer, primary_key=True)
-    billing_id = db.Column(db.Integer, db.ForeignKey('billing.id'), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
+    billing_id = db.Column(db.Integer, db.ForeignKey('billing.id'), nullable=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=True, index=True)
+
+    amount = db.Column(db.Float, nullable=False, default=0.0)
+    currency = db.Column(db.String(10), default='INR')
     transaction_id = db.Column(db.String(100))
     payment_method = db.Column(db.String(50))
     payment_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Razorpay and Gateway specific tracking
+    gateway = db.Column(db.String(50), default='Razorpay')
+    gateway_order_id = db.Column(db.String(100), index=True)
+    gateway_payment_id = db.Column(db.String(100), unique=True, index=True)
+    gateway_signature = db.Column(db.String(255))
+    gateway_status = db.Column(db.String(50), default='created')
+    signature_verified = db.Column(db.Boolean, default=False)
+
+    # Failure & Refund details
+    failure_code = db.Column(db.String(100))
+    failure_reason = db.Column(db.Text)
+    refund_status = db.Column(db.String(50), default=None)
+    refunded_amount = db.Column(db.Float, default=0.0)
+    refund_id = db.Column(db.String(100))
+
+    # Audit & timestamps
+    raw_response = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    paid_at = db.Column(db.DateTime)
+
+    order_rel = db.relationship('Order', backref=db.backref('order_payments', lazy=True), foreign_keys=[order_id])
+
+    def to_dict(self):
+        ord_no = None
+        if self.order_rel:
+            ord_no = self.order_rel.order_number or self.order_rel.order_id
+        elif self.billing and self.billing.order_rel:
+            ord_no = self.billing.order_rel.order_number or self.billing.order_rel.order_id
+
+        return {
+            "id": self.id,
+            "billing_id": self.billing_id,
+            "order_id": self.order_id,
+            "order_number": ord_no,
+            "amount": float(self.amount) if self.amount is not None else 0.0,
+            "currency": self.currency or "INR",
+            "transaction_id": self.transaction_id,
+            "payment_method": self.payment_method,
+            "gateway": self.gateway or "Razorpay",
+            "gateway_order_id": self.gateway_order_id,
+            "gateway_payment_id": self.gateway_payment_id,
+            "gateway_status": self.gateway_status,
+            "signature_verified": bool(self.signature_verified),
+            "failure_code": self.failure_code,
+            "failure_reason": self.failure_reason,
+            "refund_status": self.refund_status or "none",
+            "refunded_amount": float(self.refunded_amount) if self.refunded_amount is not None else 0.0,
+            "refund_id": self.refund_id,
+            "payment_date": self.payment_date.isoformat() if self.payment_date else None,
+            "paid_at": self.paid_at.isoformat() if self.paid_at else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class WebhookEvent(db.Model):
+    __tablename__ = 'webhook_event'
+
+    id = db.Column(db.Integer, primary_key=True)
+    gateway = db.Column(db.String(50), default='Razorpay', nullable=False)
+    event_id = db.Column(db.String(100), unique=True, index=True, nullable=False)
+    event_type = db.Column(db.String(100), nullable=False)
+    payload = db.Column(db.Text)
+    status = db.Column(db.String(50), default='pending')
+    error_message = db.Column(db.Text)
+    received_at = db.Column(db.DateTime, default=datetime.utcnow)
+    processed_at = db.Column(db.DateTime)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "gateway": self.gateway,
+            "event_id": self.event_id,
+            "event_type": self.event_type,
+            "status": self.status,
+            "error_message": self.error_message,
+            "received_at": self.received_at.isoformat() if self.received_at else None,
+            "processed_at": self.processed_at.isoformat() if self.processed_at else None,
+        }
 
 # ==========================================
 # 14. AI Recommendation Tables

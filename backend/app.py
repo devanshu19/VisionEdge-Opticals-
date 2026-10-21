@@ -17,9 +17,10 @@ def create_app():
 
     # Initialize extensions
     from flask_cors import CORS
+    cors_origins = list(dict.fromkeys((Config.FRONTEND_URL, *Config.CORS_ALLOWED_ORIGINS)))
     CORS(
         app,
-        resources={r"/*": {"origins": "*"}},
+        resources={r"/*": {"origins": cors_origins}},
         supports_credentials=True,
     )
     db.init_app(app)
@@ -65,6 +66,7 @@ def create_app():
     from routes.notification_routes import notification_bp
     from routes.appointment_routes import appointment_bp
     from routes.payment_routes import payment_bp
+    from routes.razorpay_routes import razorpay_bp
     from utils.signals import register_signals
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
@@ -84,6 +86,7 @@ def create_app():
     app.register_blueprint(notification_bp, url_prefix="/api/notifications")
     app.register_blueprint(appointment_bp, url_prefix="/api/appointments")
     app.register_blueprint(payment_bp, url_prefix="/api/payment")
+    app.register_blueprint(razorpay_bp, url_prefix="/api/payment/razorpay")
 
     # Register SQLAlchemy event listeners
     with app.app_context():
@@ -165,4 +168,4 @@ if __name__ == "__main__":
             print(f"Error connecting to the database: {e}")
             print("Please check your DATABASE_URL configuration.")
 
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=app.config["DEBUG"])

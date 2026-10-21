@@ -223,30 +223,82 @@
     try {
         localStorage.setItem('visionEdgeCart', JSON.stringify([]));
         localStorage.setItem('cart', JSON.stringify([]));
+        sessionStorage.removeItem('appliedCoupon');
+        localStorage.removeItem('appliedCoupon');
     } catch(e) {}
 
-    // Parse URL params
     const params = new URLSearchParams(window.location.search);
-    const txnid   = params.get('txnid')   || '';
-    const orderId = params.get('order')   || '';
-    const invoice = params.get('invoice') || '';
-    const amount  = params.get('amount')  || '';
-    const isCod   = params.get('cod')     === '1';
-    const method  = params.get('method')  || (isCod ? 'Cash on Delivery' : 'Credit Card');
+    const txnidParam   = params.get('txnid')   || '';
+    const orderIdParam = params.get('order')   || '';
+    const invoiceParam = params.get('invoice') || '';
+    const amountParam  = params.get('amount')  || '';
+    const isCodParam   = params.get('cod')     === '1';
+    const methodParam  = params.get('method')  || (isCodParam ? 'Cash on Delivery' : 'Razorpay');
 
-    // Fill details
-    document.getElementById('detInvoice').textContent = invoice || '—';
-    document.getElementById('detOrder').textContent   = orderId ? `#${orderId}` : '—';
-    document.getElementById('detTxn').textContent     = txnid   || (isCod ? 'N/A (COD)' : '—');
-    document.getElementById('detMethod').textContent  = method;
-    document.getElementById('detAmount').textContent  = amount  ? `₹${parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits:2})}` : '—';
+    // Default fallback from URL
+    document.getElementById('detInvoice').textContent = invoiceParam || '—';
+    document.getElementById('detOrder').textContent   = orderIdParam ? `#${orderIdParam}` : '—';
+    document.getElementById('detTxn').textContent     = txnidParam   || (isCodParam ? 'N/A (COD)' : '—');
+    document.getElementById('detMethod').textContent  = methodParam;
+    document.getElementById('detAmount').textContent  = amountParam  ? `₹${parseFloat(amountParam).toLocaleString('en-IN', {minimumFractionDigits:2})}` : '—';
     document.getElementById('detDate').textContent    = new Date().toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
 
-    if (isCod) {
-        document.getElementById('codNote').classList.remove('d-none');
-        document.getElementById('successSubtext').textContent =
-            'Your order has been placed successfully! Pay with cash upon delivery.';
+    if (isCodParam) {
+        document.getElementById('codNote')?.classList.remove('d-none');
+        const sub = document.getElementById('successSubtext');
+        if (sub) sub.textContent = 'Your order has been placed successfully! Pay with cash upon delivery.';
     }
+
+    // Authoritative Server-Side Status Verification
+    async function verifyOrderStatusWithServer() {
+        if (!orderIdParam) return;
+        const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+        const token = localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken');
+
+        if (!token) return;
+
+        try {
+            const res = await fetch(`${apiUrl}/payment/razorpay/status/${orderIdParam}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return;
+
+            const data = await res.json();
+            if (data && data.order_id) {
+                document.getElementById('detOrder').textContent = `#${data.order_number || data.order_id}`;
+                if (data.billing && data.billing.invoice_number) {
+                    document.getElementById('detInvoice').textContent = data.billing.invoice_number;
+                }
+                if (data.payment && (data.payment.transaction_id || data.payment.gateway_order_id)) {
+                    document.getElementById('detTxn').textContent = data.payment.transaction_id || data.payment.gateway_order_id;
+                }
+                if (data.payment && data.payment.payment_method) {
+                    document.getElementById('detMethod').textContent = data.payment.payment_method;
+                }
+                if (data.total_amount) {
+                    document.getElementById('detAmount').textContent = `₹${parseFloat(data.total_amount).toLocaleString('en-IN', {minimumFractionDigits:2})}`;
+                }
+                if (data.order_date) {
+                    try {
+                        document.getElementById('detDate').textContent = new Date(data.order_date).toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+                    } catch(e) {}
+                }
+
+                // Add verified checkmark badge
+                if (data.payment && data.payment.is_paid) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-success-subtle text-success border border-success-subtle ms-2';
+                    badge.style.fontSize = '0.75rem';
+                    badge.innerHTML = '<i class="bi bi-patch-check-fill me-1"></i>Verified by Razorpay';
+                    document.getElementById('detTxn').appendChild(badge);
+                }
+            }
+        } catch (e) {
+            console.log('Server verification skipped; using confirmed session parameters.');
+        }
+    }
+
+    verifyOrderStatusWithServer();
 
     // ── Stars ──────────────────────────────────────────────────────────────
     const starsEl = document.getElementById('starsContainer');

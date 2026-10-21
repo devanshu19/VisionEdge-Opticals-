@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_EMAIL = os.getenv("SMTP_EMAIL", os.getenv("SMTP_USER", "chaudharidevanshu1912@gmail.com"))
+SMTP_EMAIL = os.getenv("SMTP_EMAIL", os.getenv("SMTP_USER", ""))
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", os.getenv("SMTP_PASS", ""))
 
 def send_email_otp(to_email: str, otp_code: str, user_name: str = "Valued Customer") -> dict:

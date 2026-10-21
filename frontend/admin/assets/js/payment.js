@@ -74,24 +74,44 @@ async function loadPayments() {
         payments.forEach(p => {
             const dateStr = p.payment_date ? p.payment_date.replace('T', ' ').split('.')[0] : '-';
             const methodIcon = getMethodIcon(p.payment_method);
-            const statusClass = p.status === 'Paid' ? 'success' : (p.status === 'Partial' ? 'info' : 'warning');
+            const statusClass = (p.status === 'Paid' || p.gateway_status === 'captured') ? 'success' : (p.status === 'Refunded' ? 'danger' : (p.status === 'Partial' ? 'info' : 'warning'));
             const pdfUrl = `${API_BASE_URL}/billing/${p.billing_id}/pdf`;
+
+            const isRzp = (p.gateway === 'Razorpay' || (p.gateway_payment_id && p.gateway_payment_id.startsWith('pay_')));
+            const canRefund = isRzp && (p.gateway_status === 'captured' || p.status === 'Paid') && p.refund_status !== 'full';
+
+            const refundBadge = p.refund_status
+                ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1" style="font-size:0.7rem;">Refunded ₹${(p.refunded_amount || 0).toFixed(2)}</span>`
+                : '';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="ps-4">
                     <div class="fw-bold text-primary">${p.invoice_number}</div>
-                    <small class="text-muted">${p.transaction_id || '-'}</small>
+                    <small class="text-muted font-monospace">${p.gateway_payment_id || p.transaction_id || '-'}</small>
                 </td>
                 <td class="text-muted">${dateStr}</td>
                 <td class="fw-medium">${p.customer_name || 'Customer'}</td>
-                <td class="fw-bold text-success">₹${(p.amount || 0).toFixed(2)}</td>
-                <td><span class="badge bg-light text-dark border">${methodIcon} ${p.payment_method || 'Cash'}</span></td>
-                <td><span class="badge bg-${statusClass} bg-opacity-10 text-${statusClass} px-3 py-1 rounded-pill border border-${statusClass}">${p.status || 'Paid'}</span></td>
+                <td class="fw-bold text-success">
+                    ₹${(p.amount || 0).toFixed(2)}
+                    ${refundBadge}
+                </td>
+                <td>
+                    <span class="badge bg-light text-dark border">${methodIcon} ${p.payment_method || 'Cash'}</span>
+                    ${isRzp ? '<span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size:0.68rem;">Razorpay</span>' : ''}
+                </td>
+                <td>
+                    <span class="badge bg-${statusClass} bg-opacity-10 text-${statusClass} px-3 py-1 rounded-pill border border-${statusClass}">${p.gateway_status || p.status || 'Paid'}</span>
+                </td>
                 <td class="text-end pe-4">
                     <a href="${pdfUrl}" target="_blank" class="btn btn-sm btn-outline-primary" title="Receipt PDF">
                         <i class="bi bi-file-earmark-text me-1"></i>PDF
                     </a>
+                    ${canRefund ? `
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-1" onclick="openRefundModal(${p.id}, '${p.gateway_payment_id || p.transaction_id}', ${p.amount}, ${p.refunded_amount || 0})" title="Process Razorpay Refund">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Refund
+                        </button>
+                    ` : ''}
                 </td>
             `;
             tbody.appendChild(tr);
@@ -99,7 +119,96 @@ async function loadPayments() {
 
     } catch (e) {
         console.error('Error loading payments:', e);
-        document.getElementById('paymentTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error loading data.</td></tr>';
+        document.getElementById('paymentTableBody').innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">Failed to load payments data.</td></tr>';
+    }
+}
+
+// ─── Razorpay Admin Refund Handlers ──────────────────────────────────────────
+let activeRefundPayment = null;
+
+function openRefundModal(paymentId, gatewayPaymentId, amount, alreadyRefunded) {
+    activeRefundPayment = {
+        paymentId: paymentId,
+        gatewayPaymentId: gatewayPaymentId,
+        amount: parseFloat(amount || 0),
+        alreadyRefunded: parseFloat(alreadyRefunded || 0)
+    };
+
+    const maxRefundable = Math.max(0, activeRefundPayment.amount - activeRefundPayment.alreadyRefunded);
+
+    document.getElementById('refundPaymentId').value = paymentId;
+    document.getElementById('refundGatewayPayId').textContent = gatewayPaymentId;
+    document.getElementById('refundOriginalAmount').textContent = `₹${activeRefundPayment.amount.toFixed(2)}`;
+    document.getElementById('refundMaxAmount').textContent = `₹${maxRefundable.toFixed(2)}`;
+
+    document.getElementById('refundFull').checked = true;
+    toggleRefundAmountInput();
+    document.getElementById('refundReason').value = '';
+
+    const modal = new bootstrap.Modal(document.getElementById('refundModal'));
+    modal.show();
+}
+
+function toggleRefundAmountInput() {
+    const isPartial = document.getElementById('refundPartial').checked;
+    const group = document.getElementById('partialAmountGroup');
+    const input = document.getElementById('refundCustomAmount');
+    if (isPartial) {
+        group.classList.remove('d-none');
+        input.required = true;
+        const maxRefundable = activeRefundPayment ? (activeRefundPayment.amount - activeRefundPayment.alreadyRefunded) : 0;
+        input.max = maxRefundable;
+        input.value = maxRefundable.toFixed(2);
+    } else {
+        group.classList.add('d-none');
+        input.required = false;
+        input.value = '';
+    }
+}
+
+async function handleRefundSubmit(event) {
+    event.preventDefault();
+    if (!activeRefundPayment) return;
+
+    const btn = document.getElementById('btnConfirmRefund');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Processing Refund...';
+
+    const isPartial = document.getElementById('refundPartial').checked;
+    let refundAmount = null;
+    if (isPartial) {
+        refundAmount = parseFloat(document.getElementById('refundCustomAmount').value);
+    }
+    const reason = document.getElementById('refundReason').value.trim();
+
+    try {
+        const response = await fetchWithAuth(`${API_BASE_URL}/payment/razorpay/refund`, {
+            method: 'POST',
+            body: JSON.stringify({
+                payment_id: activeRefundPayment.gatewayPaymentId || activeRefundPayment.paymentId,
+                amount: refundAmount,
+                reason: reason
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+            const modalEl = document.getElementById('refundModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            alert(`Refund Successful! Refund ID: ${data.refund_id}. Total Refunded: ₹${data.total_refunded}`);
+            await loadPayments();
+            await loadPaymentStats();
+        } else {
+            alert(data.message || 'Refund request failed. Check server logs.');
+        }
+    } catch (err) {
+        alert(`Error executing refund: ${err.message}`);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i>Execute Razorpay Refund';
     }
 }
 
