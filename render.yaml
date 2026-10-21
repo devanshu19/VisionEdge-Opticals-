@@ -4,7 +4,7 @@ services:
     runtime: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT wsgi
+    startCommand: gunicorn --bind 0.0.0.0:$PORT wsgi:app
     healthCheckPath: /api/health
     envVars:
       - key: PYTHON_VERSION
@@ -17,13 +17,13 @@ services:
         value: INR
       - key: RAZORPAY_MODE
         value: test
+      - key: FRONTEND_URL
+        value: https://visionopticals.netlify.app
       - key: DATABASE_URL
         sync: false
       - key: SECRET_KEY
         sync: false
       - key: JWT_SECRET_KEY
-        sync: false
-      - key: FRONTEND_URL
         sync: false
       - key: RAZORPAY_KEY_ID
         sync: false

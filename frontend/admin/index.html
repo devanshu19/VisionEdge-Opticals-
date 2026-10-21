@@ -148,7 +148,9 @@
             btn.disabled = true;
 
             try {
-                const response = await fetch('http://localhost:5000/api/auth/login', {
+                const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
+                const apiUrl = window.API_BASE_URL || (isLocal ? 'http://127.0.0.1:5000/api' : 'https://visionedge-opticals.onrender.com/api');
+                const response = await fetch(`${apiUrl}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -158,9 +160,22 @@
                 });
                 const data = await response.json();
 
-                if (response.ok && data.access_token) {
+                if (response.ok && data.access_token && data.user) {
+                    const role = (data.user.role || '').toLowerCase();
+                    if (role !== 'admin' && role !== 'staff') {
+                        passwordInput.setCustomValidity('Invalid');
+                        const feedback = passwordInput.parentElement.querySelector('.invalid-feedback');
+                        if (feedback) feedback.textContent = 'Access denied. Administrator privileges required.';
+                        form.classList.add('was-validated');
+                        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Sign In';
+                        btn.disabled = false;
+                        return;
+                    }
+
                     localStorage.setItem('jwtToken', data.access_token);
+                    localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('current_user', JSON.stringify(data.user));
                     window.location.href = 'dashboard.html';
                 } else {
                     passwordInput.setCustomValidity('Invalid');

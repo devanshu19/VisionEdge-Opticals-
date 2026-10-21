@@ -1,8 +1,29 @@
-const currentHost = window.location.hostname || 'localhost';
-window.API_BASE_URL = `http://${currentHost}:5000/api`;
+// app.js — Global Application Logic and UI Handlers for VisionEdge
 
+// 1. Centralized API Base URL
+(function() {
+    if (!window.API_BASE_URL) {
+        const hostname = window.location.hostname || '';
+        const isLocal = hostname === 'localhost' ||
+                        hostname === '127.0.0.1' ||
+                        hostname.startsWith('192.168.') ||
+                        hostname.startsWith('10.') ||
+                        hostname.endsWith('.local') ||
+                        window.location.protocol === 'file:';
+
+        window.API_BASE_URL = isLocal
+            ? 'http://127.0.0.1:5000/api'
+            : 'https://visionedge-opticals.onrender.com/api';
+    }
+})();
+
+// 2. Authenticated Fetch Helper
 window.fetchWithAuth = async function(url, options = {}) {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('access_token') || 
+                  localStorage.getItem('jwtToken') || 
+                  sessionStorage.getItem('access_token') || 
+                  sessionStorage.getItem('jwtToken');
+
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers
@@ -10,23 +31,38 @@ window.fetchWithAuth = async function(url, options = {}) {
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
-    const response = await fetch(window.API_BASE_URL + url, {
+
+    const fullUrl = url.startsWith('http') 
+        ? url 
+        : (window.API_BASE_URL + (url.startsWith('/') ? '' : '/') + url);
+
+    const response = await fetch(fullUrl, {
         ...options,
         headers
     });
     return response;
 };
 
-window.logout = function() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('current_user');
-    window.location.href = 'index.html';
+// 3. One-Click Global Logout
+window.logout = async function(event) {
+    if (event && event.preventDefault) event.preventDefault();
+
+    try {
+        await fetch(`${window.API_BASE_URL}/auth/logout`, { method: 'POST' });
+    } catch (e) {
+        // Continue clearing client state regardless
+    }
+
+    ['access_token', 'jwtToken', 'current_user', 'user', 'visionEdgeCart', 'cart'].forEach(k => {
+        localStorage.removeItem(k);
+        sessionStorage.removeItem(k);
+    });
+
+    window.location.href = 'login.html';
 };
 
-// We are now loading cart.js explicitly via script tags in HTML files.
-
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Hide Loader
+    // Hide Loader
     const loader = document.getElementById('loader');
     if (loader) {
         setTimeout(() => {
@@ -35,10 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 800);
     }
 
-    // 2. Load Components (Navbar, Footer)
+    // Load Components (Navbar, Footer)
     loadComponents();
 
-    // 3. Initialize Animations
+    // Initialize Animations
     if (typeof AOS !== 'undefined') {
         AOS.init({
             duration: 800,
@@ -59,14 +95,12 @@ async function loadComponents() {
         const container = document.getElementById(comp.id);
         if (container) {
             try {
-                // Determine base URL if we are ever in subdirectories, though flat structure used here
                 const response = await fetch(comp.url + '?t=' + new Date().getTime());
                 if (response.ok) {
                     const html = await response.text();
                     container.innerHTML = html;
-                    
-                    // Attach logic specific to components
-                    if(comp.id === 'navbar-container') {
+
+                    if (comp.id === 'navbar-container') {
                         initNavbarLogic();
                     }
                 }
@@ -80,10 +114,9 @@ async function loadComponents() {
 function initNavbarLogic() {
     const navbar = document.querySelector('.navbar');
     if (!navbar) return;
-    
-    // Check if this page has a transparent hero navbar (e.g. index.html)
+
     const isHeroPage = document.querySelector('.hero-section') !== null;
-    
+
     if (isHeroPage) {
         navbar.classList.add('transparent');
     } else {
@@ -100,11 +133,11 @@ function initNavbarLogic() {
             navbar.classList.remove('scrolled');
         }
     });
-    
+
     // Highlight active link
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
     const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-    
+
     navLinks.forEach(link => {
         const href = link.getAttribute('href');
         if (href === currentPath) {
@@ -116,28 +149,32 @@ function initNavbarLogic() {
 
     // Update Auth Buttons based on login state
     const authContainer = navbar.querySelector('.ms-3.d-none.d-lg-flex.gap-2');
-    const token = localStorage.getItem('access_token');
-    const userStr = localStorage.getItem('current_user');
-    
+    const token = localStorage.getItem('access_token') || localStorage.getItem('jwtToken');
+    const userStr = localStorage.getItem('current_user') || localStorage.getItem('user');
+
     if (authContainer && token && userStr) {
-        const user = JSON.parse(userStr);
-        authContainer.innerHTML = `
-            <div class="dropdown">
-                <button class="btn btn-primary btn-sm fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle me-1"></i> ${user.first_name || user.username}
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm glass-panel mt-2">
-                    <li><a class="dropdown-item py-2" href="dashboard.html">Dashboard</a></li>
-                    <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
-                    <li><a class="dropdown-item py-2" href="orders.html">My Orders</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2 text-danger" href="#" onclick="window.logout(event)">Logout</a></li>
-                </ul>
-            </div>
-        `;
+        try {
+            const user = JSON.parse(userStr);
+            const displayName = user.first_name || user.name || user.username || 'My Account';
+            authContainer.innerHTML = `
+                <div class="dropdown">
+                    <button class="btn btn-primary btn-sm fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i> ${displayName}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm glass-panel mt-2">
+                        <li><a class="dropdown-item py-2" href="dashboard.html">Dashboard</a></li>
+                        <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
+                        <li><a class="dropdown-item py-2" href="orders.html">My Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="#" onclick="window.logout(event)">Logout</a></li>
+                    </ul>
+                </div>
+            `;
+        } catch (e) {
+            console.error('Navbar user parsing error:', e);
+        }
     }
-    
-    // Set correct icon on load
+
     if (window.updateThemeIcon) {
         window.updateThemeIcon(document.documentElement.getAttribute('data-bs-theme'));
     }

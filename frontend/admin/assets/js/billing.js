@@ -179,11 +179,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadCustomers(selectEl) {
     if (!selectEl) return;
     try {
+        const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
+        const apiUrl = window.API_BASE_URL || (isLocal ? 'http://127.0.0.1:5000/api' : 'https://visionedge-opticals.onrender.com/api');
         const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const res = await fetch('http://localhost:5000/api/customers/', { headers });
+        const res = await fetch(`${apiUrl}/customers/`, { headers });
         if (res.ok) {
             const data = await res.json();
             const customers = Array.isArray(data) ? data : (data.customers || []);
@@ -209,9 +211,11 @@ async function loadCustomers(selectEl) {
 async function loadProducts(selectEl) {
     if (!selectEl) return;
     try {
+        const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
+        const apiUrl = window.API_BASE_URL || (isLocal ? 'http://127.0.0.1:5000/api' : 'https://visionedge-opticals.onrender.com/api');
         const [framesRes, lensesRes] = await Promise.all([
-            fetch('http://localhost:5000/api/inventory/frames'),
-            fetch('http://localhost:5000/api/inventory/lenses')
+            fetch(`${apiUrl}/inventory/frames`),
+            fetch(`${apiUrl}/inventory/lenses`)
         ]);
 
         const frames = framesRes.ok ? await framesRes.json() : [];

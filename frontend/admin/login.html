@@ -170,23 +170,31 @@
                 btn.disabled = true;
                 
                 try {
-                    const response = await fetch('http://localhost:5000/api/auth/login', {
+                    const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+                    const response = await fetch(`${apiUrl}/auth/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            username: usernameInput.value,
+                            username: usernameInput.value.trim(),
                             password: passwordInput.value
                         })
                     });
                     
                     const data = await response.json();
                     
-                    if (response.ok) {
+                    if (response.ok && data.user) {
+                        const role = (data.user.role || '').toLowerCase();
+                        if (role !== 'admin' && role !== 'staff') {
+                            passwordInput.setCustomValidity('Invalid');
+                            passwordInput.parentElement.querySelector('.invalid-feedback').textContent = 'Access denied. Administrator privileges required.';
+                            form.classList.add('was-validated');
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                            return;
+                        }
+
                         setAuthData(data.access_token, data.user, rememberMe);
-                        // Redirect to dashboard (if staff, dashboard will redirect to unauthorized or another page)
-                        // Wait, dashboard is admin only. We should redirect to dashboard and let app.js handle it,
-                        // or redirect based on role.
-                        if (data.user.role === 'staff') {
+                        if (role === 'staff') {
                             window.location.href = 'customers.html';
                         } else {
                             window.location.href = 'dashboard.html';

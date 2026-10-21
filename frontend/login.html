@@ -52,45 +52,21 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 480px;
-            padding: 2.25rem;
+            max-width: 460px;
+            padding: 2.5rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .nav-pills-auth .nav-link {
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 10px 16px;
-            color: #64748b;
-            transition: all 0.25s ease;
-        }
-
-        .nav-pills-auth .nav-link.active {
-            background: #2563eb;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-google {
-            background: #ffffff;
-            color: #334155;
-            border: 1px solid #cbd5e1;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.2s ease;
-        }
-        .btn-google:hover {
-            background: #f8fafc;
-            border-color: #94a3b8;
         }
 
         .form-control:focus {
             box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.2);
             border-color: #2563eb;
+        }
+
+        .password-toggle-btn {
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            border-left: none;
+            background-color: #ffffff;
         }
     </style>
 </head>
@@ -112,134 +88,66 @@
     <div class="auth-card" data-aos="zoom-in">
 
         <!-- Header -->
-        <div class="text-center mb-3">
+        <div class="text-center mb-4">
             <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
                 <i class="bi bi-shield-lock-fill fs-2"></i>
             </div>
             <h3 class="fw-bold text-dark mb-1">Welcome Back</h3>
-            <p class="text-muted small mb-0">Log in to your VisionEdge eyewear account</p>
+            <p class="text-muted small mb-0">Sign in to your VisionEdge optical account</p>
         </div>
 
         <!-- Global Alert Message -->
         <div id="loginMessage" class="alert d-none py-2 small mb-3" role="alert"></div>
 
-        <!-- Mode Switcher Tabs -->
-        <ul class="nav nav-pills nav-fill nav-pills-auth mb-4 p-1 bg-light rounded-3" id="authTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tab-email-otp" data-bs-toggle="pill" data-bs-target="#pane-email-otp" type="button" role="tab">
-                    <i class="bi bi-envelope-check me-1"></i> Email OTP
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-password" data-bs-toggle="pill" data-bs-target="#pane-password" type="button" role="tab">
-                    <i class="bi bi-key me-1"></i> Password
-                </button>
-            </li>
-        </ul>
-
-        <!-- Tab Content -->
-        <div class="tab-content">
-
-            <!-- TAB 1: EMAIL OTP LOGIN (DEFAULT) -->
-            <div class="tab-pane fade show active" id="pane-email-otp" role="tabpanel">
-
-                <!-- STEP 1: Enter Email -->
-                <div id="otpStep1">
-                    <p class="text-muted small mb-3">Enter your email address to receive an instant 6-digit verification code.</p>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-secondary">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-primary"><i class="bi bi-envelope-at"></i></span>
-                            <input type="email" id="cardEmailInput" class="form-control form-control-lg" placeholder="name@example.com" required autocomplete="email">
-                        </div>
-                    </div>
-                    <button type="button" id="cardSendOtpBtn" onclick="handleCardSendOtp()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm mb-3">
-                        <i class="bi bi-send me-2"></i>
-                        <span>Send Verification Code</span>
-                        <span class="spinner-border spinner-border-sm d-none ms-1" id="cardSendSpinner" role="status"></span>
-                    </button>
+        <!-- Simple Email + Password Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+            <!-- Email Input -->
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-secondary" for="emailInput">Email Address</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-primary"><i class="bi bi-envelope-at"></i></span>
+                    <input type="email" class="form-control form-control-lg" id="emailInput" name="email" placeholder="name@example.com" autocomplete="email" required>
                 </div>
-
-                <!-- STEP 2: Enter 6-Digit OTP -->
-                <div id="otpStep2" class="d-none">
-                    <div class="alert alert-primary py-2 small mb-3">
-                        <i class="bi bi-check-circle me-1 text-primary"></i>
-                        Verification code dispatched to <strong id="cardDisplayEmail"></strong>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-secondary">Enter 6-Digit Verification Code</label>
-                        <input type="text" id="cardOtpCodeInput" class="form-control form-control-lg text-center fw-bold fs-4" placeholder="• • • • • •" maxlength="6" required autocomplete="one-time-code">
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <input type="text" id="cardFirstName" class="form-control" placeholder="First Name (New User)">
-                        </div>
-                        <div class="col-6">
-                            <input type="text" id="cardLastName" class="form-control" placeholder="Last Name (New User)">
-                        </div>
-                    </div>
-                    <button type="button" id="cardVerifyOtpBtn" onclick="handleCardVerifyOtp()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm mb-2">
-                        <span>Verify &amp; Log In</span>
-                        <span class="spinner-border spinner-border-sm d-none ms-1" id="cardVerifySpinner" role="status"></span>
-                    </button>
-                    <button type="button" onclick="handleCardResendOtp()" class="btn btn-link text-decoration-none w-100 small text-muted">
-                        Change Email / Resend Code
-                    </button>
-                </div>
-
             </div>
 
-            <!-- TAB 2: PASSWORD LOGIN -->
-            <div class="tab-pane fade" id="pane-password" role="tabpanel">
-                <form id="loginForm" onsubmit="handlePasswordLogin(event)">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-secondary" for="username">Username or Email</label>
-                        <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="Enter username or email" autocomplete="username" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <label class="form-label fw-bold small text-secondary" for="pwdInput">Password</label>
-                            <a href="forgot-password.html" class="small text-decoration-none fw-bold">Forgot Password?</a>
-                        </div>
-                        <div class="input-group">
-                            <input type="password" class="form-control form-control-lg" placeholder="Enter password" id="pwdInput" name="password" autocomplete="current-password" required>
-                            <button class="btn btn-outline-secondary bg-white" type="button" id="togglePasswordBtn">
-                                <i class="bi bi-eye" id="eyeIcon"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="rememberMe">
-                        <label class="form-check-label text-muted small fw-medium" for="rememberMe">Remember me for 30 days</label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mb-3 shadow" id="loginBtn">
-                        <span id="loginBtnText">Log In</span>
-                        <span id="loginSpinner" class="spinner-border spinner-border-sm d-none ms-1" role="status"></span>
+            <!-- Password Input -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label fw-bold small text-secondary mb-0" for="pwdInput">Password</label>
+                    <a href="forgot-password.html" class="small text-decoration-none fw-semibold">Forgot Password?</a>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-primary"><i class="bi bi-key"></i></span>
+                    <input type="password" class="form-control form-control-lg" placeholder="Enter password" id="pwdInput" name="password" autocomplete="current-password" required>
+                    <button class="btn btn-outline-secondary password-toggle-btn" type="button" id="togglePasswordBtn" title="Show or hide password">
+                        <i class="bi bi-eye" id="eyeIcon"></i>
                     </button>
-                </form>
+                </div>
             </div>
 
-        </div>
+            <!-- Remember Me -->
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe" checked>
+                <label class="form-check-label text-muted small fw-medium" for="rememberMe">Remember me on this device</label>
+            </div>
 
-        <!-- Social / Divider -->
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mb-3 shadow" id="loginBtn">
+                <span id="loginBtnText"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</span>
+                <span id="loginSpinner" class="spinner-border spinner-border-sm d-none ms-1" role="status"></span>
+            </button>
+        </form>
+
+        <!-- Divider -->
         <div class="position-relative text-center my-3">
             <hr class="text-muted">
             <span class="position-absolute top-50 start-50 translate-middle px-2 small text-muted bg-white">OR</span>
         </div>
 
-        <!-- Google Login -->
-        <button type="button" class="btn btn-google btn-lg w-100 mb-3" id="googleLoginBtn">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google">
-            Log in with Google
-        </button>
-
         <!-- Signup Link -->
         <p class="text-center text-muted small mb-0">
             Don't have an account?
-            <a href="signup.html" class="fw-bold text-decoration-none text-primary">Sign up</a>
+            <a href="signup.html" class="fw-bold text-decoration-none text-primary">Create an Account</a>
         </p>
 
     </div>
@@ -249,27 +157,15 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- AOS JS -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<!-- VisionEdge App JS -->
+<!-- VisionEdge App & Auth JS -->
+<script src="assets/js/api-config.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
 
-<!-- Authentication Script -->
 <script>
-    // Normalize API base so appending /api/auth/... never causes double /api/api
-    const rawApi = (window.API_BASE_URL || "http://localhost:5000/api").replace(/\/+$/, "");
-    const API_BASE_URL = rawApi.endsWith("/api") ? rawApi.slice(0, -4) : rawApi;
-
     document.addEventListener("DOMContentLoaded", function () {
         if (typeof AOS !== "undefined") {
             AOS.init({ duration: 800, once: true });
-        }
-
-        // Check if redirected with hash #emailOtp or #otpModal
-        if (window.location.hash === '#emailOtp' || window.location.hash === '#otpModal') {
-            const triggerEl = document.getElementById('tab-email-otp');
-            if (triggerEl) {
-                const tab = new bootstrap.Tab(triggerEl);
-                tab.show();
-            }
         }
 
         // Show/Hide Password Toggle
@@ -277,7 +173,7 @@
         const pwdInput = document.getElementById("pwdInput");
         const eyeIcon = document.getElementById("eyeIcon");
         if (toggleBtn && pwdInput && eyeIcon) {
-            toggleBtn.addEventListener("click", function() {
+            toggleBtn.addEventListener("click", function () {
                 if (pwdInput.type === "password") {
                     pwdInput.type = "text";
                     eyeIcon.className = "bi bi-eye-slash";
@@ -285,14 +181,6 @@
                     pwdInput.type = "password";
                     eyeIcon.className = "bi bi-eye";
                 }
-            });
-        }
-
-        // Google button notice
-        const googleBtn = document.getElementById("googleLoginBtn");
-        if (googleBtn) {
-            googleBtn.addEventListener("click", () => {
-                showLoginMessage("Google Login will be connected after OAuth credentials are provided.", "info");
             });
         }
     });
@@ -309,129 +197,18 @@
     }
 
     // ==========================================
-    // EMAIL OTP LOGIC
+    // SIMPLE LOGIN HANDLER
     // ==========================================
-    let currentOtpEmail = "";
-
-    window.handleCardSendOtp = async function() {
-        hideLoginMessage();
-        const emailInput = document.getElementById("cardEmailInput").value.trim().toLowerCase();
-        if (!emailInput || !emailInput.includes('@') || !emailInput.includes('.')) {
-            showLoginMessage("Please enter a valid email address.", "warning");
-            return;
-        }
-
-        currentOtpEmail = emailInput;
-        const btn = document.getElementById("cardSendOtpBtn");
-        const spinner = document.getElementById("cardSendSpinner");
-        btn.disabled = true;
-        spinner.classList.remove("d-none");
-
-        try {
-            const res = await fetch(API_BASE_URL + "/api/auth/send-email-otp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: emailInput })
-            });
-
-            const data = await res.json();
-            if (!res.ok) {
-                showLoginMessage(data.message || "Failed to send email verification code.", "danger");
-                return;
-            }
-
-            document.getElementById("cardDisplayEmail").textContent = emailInput;
-            document.getElementById("cardOtpCodeInput").value = "";
-
-            document.getElementById("otpStep1").classList.add("d-none");
-            document.getElementById("otpStep2").classList.remove("d-none");
-
-            showLoginMessage("Verification code sent to " + emailInput + "! Please check your email inbox on your mobile device.", "success");
-        } catch (err) {
-            showLoginMessage("Network error. Make sure the backend server is running.", "danger");
-        } finally {
-            btn.disabled = false;
-            spinner.classList.add("d-none");
-        }
-    };
-
-    window.handleCardVerifyOtp = async function() {
-        hideLoginMessage();
-        const otpCode = document.getElementById("cardOtpCodeInput").value.trim();
-        const firstName = document.getElementById("cardFirstName").value.trim();
-        const lastName = document.getElementById("cardLastName").value.trim();
-
-        if (!otpCode) {
-            showLoginMessage("Please enter the 6-digit verification code.", "warning");
-            return;
-        }
-
-        const btn = document.getElementById("cardVerifyOtpBtn");
-        const spinner = document.getElementById("cardVerifySpinner");
-        btn.disabled = true;
-        spinner.classList.remove("d-none");
-
-        try {
-            const res = await fetch(API_BASE_URL + "/api/auth/verify-email-otp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: currentOtpEmail,
-                    otp: otpCode,
-                    first_name: firstName,
-                    last_name: lastName
-                })
-            });
-
-            const data = await res.json();
-            if (!res.ok) {
-                showLoginMessage(data.message || "Invalid verification code.", "danger");
-                return;
-            }
-
-            if (data.access_token) {
-                localStorage.setItem("access_token", data.access_token);
-                localStorage.setItem("jwtToken", data.access_token);
-                if (data.user) {
-                    localStorage.setItem("current_user", JSON.stringify(data.user));
-                    localStorage.setItem("user", JSON.stringify(data.user));
-                }
-
-                showLoginMessage("Login successful! Redirecting...", "success");
-                setTimeout(() => {
-                    if (data.user && data.user.role === 'admin') {
-                        window.location.href = "admin/index.html";
-                    } else {
-                        window.location.href = "dashboard.html";
-                    }
-                }, 800);
-            }
-        } catch (err) {
-            showLoginMessage("Failed to verify OTP. Server connection error.", "danger");
-        } finally {
-            btn.disabled = false;
-            spinner.classList.add("d-none");
-        }
-    };
-
-    window.handleCardResendOtp = function() {
-        document.getElementById("otpStep2").classList.add("d-none");
-        document.getElementById("otpStep1").classList.remove("d-none");
-        hideLoginMessage();
-    };
-
-    // ==========================================
-    // PASSWORD LOGIN LOGIC
-    // ==========================================
-    window.handlePasswordLogin = async function(e) {
+    window.handleLogin = async function (e) {
         e.preventDefault();
         hideLoginMessage();
 
-        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("emailInput").value.trim();
         const password = document.getElementById("pwdInput").value;
+        const rememberMe = document.getElementById("rememberMe").checked;
 
-        if (!username || !password) {
-            showLoginMessage("Please enter both username/email and password.", "warning");
+        if (!email || !password) {
+            showLoginMessage("Please enter both email address and password.", "warning");
             return;
         }
 
@@ -441,44 +218,54 @@
 
         btn.disabled = true;
         spinner.classList.remove("d-none");
-        text.textContent = "Logging in...";
+        text.innerHTML = "Signing in...";
 
         try {
-            const res = await fetch(API_BASE_URL + "/api/auth/login", {
+            const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+            const res = await fetch(`${apiUrl}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: username, password: password })
+                body: JSON.stringify({ email: email, password: password })
             });
 
             const data = await res.json();
             if (!res.ok) {
-                showLoginMessage(data.message || "Invalid username or password.", "danger");
+                showLoginMessage(data.message || "Invalid email or password.", "danger");
                 return;
             }
 
             if (data.access_token) {
-                localStorage.setItem("access_token", data.access_token);
-                localStorage.setItem("jwtToken", data.access_token);
-                if (data.user) {
-                    localStorage.setItem("current_user", JSON.stringify(data.user));
-                    localStorage.setItem("user", JSON.stringify(data.user));
+                if (typeof setAuthData === 'function') {
+                    setAuthData(data.access_token, data.user, rememberMe);
+                } else {
+                    const storage = rememberMe ? localStorage : sessionStorage;
+                    storage.setItem("access_token", data.access_token);
+                    storage.setItem("jwtToken", data.access_token);
+                    storage.setItem("current_user", JSON.stringify(data.user));
+                    storage.setItem("user", JSON.stringify(data.user));
                 }
 
                 showLoginMessage("Login successful! Redirecting...", "success");
+
                 setTimeout(() => {
-                    if (data.user && data.user.role === 'admin') {
-                        window.location.href = "admin/index.html";
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect');
+
+                    const userRole = (data.user && data.user.role) ? data.user.role.toLowerCase() : 'customer';
+                    if (userRole === 'admin' || userRole === 'staff') {
+                        window.location.href = redirectUrl || "admin/index.html";
                     } else {
-                        window.location.href = "dashboard.html";
+                        window.location.href = redirectUrl || "dashboard.html";
                     }
-                }, 800);
+                }, 600);
             }
         } catch (err) {
-            showLoginMessage("Connection failed. Please ensure the backend is running.", "danger");
+            console.error("Login network error:", err);
+            showLoginMessage("Unable to connect to VisionEdge server. Please verify your connection.", "danger");
         } finally {
             btn.disabled = false;
             spinner.classList.add("d-none");
-            text.textContent = "Log In";
+            text.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Sign In';
         }
     };
 </script>

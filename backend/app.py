@@ -17,7 +17,18 @@ def create_app():
 
     # Initialize extensions
     from flask_cors import CORS
-    cors_origins = list(dict.fromkeys((Config.FRONTEND_URL, *Config.CORS_ALLOWED_ORIGINS)))
+    default_origins = [
+        "https://visionopticals.netlify.app",
+        "http://localhost:8000",
+        "http://localhost:5000",
+        "http://127.0.0.1:5000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ]
+    configured_origins = [o for o in (Config.FRONTEND_URL, *Config.CORS_ALLOWED_ORIGINS) if o]
+    cors_origins = list(dict.fromkeys((*configured_origins, *default_origins)))
     CORS(
         app,
         resources={r"/*": {"origins": cors_origins}},
@@ -122,12 +133,13 @@ def create_app():
         except Exception as e:
             app.logger.error("Health check DB error: %s", type(e).__name__)
 
+        status_code = 200 if db_status == "connected" else 503
         return jsonify({
-            "status": "running",
+            "status": "healthy" if db_status == "connected" else "degraded",
             "database": db_status,
             "dialect": db_dialect_info,
             "message": "VisionEdge API is running",
-        }), 200
+        }), status_code
 
     # Error Handlers
     @app.errorhandler(404)

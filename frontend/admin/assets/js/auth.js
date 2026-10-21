@@ -1,39 +1,73 @@
-// auth.js - Role-Based Authentication Utilities
+// auth.js - Role-Based Authentication Utilities for VisionEdge Admin
 
-const API_BASE_URL = 'http://localhost:5000/api';
+(function () {
+    if (!window.API_BASE_URL) {
+        const hostname = window.location.hostname || '';
+        const isLocal = hostname === 'localhost' ||
+                        hostname === '127.0.0.1' ||
+                        hostname.startsWith('192.168.') ||
+                        hostname.startsWith('10.') ||
+                        hostname.endsWith('.local') ||
+                        window.location.protocol === 'file:';
+
+        window.API_BASE_URL = isLocal
+            ? 'http://127.0.0.1:5000/api'
+            : 'https://visionedge-opticals.onrender.com/api';
+    }
+})();
+
+const API_BASE_URL = window.API_BASE_URL;
 
 function setAuthData(token, user, rememberMe = true) {
-    const storage = rememberMe ? localStorage : sessionStorage;
-    storage.setItem('jwtToken', token);
-    storage.setItem('user', JSON.stringify(user));
+    const primaryStorage = rememberMe ? localStorage : sessionStorage;
+    const secondaryStorage = rememberMe ? sessionStorage : localStorage;
+
+    ['jwtToken', 'access_token', 'user', 'current_user'].forEach(k => secondaryStorage.removeItem(k));
+
+    primaryStorage.setItem('jwtToken', token);
+    primaryStorage.setItem('access_token', token);
+    primaryStorage.setItem('user', JSON.stringify(user));
+    primaryStorage.setItem('current_user', JSON.stringify(user));
 }
 
 function getToken() {
-    return localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    return localStorage.getItem('jwtToken') || 
+           localStorage.getItem('access_token') || 
+           sessionStorage.getItem('jwtToken') || 
+           sessionStorage.getItem('access_token');
 }
 
 function getUser() {
-    const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
+    const userStr = localStorage.getItem('user') || 
+                    localStorage.getItem('current_user') || 
+                    sessionStorage.getItem('user') || 
+                    sessionStorage.getItem('current_user');
     return userStr ? JSON.parse(userStr) : null;
 }
 
 function getUserRole() {
     const user = getUser();
-    return user ? user.role : null;
+    return user && user.role ? user.role.toLowerCase() : null;
 }
 
-function logout(expired = false) {
-    localStorage.removeItem('jwtToken');
-    localStorage.removeItem('user');
-    sessionStorage.removeItem('jwtToken');
-    sessionStorage.removeItem('user');
+async function logout(expired = false) {
+    try {
+        await fetch(`${window.API_BASE_URL}/auth/logout`, { method: 'POST' });
+    } catch (e) {}
+
+    ['jwtToken', 'access_token', 'user', 'current_user'].forEach(k => {
+        localStorage.removeItem(k);
+        sessionStorage.removeItem(k);
+    });
+
     window.location.href = expired ? 'login.html?expired=true' : 'login.html';
 }
 
 function checkAuth() {
-    // If not on login page, check token
     if (!window.location.pathname.endsWith('login.html')) {
-        if (!getToken()) {
+        const token = getToken();
+        const role = getUserRole();
+        if (!token || !role || !['admin', 'staff'].includes(role)) {
             window.location.href = 'login.html';
         }
     }
@@ -41,7 +75,8 @@ function checkAuth() {
 
 function enforceRoleAccess(allowedRoles) {
     const role = getUserRole();
-    if (!role || !allowedRoles.includes(role)) {
+    const allowed = allowedRoles.map(r => r.toLowerCase());
+    if (!role || !allowed.includes(role)) {
         window.location.href = 'unauthorized.html';
     }
 }
@@ -58,11 +93,13 @@ async function fetchWithAuth(url, options = {}) {
         headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const fullUrl = url.startsWith('http') ? url : (API_BASE_URL + (url.startsWith('/') ? '' : '/') + url);
+    const fullUrl = url.startsWith('http') 
+        ? url 
+        : (window.API_BASE_URL + (url.startsWith('/') ? '' : '/') + url);
+
     const response = await fetch(fullUrl, { ...options, headers });
     
     if (response.status === 401) {
-        // Token expired or unauthorized
         logout(true);
     } else if (response.status === 403) {
         window.location.href = 'unauthorized.html';
@@ -70,3 +107,13 @@ async function fetchWithAuth(url, options = {}) {
     
     return response;
 }
+
+window.API_BASE_URL = API_BASE_URL;
+window.setAuthData = setAuthData;
+window.getToken = getToken;
+window.getUser = getUser;
+window.getUserRole = getUserRole;
+window.logout = logout;
+window.checkAuth = checkAuth;
+window.enforceRoleAccess = enforceRoleAccess;
+window.fetchWithAuth = fetchWithAuth;

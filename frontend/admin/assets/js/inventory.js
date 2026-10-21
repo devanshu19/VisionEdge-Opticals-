@@ -24,13 +24,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadInventoryData() {
     try {
+        const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
+        const apiUrl = window.API_BASE_URL || (isLocal ? 'http://127.0.0.1:5000/api' : 'https://visionedge-opticals.onrender.com/api');
         const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
         // 1. Fetch Inventory Stats
         try {
-            const statsRes = await fetch('http://localhost:5000/api/inventory/stats', { headers });
+            const statsRes = await fetch(`${apiUrl}/inventory/stats`, { headers });
             if (statsRes.ok) {
                 const stats = await statsRes.json();
                 const totalEl = document.getElementById('totalItemsCount');
@@ -48,8 +50,8 @@ async function loadInventoryData() {
 
         // 2. Fetch Frames & Lenses in Parallel
         const [framesRes, lensesRes] = await Promise.all([
-            fetch('http://localhost:5000/api/inventory/frames', { credentials: 'omit' }),
-            fetch('http://localhost:5000/api/inventory/lenses', { credentials: 'omit' })
+            fetch(`${apiUrl}/inventory/frames`, { credentials: 'omit' }),
+            fetch(`${apiUrl}/inventory/lenses`, { credentials: 'omit' })
         ]);
 
         const frames = framesRes.ok ? await framesRes.json() : [];

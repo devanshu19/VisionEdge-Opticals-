@@ -15,13 +15,20 @@ def roles_required(*allowed_roles):
                 pass
                 
             if current_user_id:
-                user = User.query.get(int(current_user_id))
-                if user and (user.role in allowed_roles or 'guest' in allowed_roles):
-                    return fn(*args, **kwargs)
-                elif user:
-                    return jsonify({"message": "You do not have permission to access this resource."}), 403
+                try:
+                    user = User.query.get(int(current_user_id))
+                except (ValueError, TypeError):
+                    user = None
 
-            if 'guest' in allowed_roles:
+                if user:
+                    user_role = (user.role or '').strip().lower()
+                    allowed_lower = [r.strip().lower() for r in allowed_roles]
+                    if user_role in allowed_lower or 'guest' in allowed_lower:
+                        return fn(*args, **kwargs)
+                    else:
+                        return jsonify({"message": "You do not have permission to access this resource."}), 403
+
+            if 'guest' in [r.strip().lower() for r in allowed_roles]:
                 return fn(*args, **kwargs)
 
             return jsonify({"message": "Authentication required"}), 401
