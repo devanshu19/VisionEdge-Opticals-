@@ -762,13 +762,27 @@ def retry_razorpay_payment():
         return jsonify({"message": "Order is already paid and confirmed."}), 400
 
     billing = order.billing
+    if not billing:
+        billing = Billing(
+            invoice_number=generate_invoice_number(),
+            order_id=order.id,
+            subtotal=float(order.subtotal or order.total_amount or 0.0),
+            discount=float(order.discount or 0.0),
+            gst=float(order.gst or 0.0),
+            total_amount=float(order.total_amount or 0.0),
+            payment_method="Razorpay",
+            payment_status="Pending"
+        )
+        db.session.add(billing)
+        db.session.flush()
+
     final_amount = float(order.total_amount)
 
     try:
         notes = {
             "order_id": str(order.id),
             "order_number": order.order_number,
-            "invoice_number": billing.invoice_number if billing else "",
+            "invoice_number": billing.invoice_number,
             "store": "VisionEdge Opticals (Retry)"
         }
         rzp_order = RazorpayService.create_order(
