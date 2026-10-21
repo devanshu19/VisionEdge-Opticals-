@@ -279,7 +279,7 @@
 
             const data = await res.json();
             if (!res.ok) {
-                showSignupMessage(data.message || "Registration failed. Please check your details.", "danger");
+                showSignupMessage(data.error || data.message || "Registration failed. Please check your details.", "danger");
                 return;
             }
 

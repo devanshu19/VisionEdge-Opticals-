@@ -230,7 +230,7 @@
 
             const data = await res.json();
             if (!res.ok) {
-                showLoginMessage(data.message || "Invalid email or password.", "danger");
+                showLoginMessage(data.error || data.message || "Invalid email or password.", "danger");
                 return;
             }
 

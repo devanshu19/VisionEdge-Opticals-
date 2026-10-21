@@ -111,11 +111,11 @@ class Config:
     # ------------------------------------------------------------------ #
     # Flask core
     # ------------------------------------------------------------------ #
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+    SECRET_KEY = (os.getenv("SECRET_KEY") or "").strip() or "visionedge-secret-key-production-fallback-key-32chars"
     DEBUG = os.getenv("DEBUG", "false").strip().lower() in ("1", "true", "yes") and not IS_PRODUCTION
 
     # JWT
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", SECRET_KEY)
+    JWT_SECRET_KEY = (os.getenv("JWT_SECRET_KEY") or "").strip() or SECRET_KEY or "visionedge-jwt-production-fallback-key-32chars" 
     JWT_ACCESS_TOKEN_EXPIRES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", "86400"))  # 24 h
 
     # ------------------------------------------------------------------ #

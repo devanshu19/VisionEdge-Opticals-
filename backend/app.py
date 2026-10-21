@@ -35,7 +35,17 @@ def create_app():
         supports_credentials=True,
     )
     db.init_app(app)
+    if not app.config.get("JWT_SECRET_KEY"):
+        app.config["JWT_SECRET_KEY"] = app.config.get("SECRET_KEY") or "visionedge-jwt-production-fallback-key-32chars"
+    if not app.config.get("SECRET_KEY"):
+        app.config["SECRET_KEY"] = "visionedge-secret-key-production-fallback-key-32chars"
     jwt = JWTManager(app)
+
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            app.logger.warning("Auto db.create_all notice: %s", e)
 
     # WhiteNoise Static File Serving
     from whitenoise import WhiteNoise
