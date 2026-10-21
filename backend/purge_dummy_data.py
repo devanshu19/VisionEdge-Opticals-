@@ -24,8 +24,7 @@ with app.app_context():
     if dummy_order_ids:
         OrderItem.query.filter(OrderItem.order_id.in_(dummy_order_ids)).delete(synchronize_session=False)
         OrderStatusHistory.query.filter(OrderStatusHistory.order_id.in_(dummy_order_ids)).delete(synchronize_session=False)
-        for oid in dummy_order_ids:
-            db.session.execute(text(f"DELETE FROM `order` WHERE id = {oid}"))
+        Order.query.filter(Order.id.in_(dummy_order_ids)).delete(synchronize_session=False)
 
     # 4. Delete dummy appointments
     if dummy_cust_ids:

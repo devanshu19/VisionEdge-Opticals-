@@ -366,27 +366,51 @@ class Supplier(db.Model):
     address = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    def to_dict(self):
+        return {
+            "id": self.id, "name": self.name,
+            "phone": self.phone, "email": self.email,
+            "address": self.address,
+            "created_at": str(self.created_at)
+        }
+
 # ==========================================
 # 10. Orders & 11. Order Items
 # ==========================================
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.String(50), unique=True)
-    order_number = db.Column(db.String(50), unique=True) # Compatibility
+    order_number = db.Column(db.String(50), unique=True)  # Compatibility
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     prescription_id = db.Column(db.Integer, db.ForeignKey('prescription.id'), nullable=True)
-    
-    status = db.Column(db.String(50), default='Pending') # Pending, Processing, Ready, Delivered
+
+    status = db.Column(db.String(50), default='Pending')  # Pending, Processing, Ready, Delivered
     total_amount = db.Column(db.Float, default=0.0)
-    
-    order_date = db.Column(db.DateTime, default=datetime.utcnow) # Compatibility
+    subtotal = db.Column(db.Float, default=0.0)
+    discount = db.Column(db.Float, default=0.0)
+    gst = db.Column(db.Float, default=0.0)
+
+    # Additional fields used in order_routes.py
+    notes = db.Column(db.Text)
+    priority = db.Column(db.String(20), default='Normal')
+    sales_person_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    expected_delivery_date = db.Column(db.Date, nullable=True)
+    actual_delivery_date = db.Column(db.Date, nullable=True)
+
+    order_date = db.Column(db.DateTime, default=datetime.utcnow)  # Compatibility
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     items = db.relationship('OrderItem', backref='order', lazy=True, cascade="all, delete-orphan")
+    prescription = db.relationship('Prescription', backref='orders', lazy=True, foreign_keys=[prescription_id])
 
     def __init__(self, **kwargs):
-        valid_keys = {'id', 'order_id', 'order_number', 'customer_id', 'prescription_id', 'status', 'total_amount', 'order_date', 'created_at'}
-        filtered = {k: v for k, v in kwargs.items() if k in valid_keys}
+        # Accept all valid SQLAlchemy column attributes; silently ignore unknown keys
+        # so route code can pass any subset of fields without raising.
+        model_cols = {c.key for c in self.__table__.columns}
+        model_cols.update({'expected_delivery_date', 'actual_delivery_date',
+                           'sales_person_id', 'priority', 'notes',
+                           'subtotal', 'gst', 'discount'})
+        filtered = {k: v for k, v in kwargs.items() if k in model_cols}
         super().__init__(**filtered)
 
     def to_dict(self):
@@ -625,10 +649,20 @@ class AuditLog(db.Model):
 class Brand(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(20), default='Active')
+    logo = db.Column(db.String(255))
+
+    def to_dict(self):
+        return {"id": self.id, "name": self.name, "status": self.status, "logo": self.logo}
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    type = db.Column(db.String(50))  # Frame / Lens
+    description = db.Column(db.Text)
+
+    def to_dict(self):
+        return {"id": self.id, "name": self.name, "type": self.type, "description": self.description}
 
 class InventoryTransaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -637,6 +671,8 @@ class InventoryTransaction(db.Model):
     transaction_type = db.Column(db.String(50))
     quantity = db.Column(db.Integer)
     notes = db.Column(db.Text)
+    reference_number = db.Column(db.String(100))  # Order number / reference
+    user_id = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, **kwargs):

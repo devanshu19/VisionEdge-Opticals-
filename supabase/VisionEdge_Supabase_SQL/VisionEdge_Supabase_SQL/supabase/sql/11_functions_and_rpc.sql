@@ -1,0 +1,5 @@
+-- No RPC functions are installed by default.
+-- The existing stock decrement and transaction writes occur in backend/utils/signals.py.
+-- Adding a database stock trigger/RPC without changing Flask transaction logic could
+-- double-decrement inventory. Keep stock updates in the existing application until a
+-- separately reviewed atomic stock-adjustment design is approved.

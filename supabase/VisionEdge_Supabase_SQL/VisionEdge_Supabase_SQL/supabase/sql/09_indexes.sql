@@ -1,0 +1,28 @@
+-- Query-supporting indexes based on actual Flask route filters and relationships.
+CREATE INDEX IF NOT EXISTS ix_customer_phone ON public.customer(phone);
+CREATE INDEX IF NOT EXISTS ix_customer_email ON public.customer(email);
+CREATE INDEX IF NOT EXISTS ix_customer_created_at ON public.customer(created_at);
+CREATE INDEX IF NOT EXISTS ix_customer_created_by ON public.customer(created_by);
+CREATE INDEX IF NOT EXISTS ix_appointment_customer_id ON public.appointment(customer_id);
+CREATE INDEX IF NOT EXISTS ix_appointment_date_status ON public.appointment(appointment_date, status);
+CREATE INDEX IF NOT EXISTS ix_eye_test_customer_id ON public.eye_test(customer_id);
+CREATE INDEX IF NOT EXISTS ix_eye_test_appointment_id ON public.eye_test(appointment_id);
+CREATE INDEX IF NOT EXISTS ix_prescription_customer_id ON public.prescription(customer_id);
+CREATE INDEX IF NOT EXISTS ix_prescription_eye_test_id ON public.prescription(eye_test_id);
+CREATE INDEX IF NOT EXISTS ix_prescription_created_at ON public.prescription(created_at);
+CREATE INDEX IF NOT EXISTS ix_frame_stock ON public.frame(stock);
+CREATE INDEX IF NOT EXISTS ix_lens_stock ON public.lens(stock);
+CREATE INDEX IF NOT EXISTS ix_inventory_transaction_product ON public.inventory_transaction(product_type, product_id, created_at);
+CREATE INDEX IF NOT EXISTS ix_order_customer_id ON public."order"(customer_id);
+CREATE INDEX IF NOT EXISTS ix_order_created_at ON public."order"(created_at);
+CREATE INDEX IF NOT EXISTS ix_order_status ON public."order"(status);
+CREATE INDEX IF NOT EXISTS ix_order_item_order_id ON public.order_item(order_id);
+CREATE INDEX IF NOT EXISTS ix_payment_billing_id ON public.payment(billing_id);
+CREATE INDEX IF NOT EXISTS ix_payment_transaction_id ON public.payment(transaction_id);
+CREATE INDEX IF NOT EXISTS ix_lens_recommendation_customer ON public.lens_recommendation(customer_id, created_at);
+CREATE INDEX IF NOT EXISTS ix_frame_recommendation_customer ON public.frame_recommendation(customer_id, created_at);
+CREATE INDEX IF NOT EXISTS ix_vto_customer ON public.virtual_try_on_history(customer_id, created_at);
+CREATE INDEX IF NOT EXISTS ix_chat_history_created_at ON public.chat_history(created_at);
+CREATE INDEX IF NOT EXISTS ix_notification_customer_status ON public.notification(customer_id, status, created_at);
+CREATE INDEX IF NOT EXISTS ix_audit_log_user_timestamp ON public.audit_log(user_id, timestamp);
+CREATE INDEX IF NOT EXISTS ix_order_status_history_order ON public.order_status_history(order_id, created_at);

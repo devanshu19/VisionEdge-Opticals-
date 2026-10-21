@@ -1,0 +1,3 @@
+-- No seed rows are inserted. The source does not provide authoritative reference data.
+-- Do not seed fake customers, prescriptions, payments, or admin credentials.
+-- Brand/category rows can be added through the existing authenticated admin workflow.

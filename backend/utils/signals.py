@@ -1,27 +1,42 @@
-from sqlalchemy import event
+from sqlalchemy import event, text
 from models import Frame, Lens, Order, OrderItem, Billing, Appointment
 from utils.services import create_notification
 from datetime import datetime
+
 
 def register_signals():
     """
     Registers SQLAlchemy event listeners to automate notification creation.
     Must be called inside the app context on startup.
+
+    IMPORTANT: These listeners execute during the SQLAlchemy flush phase using
+    the low-level `connection` object (not db.session).  Raw SQL here must be
+    PostgreSQL-compatible:
+      - CURRENT_TIMESTAMP is standard SQL and works on all backends.
+      - Column names must match the actual table columns (product_type / product_id).
+      - Named bind parameters (:name) are used — no MySQL %s or SQLite ? placeholders.
     """
-    
+
+    # ------------------------------------------------------------------ #
     # 1. LOW STOCK ALERTS
+    # ------------------------------------------------------------------ #
     def check_low_stock(mapper, connection, target):
         if target.stock <= target.min_stock:
             create_notification(
                 notification_type='LOW_STOCK',
                 title='Low Stock Alert',
-                message=f"{target.name} stock has dropped to {target.stock} units. (Min required: {target.min_stock})"
+                message=(
+                    f"{target.name} stock has dropped to {target.stock} units. "
+                    f"(Min required: {target.min_stock})"
+                )
             )
 
     event.listen(Frame, 'after_update', check_low_stock)
     event.listen(Lens, 'after_update', check_low_stock)
 
+    # ------------------------------------------------------------------ #
     # 2. NEW ORDER & ORDER STATUS
+    # ------------------------------------------------------------------ #
     def on_order_insert(mapper, connection, target):
         create_notification(
             notification_type='NEW_ORDER',
@@ -30,15 +45,26 @@ def register_signals():
         )
 
     def on_order_item_insert(mapper, connection, target):
-        from sqlalchemy import text
+        """
+        Deduct stock and log inventory transaction when an OrderItem is inserted.
 
-        # Resolve field names — OrderItem uses item_type / item_id
-        itype = getattr(target, 'item_type', None) or getattr(target, 'product_type', None)
-        iid   = getattr(target, 'item_id',   None) or getattr(target, 'product_id',   None)
+        Uses the canonical column names (product_type / product_id) that exist
+        in the inventory_transaction table, with a fallback to aliases
+        (item_type / item_id) that older table versions may have had.
+
+        The raw SQL is PostgreSQL-safe:
+          - Named parameters :name with text() construct.
+          - CURRENT_TIMESTAMP is ANSI SQL.
+          - No backtick quoting.
+        """
+        # Resolve the effective item type and id
+        itype = getattr(target, 'product_type', None) or getattr(target, 'item_type', None)
+        iid   = getattr(target, 'product_id',   None) or getattr(target, 'item_id',   None)
 
         if not itype or not iid:
             return
 
+        # Deduct stock
         if itype == 'Frame':
             connection.execute(
                 text("UPDATE frame SET stock = stock - :qty WHERE id = :id"),
@@ -50,42 +76,27 @@ def register_signals():
                 {"qty": target.quantity, "id": iid}
             )
 
-        # Log Inventory Transaction — try both column name schemas gracefully
+        # Log Inventory Transaction using canonical column names
         try:
             connection.execute(
                 text("""
                     INSERT INTO inventory_transaction
-                        (item_type, item_id, transaction_type, quantity, reason, created_at)
-                    VALUES (:itype, :iid, 'Sale', :qty, :reason, CURRENT_TIMESTAMP)
+                        (product_type, product_id, transaction_type, quantity,
+                         notes, created_at)
+                    VALUES (:itype, :iid, 'Sale', :qty, :notes, CURRENT_TIMESTAMP)
                 """),
                 {
                     "itype": itype,
                     "iid": iid,
                     "qty": target.quantity,
-                    "reason": f"Order item sale (Order ID: {target.order_id})"
+                    "notes": f"Order item sale (Order ID: {target.order_id})"
                 }
             )
         except Exception:
-            try:
-                connection.execute(
-                    text("""
-                        INSERT INTO inventory_transaction
-                            (product_type, product_id, transaction_type, quantity, notes, created_at)
-                        VALUES (:itype, :iid, 'Sale', :qty, :notes, CURRENT_TIMESTAMP)
-                    """),
-                    {
-                        "itype": itype,
-                        "iid": iid,
-                        "qty": target.quantity,
-                        "notes": f"Order item sale (Order ID: {target.order_id})"
-                    }
-                )
-            except Exception:
-                pass  # Don't let logging failure break the order
+            # Don't let inventory logging failure break order creation
+            pass
 
     def on_order_update(mapper, connection, target):
-        # We check state changes in a real app by inspecting session, 
-        # but for simplicity, we trigger on specific statuses.
         if target.status == 'Ready for Pickup':
             create_notification(
                 notification_type='ORDER_READY',
@@ -97,7 +108,10 @@ def register_signals():
             create_notification(
                 notification_type='ORDER_COMPLETED',
                 title='Order Completed',
-                message=f"Thank you for shopping with VisionEdge. Order {target.order_number} is completed.",
+                message=(
+                    f"Thank you for shopping with VisionEdge. "
+                    f"Order {target.order_number} is completed."
+                ),
                 customer_id=target.customer_id
             )
 
@@ -105,37 +119,53 @@ def register_signals():
     event.listen(OrderItem, 'after_insert', on_order_item_insert)
     event.listen(Order, 'after_update', on_order_update)
 
+    # ------------------------------------------------------------------ #
     # 3. PAYMENT PENDING ALERTS
+    # ------------------------------------------------------------------ #
     def on_billing_insert(mapper, connection, target):
         if target.payment_status == 'Pending':
             create_notification(
                 notification_type='PAYMENT_PENDING',
                 title='Pending Payment',
-                message=f"Pending payment for invoice {target.invoice_number}. Total: ₹{target.total_amount}.",
-                customer_id=None # We omit customer_id here to avoid querying inside flush, admins still get it.
+                message=(
+                    f"Pending payment for invoice {target.invoice_number}. "
+                    f"Total: \u20b9{target.total_amount}."
+                ),
+                customer_id=None
             )
-            
+
     def on_billing_update(mapper, connection, target):
         if target.payment_status == 'Pending':
             create_notification(
                 notification_type='PAYMENT_PENDING',
                 title='Pending Payment',
-                message=f"Pending payment for invoice {target.invoice_number}. Total: ₹{target.total_amount}.",
+                message=(
+                    f"Pending payment for invoice {target.invoice_number}. "
+                    f"Total: \u20b9{target.total_amount}."
+                ),
                 customer_id=None
             )
 
     event.listen(Billing, 'after_insert', on_billing_insert)
     event.listen(Billing, 'after_update', on_billing_update)
 
+    # ------------------------------------------------------------------ #
     # 4. APPOINTMENT REMINDER
+    # ------------------------------------------------------------------ #
     def on_appointment_insert(mapper, connection, target):
         if target.status == 'Pending':
-            # Create a combined datetime for formatting
-            dt = datetime.combine(target.appointment_date, target.appointment_time) if target.appointment_date and target.appointment_time else datetime.utcnow()
+            dt = (
+                datetime.combine(target.appointment_date, target.appointment_time)
+                if target.appointment_date and target.appointment_time
+                else datetime.utcnow()
+            )
             create_notification(
                 notification_type='APPOINTMENT_REMINDER',
                 title='Appointment Reminder',
-                message=f"Reminder: Your eye test appointment is scheduled on {dt.strftime('%Y-%m-%d %I:%M %p')}.",
+                message=(
+                    f"Reminder: Your eye test appointment is scheduled on "
+                    f"{dt.strftime('%Y-%m-%d %I:%M %p')}."
+                ),
                 customer_id=target.customer_id
             )
 

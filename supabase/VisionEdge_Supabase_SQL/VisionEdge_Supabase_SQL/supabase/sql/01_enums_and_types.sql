@@ -1,0 +1,4 @@
+-- VisionEdge currently stores statuses and roles as VARCHAR/STRING columns.
+-- Keep these as text for compatibility with the existing Flask code, which assigns
+-- values such as customer/admin/staff, Pending/Confirmed/Completed, and Paid.
+-- No PostgreSQL ENUM types are created because the source does not define a closed enum.

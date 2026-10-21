@@ -1,0 +1,1 @@
+Generated SQL-only Supabase schema from uploaded VisionEdge ZIP. Source examined: backend/models.py, config.py, app.py, mysql_db.py, backend/routes/*.py, backend/utils/*.py. SQL was not executed. Application source was not modified.

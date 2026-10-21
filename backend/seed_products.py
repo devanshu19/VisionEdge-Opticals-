@@ -4,30 +4,7 @@ from sqlalchemy import text
 
 app = create_app()
 with app.app_context():
-    try:
-        db.session.execute(text("ALTER TABLE frame ADD COLUMN category VARCHAR(50)"))
-        db.session.commit()
-    except:
-        db.session.rollback()
-        
-    try:
-        db.session.execute(text("ALTER TABLE lens ADD COLUMN category VARCHAR(50)"))
-        db.session.commit()
-    except:
-        db.session.rollback()
-
-    try:
-        db.session.execute(text("ALTER TABLE frame MODIFY COLUMN image TEXT"))
-        db.session.commit()
-    except:
-        db.session.rollback()
-
-    try:
-        db.session.execute(text("ALTER TABLE lens MODIFY COLUMN image TEXT"))
-        db.session.commit()
-    except:
-        db.session.rollback()
-
+    # Ensure tables exist
     db.create_all()
 
     # Clear old data

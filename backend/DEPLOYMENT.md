@@ -1,15 +1,18 @@
 # VisionEdge Production Deployment Guide
+========================================
 
-This guide details how to deploy the VisionEdge backend API (Flask + MySQL architecture) into a production environment. 
+This guide details how to deploy the VisionEdge backend API (Flask + Supabase PostgreSQL architecture) into a production environment.
 
 > **Important**: This backend is built on **Flask**, not Django. Standard Django commands (`manage.py runserver`, `collectstatic`, `wsgi.py`) have been replaced by robust Flask WSGI alternatives.
 
 ---
 
 ## 1. Prerequisites
-- Python 3.9+
-- MySQL Server 8.0+
+- Python 3.10+
+- Supabase PostgreSQL Database (or any managed PostgreSQL 14+ instance)
 - Environment Variables setup (`.env`)
+
+---
 
 ## 2. Environment Variables Setup
 Copy the `.env.example` file (or create `.env`) inside the `/backend` folder:
@@ -17,48 +20,62 @@ Copy the `.env.example` file (or create `.env`) inside the `/backend` folder:
 DEBUG=False
 SECRET_KEY="your-secure-flask-secret-key"
 JWT_SECRET_KEY="your-secure-jwt-signature-key"
-DATABASE_URL="mysql+pymysql://username:password@localhost:3306/visionedge_db"
-GEMINI_API_KEY="your-optional-google-gemini-key"
+DATABASE_URL="postgresql+psycopg2://postgres.[project-ref]:[db-password]@aws-0-[region].pooler.supabase.com:6543/postgres"
+DB_SSLMODE="require"
+SUPABASE_URL="https://[project-ref].supabase.co"
+SUPABASE_PUBLISHABLE_KEY="your-supabase-publishable-key"
+FRONTEND_URL="https://your-frontend-domain.com"
 ```
 
+---
+
 ## 3. Installation
-Navigate to the `/backend` directory and install the exact locked dependencies:
+Navigate to the `/backend` directory and install dependencies:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## 4. Database Setup & Migrations
-Because we are using standard SQLAlchemy (without Django ORM), migrations are handled via custom initialization scripts:
-```bash
-# 1. First, create the database and tables natively:
-python setup_mysql.py
+---
 
-# 2. Run the data migration/seeding script (if applying initial schema structure):
-python migrate_mysql.py
+## 4. Database Setup & Supabase Migration
+The complete database schema for Supabase is located at:
+`supabase/visionedge_complete_supabase_setup.sql`
+
+### Option A: Via Supabase Dashboard (Recommended)
+1. Open your project on [Supabase Dashboard](https://supabase.com/dashboard).
+2. Go to **SQL Editor** -> **New query**.
+3. Copy and paste the contents of `supabase/visionedge_complete_supabase_setup.sql` and click **Run**.
+4. All 23 tables, foreign keys, triggers, and indexes are set up in one click.
+
+### Option B: Automatic Schema Creation via SQLAlchemy
+When running Flask in an environment with `DATABASE_URL` configured, SQLAlchemy will automatically ensure all tables are created on startup:
+```bash
+python manage.py db_check
 ```
-*Note: Your `DATABASE_URL` in `.env` must accurately reflect the MySQL credentials.*
+
+---
 
 ## 5. Running the Application
 
-### Development (Local testing only)
+### Development (Local testing)
 ```bash
 python app.py
 ```
 
 ### Production (WSGI Options)
 
-#### Option A: Gunicorn (Linux/Ubuntu/VPS/Render)
+#### Option A: Gunicorn (Linux / Ubuntu / VPS / Render)
 `gunicorn` is the industry standard for Python WSGI in Linux environments. A configuration file (`gunicorn_config.py`) is already provided.
 ```bash
 gunicorn -c gunicorn_config.py "app:create_app()"
 ```
 
 #### Option B: Waitress (Windows Environments)
-If deploying onto a Windows Server natively where Gunicorn isn't supported, use `waitress`:
+If deploying onto Windows Server natively where Gunicorn is not supported, use `waitress`:
 ```bash
-waitress-serve --port=8000 --call "app:create_app"
+waitress-serve --port=5000 --call "app:create_app"
 ```
 
 ---
@@ -70,13 +87,21 @@ waitress-serve --port=8000 --call "app:create_app"
 2. **Environment**: Python
 3. **Build Command**: `pip install -r requirements.txt`
 4. **Start Command**: `gunicorn -c gunicorn_config.py "app:create_app()"`
-5. **Environment Variables**: Add `DATABASE_URL` (link to a managed MySQL DB), `SECRET_KEY`, `JWT_SECRET_KEY`, and `DEBUG=False` in Render's Secret Manager.
+5. **Environment Variables**: Add `DATABASE_URL` (Supabase connection string), `SECRET_KEY`, `JWT_SECRET_KEY`, `DB_SSLMODE=require`, and `DEBUG=False` in Render's Secret Manager.
 
 ### Option 2: Ubuntu VPS (DigitalOcean, AWS EC2, Linode)
-1. Install Python and Nginx: `sudo apt update && sudo apt install python3-pip python3-venv nginx mysql-server`.
-2. Clone the repository and configure `.env` using your MySQL credentials.
-3. Install dependencies: `pip install -r requirements.txt`.
-4. Run Gunicorn as a systemd service. Create `/etc/systemd/system/visionedge.service`:
+1. Install Python and Nginx:
+   ```bash
+   sudo apt update && sudo apt install python3-pip python3-venv nginx
+   ```
+2. Clone repository and configure `backend/.env` using your Supabase credentials.
+3. Install dependencies:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+4. Run Gunicorn as a systemd service (`/etc/systemd/system/visionedge.service`):
    ```ini
    [Unit]
    Description=Gunicorn instance to serve VisionEdge
@@ -92,14 +117,14 @@ waitress-serve --port=8000 --call "app:create_app"
    [Install]
    WantedBy=multi-user.target
    ```
-5. Setup Nginx Reverse Proxy inside `/etc/nginx/sites-available/visionedge`:
+5. Setup Nginx Reverse Proxy (`/etc/nginx/sites-available/visionedge`):
    ```nginx
    server {
        listen 80;
        server_name your_domain.com;
 
        location / {
-           proxy_pass http://127.0.0.1:8000;
+           proxy_pass http://127.0.0.1:5000;
            proxy_set_header Host $host;
            proxy_set_header X-Real-IP $remote_addr;
            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -107,40 +132,17 @@ waitress-serve --port=8000 --call "app:create_app"
        }
    }
    ```
-6. Restart Nginx: `sudo systemctl restart nginx`.
-
-### Option 3: PythonAnywhere
-1. Create a Web App configured with Python 3.9+.
-2. Under the WSGI Configuration file provided by PythonAnywhere, configure the import to launch the Flask app:
-   ```python
-   import sys
-   import os
-   from dotenv import load_dotenv
-
-   path = '/home/yourusername/VisionEdge/backend'
-   if path not in sys.path:
-       sys.path.append(path)
-
-   # Load .env
-   load_dotenv(os.path.join(path, '.env'))
-
-   from app import create_app
-   application = create_app()
+6. Enable and restart Nginx:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/visionedge /etc/nginx/sites-enabled/
+   sudo systemctl restart nginx
    ```
-3. `whitenoise` will automatically handle static assets gracefully.
 
 ---
 
 ## 7. Operational Monitoring
 
 ### Health Check Endpoint
-To monitor uptime or link a load balancer, ping the health check route. It validates both the API runtime and the MySQL connection.
+To monitor uptime or link a load balancer, ping the health check route. It validates both the API runtime and the database connection:
 - **GET** `/api/health`
-- **Response**: `{"status": "running", "database": "connected"}`
-
-### Backups
-To take a manual snapshot of the MySQL database safely without stopping Gunicorn:
-```bash
-python manage.py backup_database
-```
-*Creates a `.sql` artifact inside the `/backups/` directory.*
+- **Response**: `{"status": "running", "database": "connected", "dialect": "postgresql"}`

@@ -1,0 +1,4 @@
+-- OPTIONAL: deliberately does not insert an administrator.
+-- The current application hashes passwords in Flask and requires a verified secure
+-- workflow. Create the first admin through the existing application/secure CLI workflow.
+-- Never insert plaintext passwords or guess a password-hash algorithm in SQL.

@@ -1,0 +1,9 @@
+-- CONDITIONAL / dashboard review required.
+-- The inspected models store file paths/URLs (prescription_image, customer.photo,
+-- frame.image, frame.vto_image, recommendation face_image, VTO images, invoice_pdf).
+-- Source code serves local files from backend/media and does not demonstrate Supabase
+-- Storage API usage. Do not create Storage policies or write directly to storage.objects
+-- until file upload/download code is intentionally migrated.
+-- Recommended future separation: public catalog bucket for approved frame/lens images;
+-- private bucket(s) for prescription scans, customer photos, virtual try-on photos, and
+-- invoice PDFs. Enforce owner/role policies only after the caller identity is verified.

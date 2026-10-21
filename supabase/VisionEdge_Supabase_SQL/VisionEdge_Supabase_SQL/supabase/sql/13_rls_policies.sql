@@ -1,0 +1,7 @@
+-- CONDITIONAL: intentionally contains no permissive policies.
+-- The verified app uses Flask JWT and a SQLAlchemy connection, not Supabase Auth JWT
+-- identity propagation. Therefore auth.uid() cannot be safely mapped to the Flask user
+-- from the current source. Do not add browser-facing policies until an identity and role
+-- propagation design is selected and tested. With RLS enabled and no policies, Data API
+-- roles have no table access. The backend database role must be separately configured.
+-- Never use USING (true) / WITH CHECK (true) for sensitive or write-enabled tables.

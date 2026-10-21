@@ -106,7 +106,7 @@ def extract_prescription():
 
         image_relative_url = f"/media/prescriptions/{filename}"
 
-        # Auto-save extracted prescription to MySQL Database
+        # Auto-save extracted prescription to Supabase PostgreSQL Database
         try:
             from models import db, Prescription, EyeTest, Customer
             from datetime import datetime

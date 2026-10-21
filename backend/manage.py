@@ -1,65 +1,65 @@
+"""
+manage.py — VisionEdge Database Management CLI
+================================================
+Usage (from the backend/ directory with venv activated):
+
+  # Initialize Flask-Migrate (first time only):
+  python manage.py db init
+
+  # Generate a new migration after model changes:
+  python manage.py db migrate -m "describe the change"
+
+  # Apply pending migrations to the database:
+  python manage.py db upgrade
+
+  # Downgrade one revision:
+  python manage.py db downgrade
+
+  # Show current revision:
+  python manage.py db current
+
+  # Show migration history:
+  python manage.py db history
+
+  # Verify DB connection:
+  python manage.py db_check
+
+Note: DATABASE_URL must be set in .env before running migrations.
+"""
+
 import os
 import sys
-import argparse
-from datetime import datetime
-import subprocess
-from dotenv import load_dotenv
 
-def backup_database():
-    load_dotenv()
-    db_url = os.environ.get('DATABASE_URL')
-    
-    if not db_url or "mysql" not in db_url:
-        print("Error: MySQL DATABASE_URL not found in .env")
-        sys.exit(1)
-        
-    # Extract DB details roughly (mysql+pymysql://user:pass@host:port/dbname)
-    # Simple parse for demo/production script
+# Ensure backend/ is on the Python path when running from project root
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from app import create_app
+from models import db
+from flask_migrate import Migrate
+from flask.cli import FlaskGroup
+
+app = create_app()
+migrate = Migrate(app, db)
+
+cli = FlaskGroup(app)
+
+
+@app.cli.command("db_check")
+def db_check():
+    """Verify the database connection without exposing credentials."""
+    from sqlalchemy import text
+    from config import Config
+    dialect = Config.db_dialect()
+    print(f"Configured dialect: {dialect}")
     try:
-        parts = db_url.split('://')[1].split('/')
-        db_name = parts[1].split('?')[0]
-        credentials, host_port = parts[0].split('@')
-        user = credentials.split(':')[0]
-        password = credentials.split(':')[1] if ':' in credentials else ''
-        host = host_port.split(':')[0]
+        with app.app_context():
+            result = db.session.execute(text("SELECT 1"))
+            result.close()
+            print("✓ Database connection successful.")
     except Exception as e:
-        print(f"Failed to parse database URL: {e}")
+        print(f"✗ Database connection failed: {type(e).__name__}: {e}")
         sys.exit(1)
-        
-    backup_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backups')
-    os.makedirs(backup_dir, exist_ok=True)
-    
-    date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
-    backup_file = os.path.join(backup_dir, f'backup_{date_str}.sql')
-    
-    print(f"Starting backup for database '{db_name}'...")
-    
-    cmd = ['mysqldump', '-u', user, '-h', host, db_name]
-    if password:
-        cmd.insert(2, f'-p{password}')
-        
-    try:
-        with open(backup_file, 'w') as f:
-            subprocess.run(cmd, stdout=f, check=True)
-        print(f"Backup successful! Saved to: {backup_file}")
-    except subprocess.CalledProcessError as e:
-        print(f"Backup failed: {e}")
-        if os.path.exists(backup_file):
-            os.remove(backup_file)
-    except FileNotFoundError:
-        print("Error: 'mysqldump' not found in PATH. Please install MySQL client tools.")
 
-def main():
-    parser = argparse.ArgumentParser(description="VisionEdge Management CLI")
-    parser.add_argument('command', help="Command to run (e.g., backup_database)")
-    
-    args = parser.parse_args()
-    
-    if args.command == 'backup_database':
-        backup_database()
-    else:
-        print(f"Unknown command: {args.command}")
-        parser.print_help()
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    cli()
