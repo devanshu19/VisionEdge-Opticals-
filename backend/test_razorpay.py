@@ -534,19 +534,39 @@ run_test("POST /api/payment/razorpay/retry: generate fresh payment session", tes
 # Test 11: Admin Refund Processing
 # ---------------------------------------------------------------------------
 def test_admin_refund():
+    import uuid
+    fresh_pay_id = f"pay_test_refund_{uuid.uuid4().hex[:6]}"
+
+    with app.app_context():
+        b = Billing.query.first()
+        p = Payment(
+            billing_id=b.id if b else 1,
+            order_id=global_test_order_info.get("order_id"),
+            amount=1000.0,
+            currency="INR",
+            gateway="Razorpay",
+            gateway_payment_id=fresh_pay_id,
+            gateway_status="captured",
+            signature_verified=True,
+            refund_status=None,
+            refunded_amount=0.0
+        )
+        db.session.add(p)
+        db.session.commit()
+
     # 1. Non-admin must be forbidden (403)
     res_nonadmin = client.post(
         "/api/payment/razorpay/refund",
         headers={"Authorization": f"Bearer {customer_token}"},
-        json={"payment_id": "pay_mock_success_112233"}
+        json={"payment_id": fresh_pay_id}
     )
     assert res_nonadmin.status_code == 403, "Non-admin refund must return 403"
 
     # 2. Admin partial refund
     mock_refund_resp = {
         "id": "rfn_mock_refund_12345",
-        "payment_id": "pay_mock_success_112233",
-        "amount": 50000,  # ₹500 in paise
+        "payment_id": fresh_pay_id,
+        "amount": 40000,  # ₹400 in paise
         "status": "processed"
     }
 
@@ -555,8 +575,8 @@ def test_admin_refund():
             "/api/payment/razorpay/refund",
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
-                "payment_id": "pay_mock_success_112233",
-                "amount": 500.0,
+                "payment_id": fresh_pay_id,
+                "amount": 400.0,
                 "reason": "Customer requested partial refund"
             }
         )
@@ -565,7 +585,7 @@ def test_admin_refund():
         assert data["status"] == "success"
         assert data["refund_id"] == "rfn_mock_refund_12345"
         assert data["refund_status"] == "partial"
-        assert data["total_refunded"] == 500.0
+        assert data["total_refunded"] == 400.0
 
     # 3. Verify Admin Transactions endpoint
     txns_res = client.get(
