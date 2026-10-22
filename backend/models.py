@@ -311,15 +311,16 @@ class Frame(db.Model):
     
     def to_dict(self):
         return {
-            "id": self.id, "frame_code": self.frame_code, "name": self.name or self.model,
-            "brand": self.brand, "model": self.model, "brand_name": self.brand,
+            "id": self.id, "frame_code": self.frame_code, "name": self.name or self.model or "Optical Frame",
+            "brand": self.brand or "VisionEdge", "model": self.model or self.name or "Model", "brand_name": self.brand or "VisionEdge",
             "category": self.category or "Eyeglasses",
-            "gender": self.gender, "shape": self.shape, "material": self.material,
-            "size": self.size, "color": self.color, 
+            "gender": self.gender or "Unisex", "shape": self.shape or "Rectangle", "material": self.material or "Acetate",
+            "size": self.size or "Medium", "color": self.color or "Classic", 
             "price": self.price, "selling_price": self.selling_price or self.price,
-            "stock": self.stock, "min_stock": self.min_stock, 
-            "status": self.status, "image": self.image, "vto_image": self.vto_image,
-            "created_at": str(self.created_at)
+            "stock": self.stock if self.stock is not None else 0, "min_stock": self.min_stock or 5, 
+            "status": self.status or "Available", "image": self.image, "vto_image": self.vto_image,
+            "item_type": "Frame",
+            "created_at": str(self.created_at) if self.created_at else None
         }
 
 # ==========================================
@@ -344,15 +345,16 @@ class Lens(db.Model):
     
     def to_dict(self):
         return {
-            "id": self.id, "lens_code": self.lens_code, "name": self.name or f"{self.brand} {self.type}",
-            "brand": self.brand, "brand_name": self.brand,
+            "id": self.id, "lens_code": self.lens_code, "name": self.name or f"{self.brand or ''} {self.type or 'Lens'}".strip(),
+            "brand": self.brand or "VisionEdge", "brand_name": self.brand or "VisionEdge",
             "category": self.category or "Contact & Optical Lenses",
-            "type": self.type, "lens_type": self.type or self.lens_type,
-            "coating": self.coating, 
+            "type": self.type or "Single Vision", "lens_type": self.type or self.lens_type or "Single Vision",
+            "coating": self.coating or "Anti-Reflective", 
             "price": self.price, "selling_price": self.selling_price or self.price,
-            "stock": self.stock, "min_stock": self.min_stock, 
-            "status": self.status, "image": self.image,
-            "created_at": str(self.created_at)
+            "stock": self.stock if self.stock is not None else 0, "min_stock": self.min_stock or 10, 
+            "status": self.status or "Available", "image": self.image,
+            "item_type": "Lens",
+            "created_at": str(self.created_at) if self.created_at else None
         }
 
 # ==========================================

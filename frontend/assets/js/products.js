@@ -236,30 +236,39 @@ window.renderProducts = function(products, container) {
                                 <span class="fs-5 fw-bold text-primary">₹${price}</span>
                                 ${p.price && p.price > price ? `<span class="text-muted text-decoration-line-through small ms-1">₹${p.price}</span>` : ''}
                             </div>
-                            <div class="d-flex gap-2">
-                                ${isOutOfStock ? `
-                                    <span class="badge bg-secondary bg-opacity-75 text-white px-3 py-2 rounded-pill"><i class="bi bi-slash-circle me-1"></i>Out of Stock</span>
-                                ` : `
-                                    ${type === 'Frame' ? `
-                                    <button class="btn btn-sm btn-outline-info rounded-pill px-3 fw-bold btn-vto shadow-sm" 
-                                        data-item-id="${p.id}"
-                                        data-item-name="${name}"
-                                        data-item-image="${imgUrl}">
-                                        <i class="bi bi-magic me-1"></i>Try On
-                                    </button>
-                                    ` : ''}
-                                    <button class="btn btn-primary btn-sm rounded-circle p-2 lh-1 shadow-sm add-to-cart-btn" 
-                                        title="Add to Cart"
-                                        onclick="window.handleAddToCart(this, event)"
-                                        data-item-id="${p.id}"
-                                        data-item-type="${type}"
-                                        data-item-name="${name}"
-                                        data-item-price="${price}"
-                                        data-item-image="${imgUrl}">
-                                        <i class="bi bi-cart-plus" style="pointer-events: none;"></i>
-                                    </button>
-                                `}
-                            </div>
+                                <div class="d-flex gap-2">
+                                    ${isOutOfStock ? `
+                                        <span class="badge bg-secondary bg-opacity-75 text-white px-3 py-2 rounded-pill"><i class="bi bi-slash-circle me-1"></i>Out of Stock</span>
+                                    ` : `
+                                        ${type === 'Frame' ? `
+                                        <button class="btn btn-sm btn-outline-info rounded-pill px-3 fw-bold btn-vto shadow-sm" 
+                                            data-item-id="${p.id}"
+                                            data-item-name="${name}"
+                                            data-item-image="${imgUrl}">
+                                            <i class="bi bi-magic me-1"></i>Try On
+                                        </button>
+                                        ` : ''}
+                                        <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold shadow-sm"
+                                            onclick="window.handleBuyNow(this, event)"
+                                            data-item-id="${p.id}"
+                                            data-item-type="${type}"
+                                            data-item-name="${name}"
+                                            data-item-price="${price}"
+                                            data-item-image="${imgUrl}">
+                                            Buy Now
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm rounded-circle p-2 lh-1 shadow-sm add-to-cart-btn" 
+                                            title="Add to Cart"
+                                            onclick="window.handleAddToCart(this, event)"
+                                            data-item-id="${p.id}"
+                                            data-item-type="${type}"
+                                            data-item-name="${name}"
+                                            data-item-price="${price}"
+                                            data-item-image="${imgUrl}">
+                                            <i class="bi bi-cart-plus" style="pointer-events: none;"></i>
+                                        </button>
+                                    `}
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -355,6 +364,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         lenses = lenses.map(l => ({ ...l, item_type: 'Lens', category: 'Contact & Optical Lenses' }));
         
         allProducts = [...frames, ...lenses];
+
+        // Update Dynamic Category Counts
+        const countFor = (cat) => allProducts.filter(p => window.matchesCategory(p, cat)).length;
+        const cEye = countFor('Eyeglasses');
+        const cSun = countFor('Sunglasses');
+        const cCmp = countFor('Computer Glasses');
+        const cKid = countFor('Kids Glasses');
+        const cLns = countFor('Contact & Optical Lenses');
+        const cAll = allProducts.length;
+
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setTxt('tabCountAll', cAll);
+        setTxt('tabCountEye', cEye);
+        setTxt('tabCountSun', cSun);
+        setTxt('tabCountCmp', cCmp);
+        setTxt('tabCountKid', cKid);
+        setTxt('tabCountLns', cLns);
+
+        setTxt('sideCountEye', cEye);
+        setTxt('sideCountSun', cSun);
+        setTxt('sideCountCmp', cCmp);
+        setTxt('sideCountKid', cKid);
+        setTxt('sideCountLns', cLns);
 
         const urlParams = new URLSearchParams(window.location.search);
         const search = urlParams.get('search');

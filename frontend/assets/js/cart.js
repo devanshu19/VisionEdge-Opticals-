@@ -172,6 +172,8 @@ window.removeFromCart = function(index) {
 // Save to localStorage
 function saveCart() {
     localStorage.setItem('visionEdgeCart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.cart = cart;
 }
 
 window.handleAddToCart = function(btn, event) {
@@ -183,12 +185,46 @@ window.handleAddToCart = function(btn, event) {
             item_id: btn.dataset.itemId,
             name: btn.dataset.itemName || 'VisionEdge Product', 
             price: parseInt(btn.dataset.itemPrice) || 999,
-            item_image: btn.dataset.itemImage || ''
+            selling_price: parseInt(btn.dataset.itemPrice) || 999,
+            image: btn.dataset.itemImage || '',
+            item_image: btn.dataset.itemImage || '',
+            quantity: 1
         };
         
         addToCart(product);
     } catch (e) {
         alert("Error in handleAddToCart: " + e.message);
+    }
+};
+
+// Immediate One-Click Buy Now
+window.handleBuyNow = function(btn, event) {
+    if (event) event.preventDefault();
+    try {
+        let product = { 
+            id: btn.dataset.itemId || Date.now().toString(), 
+            item_type: btn.dataset.itemType || 'Frame',
+            item_id: btn.dataset.itemId,
+            name: btn.dataset.itemName || 'VisionEdge Product', 
+            price: parseInt(btn.dataset.itemPrice) || 999,
+            selling_price: parseInt(btn.dataset.itemPrice) || 999,
+            image: btn.dataset.itemImage || '',
+            item_image: btn.dataset.itemImage || '',
+            quantity: 1
+        };
+        
+        // Find existing or push
+        const existing = cart.find(i => String(i.id) === String(product.id));
+        if (existing) {
+            existing.quantity = (existing.quantity || 0) + 1;
+        } else {
+            cart.push(product);
+        }
+        saveCart();
+        window.location.href = "checkout.html";
+    } catch (e) {
+        console.error("Buy now error:", e);
+        window.location.href = "checkout.html";
     }
 };
 
@@ -203,15 +239,22 @@ window.handleSearch = function(event) {
 
 // Actual Proceed to Checkout
 window.proceedToCheckout = function() {
+    if (!cart || cart.length === 0) {
+        try {
+            const saved = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart') || '[]';
+            cart = JSON.parse(saved);
+        } catch (e) { cart = []; }
+    }
+
     if (cart.length === 0) {
-        alert("Your cart is empty.");
+        alert("Your cart is empty. Please select an eyewear from products.");
+        window.location.href = "products.html";
         return;
     }
     
-    const token = localStorage.getItem("access_token");
-    const userStr = localStorage.getItem("current_user");
+    const token = localStorage.getItem("access_token") || localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+    const userStr = localStorage.getItem("current_user") || localStorage.getItem("user") || sessionStorage.getItem("user");
     if (!token || !userStr) {
-        alert("Please login to proceed to checkout.");
         window.location.href = "login.html?redirect=checkout.html";
         return;
     }

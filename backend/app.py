@@ -44,8 +44,11 @@ def create_app():
     with app.app_context():
         try:
             db.create_all()
+            # Ensure Admin user and initial inventory catalog exist
+            from seed_catalog import seed_initial_catalog_and_admin
+            seed_initial_catalog_and_admin(app)
         except Exception as e:
-            app.logger.warning("Auto db.create_all notice: %s", e)
+            app.logger.warning("Auto db setup notice: %s", e)
 
     # WhiteNoise Static File Serving
     from whitenoise import WhiteNoise

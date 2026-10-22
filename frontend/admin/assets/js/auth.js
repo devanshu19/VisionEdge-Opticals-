@@ -64,7 +64,9 @@ async function logout(expired = false) {
 }
 
 function checkAuth() {
-    if (!window.location.pathname.endsWith('login.html')) {
+    const p = window.location.pathname.toLowerCase();
+    const isLoginPage = p.endsWith('login.html') || p.endsWith('index.html') || p.endsWith('/admin') || p.endsWith('/admin/');
+    if (!isLoginPage) {
         const token = getToken();
         const role = getUserRole();
         if (!token || !role || !['admin', 'staff'].includes(role)) {

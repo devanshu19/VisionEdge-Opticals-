@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('file', file);
             
             try {
-                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                const token = typeof getToken === 'function' ? getToken() : (localStorage.getItem('access_token') || localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken'));
                 const res = await fetch(`${API_BASE_URL}/inventory/upload-image`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
@@ -146,8 +146,11 @@ async function handleFormSubmit(e) {
         lens_code: document.getElementById('lCode').value.trim(),
         name: document.getElementById('lName').value.trim(),
         brand_id: document.getElementById('lBrand').value || null,
+        brand: (document.getElementById('lBrand').selectedIndex > 0) ? document.getElementById('lBrand').options[document.getElementById('lBrand').selectedIndex].text : undefined,
         category_id: document.getElementById('lCategory').value || null,
-        lens_type: document.getElementById('lType').value,
+        category: (document.getElementById('lCategory').selectedIndex > 0) ? document.getElementById('lCategory').options[document.getElementById('lCategory').selectedIndex].text : 'Contact & Optical Lenses',
+        lens_type: document.getElementById('lType').value || 'Single Vision',
+        type: document.getElementById('lType').value || 'Single Vision',
         material: document.getElementById('lMaterial').value,
         index: document.getElementById('lIndex').value,
         coating: document.getElementById('lCoating').value.trim(),
@@ -155,6 +158,7 @@ async function handleFormSubmit(e) {
         purchase_price: parseFloat(document.getElementById('lPurchasePrice').value) || 0,
         price: parseFloat(document.getElementById('lSellingPrice').value) || 0,
         selling_price: parseFloat(document.getElementById('lSellingPrice').value) || 0,
+        stock: parseInt(document.getElementById('lStock').value) || 0,
         min_stock: parseInt(document.getElementById('lMinStock').value) || 10,
         supplier_id: document.getElementById('lSupplier').value || null,
         location: document.getElementById('lLocation').value.trim(),
@@ -162,10 +166,6 @@ async function handleFormSubmit(e) {
         image: document.getElementById('lImageUrl') ? document.getElementById('lImageUrl').value.trim() : null,
         notes: document.getElementById('lNotes').value.trim()
     };
-    
-    if (!lensId) {
-        data.stock = parseInt(document.getElementById('lStock').value) || 0;
-    }
     
     if (data.selling_price < data.purchase_price) {
         if (!confirm('Selling price is lower than purchase price. Proceed?')) return;

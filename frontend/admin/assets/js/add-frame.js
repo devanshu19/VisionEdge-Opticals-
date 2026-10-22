@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('file', file);
             
             try {
-                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                const token = typeof getToken === 'function' ? getToken() : (localStorage.getItem('access_token') || localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken'));
                 const res = await fetch(`${API_BASE_URL}/inventory/upload-image`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
@@ -149,7 +149,9 @@ async function handleFormSubmit(e) {
         frame_code: document.getElementById('fCode').value.trim(),
         name: document.getElementById('fName').value.trim(),
         brand_id: document.getElementById('fBrand').value || null,
+        brand: (document.getElementById('fBrand').selectedIndex > 0) ? document.getElementById('fBrand').options[document.getElementById('fBrand').selectedIndex].text : undefined,
         category_id: document.getElementById('fCategory').value || null,
+        category: (document.getElementById('fCategory').selectedIndex > 0) ? document.getElementById('fCategory').options[document.getElementById('fCategory').selectedIndex].text : undefined,
         gender: document.getElementById('fGender').value,
         shape: document.getElementById('fShape').value,
         material: document.getElementById('fMaterial').value,
@@ -158,6 +160,7 @@ async function handleFormSubmit(e) {
         purchase_price: parseFloat(document.getElementById('fPurchasePrice').value) || 0,
         price: parseFloat(document.getElementById('fSellingPrice').value) || 0,
         selling_price: parseFloat(document.getElementById('fSellingPrice').value) || 0,
+        stock: parseInt(document.getElementById('fStock').value) || 0,
         min_stock: parseInt(document.getElementById('fMinStock').value) || 5,
         supplier_id: document.getElementById('fSupplier').value || null,
         location: document.getElementById('fLocation').value.trim(),
@@ -166,10 +169,6 @@ async function handleFormSubmit(e) {
         vto_image: document.getElementById('fVtoImageUrl') ? document.getElementById('fVtoImageUrl').value.trim() : null,
         notes: document.getElementById('fNotes').value.trim()
     };
-    
-    if (!frameId) {
-        data.stock = parseInt(document.getElementById('fStock').value) || 0;
-    }
     
     if (data.selling_price < data.purchase_price) {
         if (!confirm('Selling price is lower than purchase price. Proceed?')) return;

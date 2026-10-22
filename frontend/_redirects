@@ -1,0 +1,4 @@
+# Netlify redirects file for VisionEdge
+/admin            /admin/index.html   200
+/admin/           /admin/index.html   200
+/admin/*          /admin/:splat       200

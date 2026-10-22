@@ -107,65 +107,164 @@ def add_supplier():
     db.session.commit()
     return jsonify(sup.to_dict()), 201
 
+# --- ALL INVENTORY (UNIFIED REALTIME QUERY) ---
+@inventory_bp.route('/items', methods=['GET'])
+def get_all_items():
+    frames = [f.to_dict() for f in Frame.query.order_by(Frame.id.desc()).all()]
+    lenses = [l.to_dict() for l in Lens.query.order_by(Lens.id.desc()).all()]
+    return jsonify({
+        "frames": frames,
+        "lenses": lenses,
+        "all": frames + lenses,
+        "total": len(frames) + len(lenses)
+    }), 200
+
 # --- FRAMES ---
 @inventory_bp.route('/frames', methods=['GET'])
 def get_frames():
     query = Frame.query
     search = request.args.get('search')
+    category = request.args.get('category')
     if search:
         st = f"%{search}%"
-        query = query.filter(or_(Frame.frame_code.ilike(st), Frame.name.ilike(st)))
-    return jsonify([f.to_dict() for f in query.all()]), 200
+        query = query.filter(or_(Frame.frame_code.ilike(st), Frame.name.ilike(st), Frame.brand.ilike(st)))
+    if category and category.lower() != 'all':
+        query = query.filter(Frame.category.ilike(f"%{category}%"))
+    return jsonify([f.to_dict() for f in query.order_by(Frame.id.desc()).all()]), 200
 
 @inventory_bp.route('/frames/<int:id>', methods=['GET'])
 def get_frame(id):
     return jsonify(Frame.query.get_or_404(id).to_dict()), 200
 
 @inventory_bp.route('/frames', methods=['POST'])
-@roles_required('admin')
+@roles_required('admin', 'staff')
 def add_frame():
-    data = request.get_json()
-    if Frame.query.filter_by(frame_code=data.get('frame_code')).first():
-        return jsonify({"message": "Frame code already exists"}), 409
-        
-    if not data.get('price'):
-        data['price'] = data.get('selling_price') or 0.0
-    frame = Frame(**{k: v for k, v in data.items() if hasattr(Frame, k) and k != 'id'})
+    data = request.get_json() or {}
+    
+    # Resolve Brand name
+    brand = data.get('brand') or data.get('brand_name')
+    if not brand and data.get('brand_id'):
+        b = Brand.query.get(data['brand_id'])
+        if b: brand = b.name
+    brand = brand or "VisionEdge"
+
+    # Resolve Category name
+    category = data.get('category') or data.get('category_name')
+    if not category and data.get('category_id'):
+        c = Category.query.get(data['category_id'])
+        if c: category = c.name
+    category = category or "Eyeglasses"
+
+    # Frame Code (auto-generate if blank)
+    code = (data.get('frame_code') or '').strip()
+    if not code:
+        code = f"FRM-{uuid.uuid4().hex[:6].upper()}"
+    elif Frame.query.filter_by(frame_code=code).first():
+        code = f"{code}-{uuid.uuid4().hex[:4].upper()}"
+
+    name = (data.get('name') or data.get('model') or f"{brand} {category}").strip()
+    model = (data.get('model') or name).strip()
+    
+    selling_price = float(data.get('selling_price') or data.get('price') or 999.0)
+    price = float(data.get('price') or selling_price)
+    stock = int(data.get('stock') or 0)
+    min_stock = int(data.get('min_stock') or 5)
+
+    frame = Frame(
+        frame_code=code,
+        name=name,
+        model=model,
+        brand=brand,
+        category=category,
+        shape=data.get('shape') or 'Rectangle',
+        material=data.get('material') or 'Acetate',
+        color=data.get('color') or 'Black',
+        size=data.get('size') or 'Medium',
+        gender=data.get('gender') or 'Unisex',
+        price=price,
+        selling_price=selling_price,
+        stock=stock,
+        min_stock=min_stock,
+        image=data.get('image') or '',
+        vto_image=data.get('vto_image') or '',
+        status=data.get('status') or 'Available'
+    )
     db.session.add(frame)
     db.session.commit()
     
     # Log initial stock if > 0
     if frame.stock > 0:
-        tx = InventoryTransaction(
-            item_type='Frame', item_id=frame.id, transaction_type='Stock In',
-            quantity=frame.stock, reason='Initial Stock', user_id=get_jwt_identity()
-        )
-        db.session.add(tx)
-        db.session.commit()
+        try:
+            tx = InventoryTransaction(
+                item_type='Frame', item_id=frame.id, transaction_type='Stock In',
+                quantity=frame.stock, reason='Initial Stock', user_id=get_jwt_identity()
+            )
+            db.session.add(tx)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
         
-    return jsonify(frame.to_dict()), 201
+    return jsonify({"message": "Frame created successfully", "frame": frame.to_dict()}), 201
 
 @inventory_bp.route('/frames/<int:id>', methods=['PUT'])
-@roles_required('admin')
+@roles_required('admin', 'staff')
 def update_frame(id):
     frame = Frame.query.get_or_404(id)
-    data = request.get_json()
+    data = request.get_json() or {}
     
-    # Disallow stock manual updates from here to enforce ledger (but fallback logic added)
-    for k, v in data.items():
-        if hasattr(Frame, k) and k not in ['id', 'stock']:
-            setattr(frame, k, v)
+    # Brand & Category resolution
+    if 'brand' in data and data['brand']:
+        frame.brand = data['brand']
+    elif 'brand_id' in data and data['brand_id']:
+        b = Brand.query.get(data['brand_id'])
+        if b: frame.brand = b.name
+
+    if 'category' in data and data['category']:
+        frame.category = data['category']
+    elif 'category_id' in data and data['category_id']:
+        c = Category.query.get(data['category_id'])
+        if c: frame.category = c.name
+
+    if 'name' in data and data['name']:
+        frame.name = data['name'].strip()
+    if 'model' in data and data['model']:
+        frame.model = data['model'].strip()
+    if 'shape' in data: frame.shape = data['shape']
+    if 'material' in data: frame.material = data['material']
+    if 'color' in data: frame.color = data['color']
+    if 'size' in data: frame.size = data['size']
+    if 'gender' in data: frame.gender = data['gender']
+    if 'status' in data: frame.status = data['status']
+    if 'image' in data: frame.image = data['image']
+    if 'vto_image' in data: frame.vto_image = data['vto_image']
+    if 'min_stock' in data and data['min_stock'] is not None:
+        frame.min_stock = int(data['min_stock'])
+    if 'stock' in data and data['stock'] is not None:
+        frame.stock = int(data['stock'])
+        
+    if 'selling_price' in data and data['selling_price'] is not None:
+        frame.selling_price = float(data['selling_price'])
+        if 'price' not in data or not data['price']:
+            frame.price = frame.selling_price
+    if 'price' in data and data['price'] is not None:
+        frame.price = float(data['price'])
+        if 'selling_price' not in data or not data['selling_price']:
+            frame.selling_price = frame.price
             
     db.session.commit()
-    return jsonify(frame.to_dict()), 200
+    return jsonify({"message": "Frame updated successfully", "frame": frame.to_dict()}), 200
 
 @inventory_bp.route('/frames/<int:id>', methods=['DELETE'])
-@roles_required('admin')
+@roles_required('admin', 'staff')
 def delete_frame(id):
     frame = Frame.query.get_or_404(id)
+    try:
+        InventoryTransaction.query.filter_by(item_type='Frame', item_id=frame.id).delete()
+    except Exception:
+        pass
     db.session.delete(frame)
     db.session.commit()
-    return jsonify({"message": "Frame deleted"}), 200
+    return jsonify({"message": "Frame deleted successfully", "id": id}), 200
 
 # --- LENSES ---
 @inventory_bp.route('/lenses', methods=['GET'])
@@ -174,54 +273,120 @@ def get_lenses():
     search = request.args.get('search')
     if search:
         st = f"%{search}%"
-        query = query.filter(or_(Lens.lens_code.ilike(st), Lens.name.ilike(st)))
-    return jsonify([l.to_dict() for l in query.all()]), 200
+        query = query.filter(or_(Lens.lens_code.ilike(st), Lens.name.ilike(st), Lens.brand.ilike(st)))
+    return jsonify([l.to_dict() for l in query.order_by(Lens.id.desc()).all()]), 200
 
 @inventory_bp.route('/lenses/<int:id>', methods=['GET'])
 def get_lens(id):
     return jsonify(Lens.query.get_or_404(id).to_dict()), 200
 
 @inventory_bp.route('/lenses', methods=['POST'])
-@roles_required('admin')
+@roles_required('admin', 'staff')
 def add_lens():
-    data = request.get_json()
-    if Lens.query.filter_by(lens_code=data.get('lens_code')).first():
-        return jsonify({"message": "Lens code already exists"}), 409
-        
-    if not data.get('price'):
-        data['price'] = data.get('selling_price') or 0.0
-    lens = Lens(**{k: v for k, v in data.items() if hasattr(Lens, k) and k != 'id'})
+    data = request.get_json() or {}
+    
+    brand = data.get('brand') or data.get('brand_name')
+    if not brand and data.get('brand_id'):
+        b = Brand.query.get(data['brand_id'])
+        if b: brand = b.name
+    brand = brand or "VisionEdge"
+
+    code = (data.get('lens_code') or '').strip()
+    if not code:
+        code = f"LNS-{uuid.uuid4().hex[:6].upper()}"
+    elif Lens.query.filter_by(lens_code=code).first():
+        code = f"{code}-{uuid.uuid4().hex[:4].upper()}"
+
+    lens_type = data.get('lens_type') or data.get('type') or 'Single Vision'
+    name = (data.get('name') or f"{brand} {lens_type}").strip()
+    
+    selling_price = float(data.get('selling_price') or data.get('price') or 899.0)
+    price = float(data.get('price') or selling_price)
+    stock = int(data.get('stock') or 0)
+    min_stock = int(data.get('min_stock') or 10)
+
+    lens = Lens(
+        lens_code=code,
+        name=name,
+        brand=brand,
+        category=data.get('category') or 'Contact & Optical Lenses',
+        type=lens_type,
+        lens_type=lens_type,
+        coating=data.get('coating') or 'Anti-Reflective',
+        price=price,
+        selling_price=selling_price,
+        stock=stock,
+        min_stock=min_stock,
+        image=data.get('image') or '',
+        status=data.get('status') or 'Available'
+    )
     db.session.add(lens)
     db.session.commit()
     
     if lens.stock > 0:
-        tx = InventoryTransaction(
-            item_type='Lens', item_id=lens.id, transaction_type='Stock In',
-            quantity=lens.stock, reason='Initial Stock', user_id=get_jwt_identity()
-        )
-        db.session.add(tx)
-        db.session.commit()
+        try:
+            tx = InventoryTransaction(
+                item_type='Lens', item_id=lens.id, transaction_type='Stock In',
+                quantity=lens.stock, reason='Initial Stock', user_id=get_jwt_identity()
+            )
+            db.session.add(tx)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
         
-    return jsonify(lens.to_dict()), 201
+    return jsonify({"message": "Lens created successfully", "lens": lens.to_dict()}), 201
 
 @inventory_bp.route('/lenses/<int:id>', methods=['PUT'])
-@roles_required('admin')
+@roles_required('admin', 'staff')
 def update_lens(id):
     lens = Lens.query.get_or_404(id)
-    data = request.get_json()
-    for k, v in data.items():
-        if hasattr(Lens, k) and k not in ['id', 'stock']:
-            setattr(lens, k, v)
+    data = request.get_json() or {}
+    
+    if 'brand' in data and data['brand']:
+        lens.brand = data['brand']
+    elif 'brand_id' in data and data['brand_id']:
+        b = Brand.query.get(data['brand_id'])
+        if b: lens.brand = b.name
+
+    if 'name' in data and data['name']: lens.name = data['name'].strip()
+    if 'type' in data and data['type']:
+        lens.type = data['type']
+        lens.lens_type = data['type']
+    if 'lens_type' in data and data['lens_type']:
+        lens.lens_type = data['lens_type']
+        lens.type = data['lens_type']
+    if 'category' in data and data['category']: lens.category = data['category']
+    if 'coating' in data: lens.coating = data['coating']
+    if 'status' in data: lens.status = data['status']
+    if 'image' in data: lens.image = data['image']
+    if 'min_stock' in data and data['min_stock'] is not None:
+        lens.min_stock = int(data['min_stock'])
+    if 'stock' in data and data['stock'] is not None:
+        lens.stock = int(data['stock'])
+        
+    if 'selling_price' in data and data['selling_price'] is not None:
+        lens.selling_price = float(data['selling_price'])
+        if 'price' not in data or not data['price']:
+            lens.price = lens.selling_price
+    if 'price' in data and data['price'] is not None:
+        lens.price = float(data['price'])
+        if 'selling_price' not in data or not data['selling_price']:
+            lens.selling_price = lens.price
+
     db.session.commit()
-    return jsonify(lens.to_dict()), 200
+    return jsonify({"message": "Lens updated successfully", "lens": lens.to_dict()}), 200
 
 @inventory_bp.route('/lenses/<int:id>', methods=['DELETE'])
-@roles_required('admin')
+@roles_required('admin', 'staff')
 def delete_lens(id):
     lens = Lens.query.get_or_404(id)
+    try:
+        InventoryTransaction.query.filter_by(item_type='Lens', item_id=lens.id).delete()
+    except Exception:
+        pass
     db.session.delete(lens)
     db.session.commit()
-    return jsonify({"message": "Lens deleted"}), 200
+    return jsonify({"message": "Lens deleted successfully", "id": id}), 200
 
 # --- TRANSACTIONS ---
 @inventory_bp.route('/transactions', methods=['POST'])

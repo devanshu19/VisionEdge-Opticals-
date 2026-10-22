@@ -69,31 +69,31 @@
                             <div class="form-check mb-2">
                                 <input class="form-check-input cat-checkbox" type="checkbox" id="cat1" value="Eyeglasses" checked>
                                 <label class="form-check-label text-muted d-flex justify-content-between align-items-center" for="cat1">
-                                    <span>Eyeglasses</span> <span class="badge bg-light text-dark rounded-pill">5</span>
+                                    <span>Eyeglasses</span> <span class="badge bg-light text-dark rounded-pill" id="sideCountEye">0</span>
                                 </label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input cat-checkbox" type="checkbox" id="cat2" value="Sunglasses" checked>
                                 <label class="form-check-label text-muted d-flex justify-content-between align-items-center" for="cat2">
-                                    <span>Sunglasses</span> <span class="badge bg-light text-dark rounded-pill">5</span>
+                                    <span>Sunglasses</span> <span class="badge bg-light text-dark rounded-pill" id="sideCountSun">0</span>
                                 </label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input cat-checkbox" type="checkbox" id="cat3" value="Computer Glasses" checked>
                                 <label class="form-check-label text-muted d-flex justify-content-between align-items-center" for="cat3">
-                                    <span>Computer Glasses</span> <span class="badge bg-light text-dark rounded-pill">5</span>
+                                    <span>Computer Glasses</span> <span class="badge bg-light text-dark rounded-pill" id="sideCountCmp">0</span>
                                 </label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input cat-checkbox" type="checkbox" id="cat4" value="Kids Glasses" checked>
                                 <label class="form-check-label text-muted d-flex justify-content-between align-items-center" for="cat4">
-                                    <span>Kids Glasses</span> <span class="badge bg-light text-dark rounded-pill">5</span>
+                                    <span>Kids Glasses</span> <span class="badge bg-light text-dark rounded-pill" id="sideCountKid">0</span>
                                 </label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input cat-checkbox" type="checkbox" id="cat5" value="Contact & Optical Lenses" checked>
                                 <label class="form-check-label text-muted d-flex justify-content-between align-items-center" for="cat5">
-                                    <span>Contact &amp; Lenses</span> <span class="badge bg-light text-dark rounded-pill">5</span>
+                                    <span>Contact &amp; Lenses</span> <span class="badge bg-light text-dark rounded-pill" id="sideCountLns">0</span>
                                 </label>
                             </div>
                         </div>
@@ -125,14 +125,14 @@
 
                 <!-- Product Grid -->
                 <div class="col-lg-9">
-                    <!-- Category Quick Tabs -->
+                    <!-- Category Quick Tabs (Dynamic counts) -->
                     <div class="d-flex flex-wrap gap-2 mb-4" id="categoryNavTabs">
-                        <button class="btn btn-primary btn-sm rounded-pill px-3 cat-tab-btn active" data-cat="All" onclick="window.filterByCategory('All', this)">All Categories (25)</button>
-                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Eyeglasses" onclick="window.filterByCategory('Eyeglasses', this)">Eyeglasses (5)</button>
-                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Sunglasses" onclick="window.filterByCategory('Sunglasses', this)">Sunglasses (5)</button>
-                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Computer Glasses" onclick="window.filterByCategory('Computer Glasses', this)">Computer Glasses (5)</button>
-                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Kids Glasses" onclick="window.filterByCategory('Kids Glasses', this)">Kids Glasses (5)</button>
-                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Contact & Optical Lenses" onclick="window.filterByCategory('Contact & Optical Lenses', this)">Contact &amp; Lenses (5)</button>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3 cat-tab-btn active" data-cat="All" onclick="window.filterByCategory('All', this)">All Categories (<span id="tabCountAll">0</span>)</button>
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Eyeglasses" onclick="window.filterByCategory('Eyeglasses', this)">Eyeglasses (<span id="tabCountEye">0</span>)</button>
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Sunglasses" onclick="window.filterByCategory('Sunglasses', this)">Sunglasses (<span id="tabCountSun">0</span>)</button>
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Computer Glasses" onclick="window.filterByCategory('Computer Glasses', this)">Computer Glasses (<span id="tabCountCmp">0</span>)</button>
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Kids Glasses" onclick="window.filterByCategory('Kids Glasses', this)">Kids Glasses (<span id="tabCountKid">0</span>)</button>
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 cat-tab-btn" data-cat="Contact & Optical Lenses" onclick="window.filterByCategory('Contact & Optical Lenses', this)">Contact &amp; Lenses (<span id="tabCountLns">0</span>)</button>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">

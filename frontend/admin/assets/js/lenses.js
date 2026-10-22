@@ -33,8 +33,10 @@ async function loadLenses(search = '') {
         
         lenses.forEach(l => {
             let stockBadge = l.stock > l.min_stock ? 'success' : (l.stock > 0 ? 'warning' : 'danger');
-            const imgTag = l.image 
-                ? `<img src="${(l.image.startsWith('http') || l.image.startsWith('data:')) ? l.image : (baseUrl + (l.image.startsWith('/') ? '' : '/') + l.image)}" class="rounded me-2" style="width:36px; height:36px; object-fit:cover;">`
+            let imgSrc = l.image || '';
+            if (imgSrc && imgSrc.startsWith('assets/')) imgSrc = '../' + imgSrc;
+            const imgTag = imgSrc 
+                ? `<img src="${(imgSrc.startsWith('http') || imgSrc.startsWith('data:') || imgSrc.startsWith('../')) ? imgSrc : (baseUrl + (imgSrc.startsWith('/') ? '' : '/') + imgSrc)}" class="rounded me-2" style="width:36px; height:36px; object-fit:cover;">`
                 : `<div class="rounded me-2 d-inline-flex align-items-center justify-content-center bg-light border text-muted" style="width:36px; height:36px;"><i class="bi bi-disc"></i></div>`;
             
             const tr = document.createElement('tr');

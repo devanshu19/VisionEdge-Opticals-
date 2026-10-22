@@ -39,21 +39,48 @@ document.addEventListener('DOMContentLoaded', () => {
 // ─── Render cart summary & coupon calculation ─────────────────────────────────
 function renderCheckoutCart() {
     if (typeof cart === 'undefined' || !cart || cart.length === 0) {
-        // Try reload from localStorage
         try {
-            const raw = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart') || '[]';
+            const raw = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart') || sessionStorage.getItem('visionEdgeCart') || '[]';
             window.cart = JSON.parse(raw);
         } catch (e) { window.cart = []; }
     }
 
-    if (!window.cart || window.cart.length === 0) {
-        alert('Your cart is empty! Redirecting to products...');
-        window.location.href = 'products.html';
-        return;
+    // Direct Buy-Now query param fallback
+    const urlParams = new URLSearchParams(window.location.search);
+    if ((!window.cart || window.cart.length === 0) && (urlParams.get('item_id') || urlParams.get('buy_now'))) {
+        const directItem = {
+            id: urlParams.get('item_id') || '1',
+            name: urlParams.get('name') || 'VisionEdge Optical Eyewear',
+            price: parseFloat(urlParams.get('price')) || 1299,
+            selling_price: parseFloat(urlParams.get('price')) || 1299,
+            item_type: urlParams.get('type') || 'Frame',
+            image: urlParams.get('image') || '',
+            quantity: 1
+        };
+        window.cart = [directItem];
+        localStorage.setItem('visionEdgeCart', JSON.stringify(window.cart));
+        localStorage.setItem('cart', JSON.stringify(window.cart));
     }
 
     const itemsContainer = document.getElementById('orderSummaryItems');
-    if (!itemsContainer) return;
+    const placeOrderBtn = document.getElementById('btnPlaceOrder');
+
+    if (!window.cart || window.cart.length === 0) {
+        if (itemsContainer) {
+            itemsContainer.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="bi bi-cart-x fs-1 text-muted mb-2 d-block"></i>
+                    <h6 class="fw-bold text-dark">Your cart is currently empty</h6>
+                    <p class="text-muted small mb-3">Please select a frame or lens from our catalog to proceed.</p>
+                    <a href="products.html" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">Explore Eyewear</a>
+                </div>
+            `;
+        }
+        if (placeOrderBtn) placeOrderBtn.disabled = true;
+        return;
+    }
+
+    if (placeOrderBtn) placeOrderBtn.disabled = false;
 
     itemsContainer.innerHTML = '';
     let subtotal = 0;

@@ -33,8 +33,10 @@ async function loadFrames(search = '') {
         
         frames.forEach(f => {
             let stockBadge = f.stock > f.min_stock ? 'success' : (f.stock > 0 ? 'warning' : 'danger');
-            const imgTag = f.image 
-                ? `<img src="${(f.image.startsWith('http') || f.image.startsWith('data:')) ? f.image : (baseUrl + (f.image.startsWith('/') ? '' : '/') + f.image)}" class="rounded me-2" style="width:36px; height:36px; object-fit:cover;">`
+            let imgSrc = f.image || '';
+            if (imgSrc && imgSrc.startsWith('assets/')) imgSrc = '../' + imgSrc;
+            const imgTag = imgSrc 
+                ? `<img src="${(imgSrc.startsWith('http') || imgSrc.startsWith('data:') || imgSrc.startsWith('../')) ? imgSrc : (baseUrl + (imgSrc.startsWith('/') ? '' : '/') + imgSrc)}" class="rounded me-2" style="width:36px; height:36px; object-fit:cover;">`
                 : `<div class="rounded me-2 d-inline-flex align-items-center justify-content-center bg-light border text-muted" style="width:36px; height:36px;"><i class="bi bi-eyeglasses"></i></div>`;
             
             const tr = document.createElement('tr');
