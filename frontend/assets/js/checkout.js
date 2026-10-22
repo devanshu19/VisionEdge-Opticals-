@@ -38,18 +38,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ─── Render cart summary & coupon calculation ─────────────────────────────────
 function renderCheckoutCart() {
-    if (typeof cart === 'undefined' || !cart || cart.length === 0) {
-        try {
-            const raw = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart') || sessionStorage.getItem('visionEdgeCart') || '[]';
-            window.cart = JSON.parse(raw);
-        } catch (e) { window.cart = []; }
+    let activeCart = [];
+    try {
+        const raw = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart') || sessionStorage.getItem('visionEdgeCart') || '[]';
+        activeCart = JSON.parse(raw);
+    } catch (e) { activeCart = []; }
+
+    if ((!activeCart || activeCart.length === 0) && typeof cart !== 'undefined' && Array.isArray(cart) && cart.length > 0) {
+        activeCart = cart;
     }
 
     // Direct Buy-Now query param fallback
     const urlParams = new URLSearchParams(window.location.search);
-    if ((!window.cart || window.cart.length === 0) && (urlParams.get('item_id') || urlParams.get('buy_now'))) {
+    if ((!activeCart || activeCart.length === 0) && (urlParams.get('item_id') || urlParams.get('buy_now'))) {
         const directItem = {
-            id: urlParams.get('item_id') || '1',
+            id: urlParams.get('item_id') || '2',
             name: urlParams.get('name') || 'VisionEdge Optical Eyewear',
             price: parseFloat(urlParams.get('price')) || 1299,
             selling_price: parseFloat(urlParams.get('price')) || 1299,
@@ -57,9 +60,14 @@ function renderCheckoutCart() {
             image: urlParams.get('image') || '',
             quantity: 1
         };
-        window.cart = [directItem];
-        localStorage.setItem('visionEdgeCart', JSON.stringify(window.cart));
-        localStorage.setItem('cart', JSON.stringify(window.cart));
+        activeCart = [directItem];
+        localStorage.setItem('visionEdgeCart', JSON.stringify(activeCart));
+        localStorage.setItem('cart', JSON.stringify(activeCart));
+    }
+
+    window.cart = activeCart;
+    if (typeof cart !== 'undefined') {
+        cart = activeCart;
     }
 
     const itemsContainer = document.getElementById('orderSummaryItems');

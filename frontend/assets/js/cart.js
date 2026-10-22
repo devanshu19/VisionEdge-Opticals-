@@ -3,7 +3,7 @@
 // Initialize cart from localStorage robustly
 let cart = [];
 try {
-    const saved = localStorage.getItem('visionEdgeCart');
+    const saved = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart');
     if (saved) {
         cart = JSON.parse(saved);
     }
@@ -11,6 +11,7 @@ try {
     console.error("Failed to parse cart:", e);
     cart = [];
 }
+window.cart = cart;
 
 function initCart() {
     const checkNavbar = setInterval(() => {
@@ -103,7 +104,7 @@ function addToCart(product) {
             return;
         }
 
-        const existing = cart.find(item => item.id === product.id);
+        const existing = cart.find(item => String(item.id) === String(product.id));
         if (existing) {
             existing.quantity += 1;
         } else {
@@ -239,6 +240,7 @@ window.handleSearch = function(event) {
 
 // Actual Proceed to Checkout
 window.proceedToCheckout = function() {
+    saveCart();
     if (!cart || cart.length === 0) {
         try {
             const saved = localStorage.getItem('visionEdgeCart') || localStorage.getItem('cart') || '[]';
