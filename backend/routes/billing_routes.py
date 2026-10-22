@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, send_file
 from auth_utils import roles_required
-from flask_jwt_extended import get_jwt_identity
-from models import db, Billing, Order, Customer, Payment, OrderStatusHistory
+from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request, decode_token
+from models import db, Billing, Order, Customer, Payment, OrderStatusHistory, User
 from datetime import datetime
 import os
 import uuid
@@ -234,18 +234,77 @@ def record_payment(id):
     }), 201
 
 @billing_bp.route('/<int:id>/pdf', methods=['GET'])
-@roles_required('admin', 'staff')
 def download_invoice_pdf(id):
+    """
+    Download or generate the PDF invoice for a billing record.
+    Supports Admin, Staff, and the Customer who owns the order.
+    Accepts Authorization header OR ?token=<jwt> parameter for direct browser clicks.
+    """
+    token = request.args.get('token')
+    user = None
+    
+    # 1. Try Authorization header
+    try:
+        verify_jwt_in_request(optional=True)
+        uid = get_jwt_identity()
+        if uid:
+            user = User.query.get(int(uid))
+    except Exception:
+        pass
+        
+    # 2. Try query token parameter
+    if not user and token:
+        try:
+            decoded = decode_token(token)
+            uid = decoded.get('sub')
+            if uid:
+                user = User.query.get(int(uid))
+        except Exception:
+            pass
+
+    if not user:
+        return jsonify({"message": "Authentication required to download invoice"}), 401
+
     bill = Billing.query.get_or_404(id)
-    if not bill.invoice_pdf:
-        return jsonify({"message": "Invoice PDF not available"}), 404
-        
+    
+    # Permission verification
+    role = (user.role or '').strip().lower()
+    if role not in ('admin', 'staff'):
+        order = bill.order_rel or Order.query.get(bill.order_id)
+        if not order:
+            return jsonify({"message": "Order not found"}), 404
+            
+        customer = order.customer
+        allowed = False
+        if customer:
+            if getattr(customer, 'created_by', None) == user.id:
+                allowed = True
+            elif user.email and getattr(customer, 'email', None) and customer.email.lower() == user.email.lower():
+                allowed = True
+            elif user.phone and getattr(customer, 'phone', None) and customer.phone == user.phone:
+                allowed = True
+                
+        if not allowed:
+            return jsonify({"message": "You do not have permission to access this invoice."}), 403
+
+    # Ensure PDF exists or generate on the fly
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    full_path = os.path.join(base_dir, bill.invoice_pdf)
-    if not os.path.exists(full_path):
-        return jsonify({"message": "PDF file not found"}), 404
+    full_path = os.path.join(base_dir, bill.invoice_pdf) if bill.invoice_pdf else None
+    
+    if not full_path or not os.path.exists(full_path):
+        from utils.pdf_generator import generate_invoice_pdf
+        rel_path = generate_invoice_pdf(bill)
+        bill.invoice_pdf = rel_path
+        db.session.commit()
+        full_path = os.path.join(base_dir, rel_path)
         
-    return send_file(full_path, mimetype='application/pdf', as_attachment=False)
+    download_filename = f"VisionEdge_Invoice_{bill.invoice_number}.pdf"
+    return send_file(
+        full_path, 
+        mimetype='application/pdf', 
+        as_attachment=False, 
+        download_name=download_filename
+    )
 
 @billing_bp.route('/<int:id>', methods=['DELETE'])
 @roles_required('admin')

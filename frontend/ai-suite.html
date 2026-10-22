@@ -622,9 +622,14 @@
             const formData = new FormData();
             formData.append('file', ocrSelectedFile);
 
+            const authTkn = localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken');
+            const ocrHeaders = {};
+            if (authTkn) ocrHeaders['Authorization'] = `Bearer ${authTkn}`;
+
             try {
                 const res = await fetch(`${API_BASE}/ai/extract`, {
                     method: 'POST',
+                    headers: ocrHeaders,
                     body: formData
                 });
                 

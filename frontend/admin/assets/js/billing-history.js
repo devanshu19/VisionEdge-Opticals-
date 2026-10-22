@@ -52,7 +52,8 @@ async function loadBills() {
         bills.forEach(b => {
             const dateStr = b.created_at ? b.created_at.split(' ')[0] : 'Today';
             const badgeClass = b.payment_status === 'Paid' ? 'success' : (b.payment_status === 'Partial' ? 'info' : 'warning');
-            const pdfUrl = `${API_BASE_URL}/billing/${b.id}/pdf`;
+            const adminToken = localStorage.getItem('token') || localStorage.getItem('jwtToken') || sessionStorage.getItem('token') || '';
+            const pdfUrl = `${API_BASE_URL}/billing/${b.id}/pdf?token=${encodeURIComponent(adminToken)}`;
             const custName = b.customer_name || 'Customer';
             const total = (b.total_amount || 0).toFixed(2);
             

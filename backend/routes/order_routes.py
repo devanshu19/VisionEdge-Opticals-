@@ -1,9 +1,10 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from auth_utils import roles_required
-from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required, verify_jwt_in_request, decode_token
 from models import db, Order, OrderItem, OrderStatusHistory, InventoryTransaction, Frame, Lens, Customer, Prescription, User, Billing, Payment
 from datetime import datetime
 import uuid
+import os
 
 order_bp = Blueprint('order', __name__)
 
@@ -442,3 +443,85 @@ def checkout():
         import traceback
         traceback.print_exc()
         return jsonify({"message": "Failed to process checkout"}), 500
+
+@order_bp.route('/<int:id>/invoice-pdf', methods=['GET'])
+def download_order_invoice_pdf(id):
+    """
+    Allows downloading or streaming the PDF invoice directly by Order ID.
+    Auto-creates the Billing record and PDF invoice if not yet present.
+    """
+    token = request.args.get('token')
+    user = None
+    
+    try:
+        verify_jwt_in_request(optional=True)
+        uid = get_jwt_identity()
+        if uid:
+            user = User.query.get(int(uid))
+    except Exception:
+        pass
+        
+    if not user and token:
+        try:
+            decoded = decode_token(token)
+            uid = decoded.get('sub')
+            if uid:
+                user = User.query.get(int(uid))
+        except Exception:
+            pass
+
+    if not user:
+        return jsonify({"message": "Authentication required to download invoice"}), 401
+
+    order = Order.query.get_or_404(id)
+    
+    role = (user.role or '').strip().lower()
+    if role not in ('admin', 'staff'):
+        customer = order.customer
+        allowed = False
+        if customer:
+            if getattr(customer, 'created_by', None) == user.id:
+                allowed = True
+            elif user.email and getattr(customer, 'email', None) and customer.email.lower() == user.email.lower():
+                allowed = True
+            elif user.phone and getattr(customer, 'phone', None) and customer.phone == user.phone:
+                allowed = True
+        if not allowed:
+            return jsonify({"message": "You do not have permission to access this order's invoice."}), 403
+
+    bill = order.billing or Billing.query.filter_by(order_id=order.id).first()
+    if not bill:
+        from routes.billing_routes import generate_invoice_number
+        subtotal = float(order.subtotal or order.total_amount or 0.0)
+        discount = float(order.discount or 0.0)
+        gst_val = float(order.gst or 0.0)
+        total = float(order.total_amount or (subtotal - discount + gst_val))
+        bill = Billing(
+            invoice_number=generate_invoice_number(),
+            order_id=order.id,
+            subtotal=subtotal,
+            discount=discount,
+            gst=gst_val,
+            total_amount=total,
+            payment_status='Paid' if order.status in ('Confirmed', 'Processing', 'Delivered', 'Completed') else 'Pending',
+            payment_method='Razorpay Online'
+        )
+        db.session.add(bill)
+        db.session.commit()
+
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    full_path = os.path.join(base_dir, bill.invoice_pdf) if bill.invoice_pdf else None
+    
+    if not full_path or not os.path.exists(full_path):
+        from utils.pdf_generator import generate_invoice_pdf
+        rel_path = generate_invoice_pdf(bill)
+        bill.invoice_pdf = rel_path
+        db.session.commit()
+        full_path = os.path.join(base_dir, rel_path)
+
+    return send_file(
+        full_path,
+        mimetype='application/pdf',
+        as_attachment=False,
+        download_name=f"VisionEdge_Invoice_{bill.invoice_number}.pdf"
+    )
