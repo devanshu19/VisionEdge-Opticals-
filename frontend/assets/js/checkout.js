@@ -7,33 +7,65 @@ let checkoutCartTotal = 0;
 let activeCouponCode = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Check user authentication
     const token = typeof getToken === 'function'
         ? getToken()
         : (localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken'));
     const userStr = localStorage.getItem('user') || localStorage.getItem('current_user') || sessionStorage.getItem('user');
 
+    const accountBanner = document.getElementById('accountStatusBanner');
+    const accountUserDisplay = document.getElementById('accountUserDisplay');
+
     if (!token || !userStr) {
-        alert('Please login to proceed to checkout.');
-        window.location.href = 'login.html?redirect=checkout.html';
-        return;
+        if (accountBanner && accountUserDisplay) {
+            accountBanner.className = 'alert alert-warning border d-flex justify-content-between align-items-center mb-4 py-2 px-3 rounded-3 shadow-sm';
+            accountUserDisplay.innerHTML = '<span class="text-danger fw-bold"><i class="bi bi-exclamation-circle me-1"></i>Not Logged In</span> — Please sign in to place your order.';
+            const switchBtn = document.getElementById('btnSwitchAccount');
+            if (switchBtn) {
+                switchBtn.textContent = 'Sign In / Register';
+                switchBtn.href = 'login.html?redirect=checkout.html';
+                switchBtn.className = 'btn btn-sm btn-primary fw-bold';
+            }
+        }
+    } else {
+        let user = {};
+        try { user = JSON.parse(userStr); } catch (e) { user = {}; }
+
+        // Display user account info
+        if (accountBanner && accountUserDisplay) {
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Valued Customer';
+            const email = user.email || '';
+            accountUserDisplay.innerHTML = `<strong>${fullName}</strong> &bull; <span class="text-muted">${email}</span>`;
+        }
+
+        // Auto-fill user details into shipping form
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+        setVal('co_firstName', user.first_name || (user.name ? user.name.split(' ')[0] : (user.username || '')));
+        setVal('co_lastName',  user.last_name  || (user.name ? user.name.split(' ').slice(1).join(' ') : ''));
+        setVal('co_email',     user.email);
+        setVal('co_phone',     user.phone);
+        setVal('co_address',   user.address);
     }
 
-    let user = {};
-    try { user = JSON.parse(userStr); } catch (e) { user = {}; }
+    // 2. Close any open cart offcanvas when landing on checkout
+    try {
+        const offcanvasEl = document.getElementById('cartOffcanvas');
+        if (offcanvasEl && typeof bootstrap !== 'undefined') {
+            const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+            if (bsOffcanvas) bsOffcanvas.hide();
+        }
+    } catch (e) {}
 
-    // Auto-fill user details
-    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
-    setVal('co_firstName', user.first_name || (user.name ? user.name.split(' ')[0] : (user.username || '')));
-    setVal('co_lastName',  user.last_name  || (user.name ? user.name.split(' ').slice(1).join(' ') : ''));
-    setVal('co_email',     user.email);
-    setVal('co_phone',     user.phone);
-    setVal('co_address',   user.address);
-
+    // 3. Render Cart Summary
     renderCheckoutCart();
     handlePaymentMethodChange();
 
+    // 4. Attach Unified Checkout Button
     const btn = document.getElementById('btnPlaceOrder');
-    if (btn) btn.addEventListener('click', handleUnifiedCheckout);
+    if (btn) {
+        btn.removeEventListener('click', handleUnifiedCheckout);
+        btn.addEventListener('click', handleUnifiedCheckout);
+    }
 });
 
 // ─── Render cart summary & coupon calculation ─────────────────────────────────
@@ -70,21 +102,32 @@ function renderCheckoutCart() {
         cart = activeCart;
     }
 
-    const itemsContainer = document.getElementById('orderSummaryItems');
+    const itemsContainer = document.getElementById('checkoutItemsList') || document.getElementById('orderSummaryItems');
     const placeOrderBtn = document.getElementById('btnPlaceOrder');
 
+    if (!itemsContainer) {
+        console.warn('Neither checkoutItemsList nor orderSummaryItems container found.');
+        return;
+    }
+
     if (!window.cart || window.cart.length === 0) {
-        if (itemsContainer) {
-            itemsContainer.innerHTML = `
-                <div class="text-center py-4">
-                    <i class="bi bi-cart-x fs-1 text-muted mb-2 d-block"></i>
-                    <h6 class="fw-bold text-dark">Your cart is currently empty</h6>
-                    <p class="text-muted small mb-3">Please select a frame or lens from our catalog to proceed.</p>
-                    <a href="products.html" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">Explore Eyewear</a>
-                </div>
-            `;
+        itemsContainer.innerHTML = `
+            <div class="text-center py-4">
+                <i class="bi bi-cart-x fs-1 text-muted mb-2 d-block"></i>
+                <h6 class="fw-bold text-dark">Your cart is currently empty</h6>
+                <p class="text-muted small mb-3">Please select a frame or lens from our catalog to proceed.</p>
+                <a href="products.html" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">Explore Eyewear</a>
+            </div>
+        `;
+        checkoutCartSubtotal = 0;
+        checkoutTaxAmount = 0;
+        checkoutCartTotal = 0;
+        updateCheckoutTotals();
+        if (placeOrderBtn) {
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.innerHTML = '<i class="bi bi-cart-x me-2"></i>Cart is Empty — Click to Select a Product';
+            placeOrderBtn.className = 'btn btn-secondary w-100 py-3 fw-bold shadow-sm';
         }
-        if (placeOrderBtn) placeOrderBtn.disabled = true;
         return;
     }
 
@@ -92,40 +135,35 @@ function renderCheckoutCart() {
 
     itemsContainer.innerHTML = '';
     let subtotal = 0;
-    let totalTax = 0;
 
     window.cart.forEach(item => {
         const price = parseFloat(item.price || item.selling_price || 0);
         const qty = parseInt(item.quantity || 1, 10);
         const itemSubtotal = price * qty;
-        const taxRate = parseFloat(item.gst_percent || 18) / 100;
-        const itemTax = itemSubtotal * taxRate;
-
         subtotal += itemSubtotal;
-        totalTax += itemTax;
 
         const name = item.name || item.model_name || 'Eyewear Item';
         const type = item.item_type || item.product_type || 'Frame';
-        const img = item.image || item.image_url || 'assets/images/placeholder.jpg';
+        const img = item.image || item.item_image || item.image_url || 'assets/images/placeholder.jpg';
 
         itemsContainer.innerHTML += `
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                 <div class="d-flex align-items-center">
-                    <img src="${img}" alt="${name}" class="rounded me-3 border" style="width: 52px; height: 52px; object-fit: cover;">
+                    <img src="${img}" alt="${name}" class="rounded me-3 border" style="width: 52px; height: 52px; object-fit: cover;" onerror="this.src='assets/images/products/real_1.jpg'">
                     <div>
-                        <h6 class="mb-0 fw-bold small text-truncate" style="max-width: 170px;">${name}</h6>
+                        <h6 class="mb-0 fw-bold small text-truncate" style="max-width: 170px;" title="${name}">${name}</h6>
                         <small class="text-muted d-block">${type} × ${qty}</small>
                     </div>
                 </div>
                 <div class="text-end">
-                    <span class="fw-bold small">₹${itemSubtotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</span>
+                    <span class="fw-bold small">₹${itemSubtotal.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                 </div>
             </div>
         `;
     });
 
     checkoutCartSubtotal = subtotal;
-    checkoutTaxAmount = totalTax;
+    checkoutTaxAmount = 0; // Prices are tax-inclusive standard retail
 
     // Check pre-applied coupon from cart page
     try {
@@ -141,6 +179,7 @@ function renderCheckoutCart() {
 
     updateCheckoutTotals();
 }
+window.renderCheckoutCart = renderCheckoutCart;
 
 function applyCouponCode(manualCode, showSuccessAlert = true) {
     const inputEl = document.getElementById('couponCodeInput');
@@ -188,20 +227,23 @@ function applyCouponCode(manualCode, showSuccessAlert = true) {
         localStorage.setItem('appliedCoupon', payload);
     } catch(e) {}
 
-    const appliedContainer = document.getElementById('appliedCouponContainer');
-    const tagEl = document.getElementById('appliedCouponTag');
-    if (appliedContainer && tagEl) {
-        tagEl.innerHTML = `<i class="bi bi-tag-fill me-1"></i>${code} (${badgeText}) - ₹${checkoutDiscountAmount.toFixed(2)}`;
+    const appliedContainer = document.getElementById('appliedCouponContainer') || document.getElementById('couponDiscountRow');
+    const tagEl = document.getElementById('appliedCouponTag') || document.getElementById('appliedCouponBadge');
+    if (tagEl) {
+        tagEl.textContent = `${code} (${badgeText})`;
+    }
+    if (appliedContainer) {
         appliedContainer.classList.remove('d-none');
     }
 
     if (feedbackEl) {
         feedbackEl.className = 'text-success small mt-1';
-        feedbackEl.textContent = `Coupon ${code} applied successfully!`;
+        feedbackEl.textContent = `Coupon ${code} applied successfully! You save ₹${checkoutDiscountAmount.toFixed(2)}`;
     }
 
     updateCheckoutTotals();
 }
+window.applyCouponCode = applyCouponCode;
 
 function removeCouponCode() {
     checkoutDiscountAmount = 0;
@@ -211,7 +253,7 @@ function removeCouponCode() {
         localStorage.removeItem('appliedCoupon');
     } catch (e) {}
 
-    const appliedContainer = document.getElementById('appliedCouponContainer');
+    const appliedContainer = document.getElementById('appliedCouponContainer') || document.getElementById('couponDiscountRow');
     if (appliedContainer) appliedContainer.classList.add('d-none');
 
     const feedbackEl = document.getElementById('couponFeedback');
@@ -225,22 +267,21 @@ function removeCouponCode() {
 
     updateCheckoutTotals();
 }
+window.removeCouponCode = removeCouponCode;
 
 function updateCheckoutTotals() {
-    const totalBeforeDiscount = checkoutCartSubtotal + checkoutTaxAmount;
-    checkoutCartTotal = Math.max(1.0, totalBeforeDiscount - checkoutDiscountAmount);
+    checkoutCartTotal = Math.max(1.0, checkoutCartSubtotal - checkoutDiscountAmount);
 
     const subEl = document.getElementById('co_subtotal');
     if (subEl) subEl.textContent = `₹${checkoutCartSubtotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-    const taxEl = document.getElementById('co_tax');
-    if (taxEl) taxEl.textContent = `₹${checkoutTaxAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-
-    const discRow = document.getElementById('co_discountRow');
+    const discRow = document.getElementById('couponDiscountRow') || document.getElementById('co_discountRow');
     const discEl = document.getElementById('co_discount');
+    const discBadge = document.getElementById('appliedCouponBadge') || document.getElementById('appliedCouponTag');
     if (checkoutDiscountAmount > 0) {
         if (discRow) discRow.classList.remove('d-none');
         if (discEl) discEl.textContent = `-₹${checkoutDiscountAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        if (discBadge) discBadge.textContent = activeCouponCode || '';
     } else {
         if (discRow) discRow.classList.add('d-none');
     }
@@ -258,11 +299,12 @@ function handlePaymentMethodChange() {
 
     if (!window.cart || window.cart.length === 0 || checkoutCartTotal <= 0) {
         btn.innerHTML = `<i class="bi bi-cart-x me-2"></i>Cart is Empty — Click to Select a Product`;
-        btn.className = 'btn btn-warning w-100 py-3 fw-bold shadow-sm';
-        btn.disabled = false;
+        btn.className = 'btn btn-secondary w-100 py-3 fw-bold shadow-sm';
+        btn.disabled = true;
         return;
     }
 
+    btn.disabled = false;
     const selectedPm = document.querySelector('input[name="paymentMethod"]:checked');
     const pm = selectedPm ? selectedPm.value : 'Razorpay';
     const formattedAmount = `₹${checkoutCartTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -270,24 +312,33 @@ function handlePaymentMethodChange() {
     if (pm === 'Razorpay' || pm === 'Credit Card') {
         btn.innerHTML = `<i class="bi bi-shield-lock-fill me-2"></i>Pay ${formattedAmount} Securely with Razorpay`;
         btn.className = 'btn btn-primary w-100 py-3 fw-bold shadow-sm';
-        btn.disabled = false;
     } else if (pm === 'Cash on Delivery') {
         btn.innerHTML = `<i class="bi bi-cash-stack me-2"></i>Place Cash on Delivery Order (${formattedAmount})`;
         btn.className = 'btn btn-success w-100 py-3 fw-bold shadow-sm';
-        btn.disabled = false;
     } else if (pm === 'PayU Sandbox') {
         btn.innerHTML = `<i class="bi bi-box-arrow-up-right me-2"></i>Pay ${formattedAmount} via PayU Sandbox`;
         btn.className = 'btn btn-info text-white w-100 py-3 fw-bold shadow-sm';
-        btn.disabled = false;
     } else {
         btn.innerHTML = `<i class="bi bi-lock-fill me-2"></i>Proceed to Pay ${formattedAmount}`;
         btn.className = 'btn btn-primary w-100 py-3 fw-bold shadow-sm';
-        btn.disabled = false;
     }
 }
+window.handlePaymentMethodChange = handlePaymentMethodChange;
 
 // ─── Master Unified Checkout Controller ───────────────────────────────────────
 async function handleUnifiedCheckout() {
+    // Check if user is logged in
+    const token = typeof getToken === 'function'
+        ? getToken()
+        : (localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken'));
+    const userStr = localStorage.getItem('user') || localStorage.getItem('current_user') || sessionStorage.getItem('user');
+
+    if (!token || !userStr) {
+        alert('Please login or register to complete your order.');
+        window.location.href = 'login.html?redirect=checkout.html';
+        return;
+    }
+
     if (!window.cart || window.cart.length === 0 || checkoutCartTotal <= 0) {
         alert('Your cart is empty! Redirecting to products so you can choose an eyewear item.');
         window.location.href = 'products.html';
@@ -317,6 +368,7 @@ async function handleUnifiedCheckout() {
         await handleRazorpayCheckout(btn);
     }
 }
+window.handleUnifiedCheckout = handleUnifiedCheckout;
 
 // ─── Razorpay Integration Flow ────────────────────────────────────────────────
 async function handleRazorpayCheckout(btn) {
@@ -330,8 +382,10 @@ async function handleRazorpayCheckout(btn) {
     }
 
     const payload = {
-        phone:            document.getElementById('co_phone')?.value   || '',
-        shipping_address: document.getElementById('co_address')?.value || '',
+        first_name:       document.getElementById('co_firstName')?.value?.trim() || '',
+        last_name:        document.getElementById('co_lastName')?.value?.trim()  || '',
+        phone:            document.getElementById('co_phone')?.value?.trim()     || '',
+        shipping_address: document.getElementById('co_address')?.value?.trim()   || '',
         coupon_code:      activeCouponCode || '',
         items: (window.cart || []).map(item => ({
             item_type: item.item_type || item.product_type || 'Frame',
@@ -339,6 +393,15 @@ async function handleRazorpayCheckout(btn) {
             quantity:  parseInt(item.quantity || 1, 10)
         }))
     };
+
+    // Update user cache locally
+    try {
+        const u = JSON.parse(localStorage.getItem('user') || localStorage.getItem('current_user') || '{}');
+        if (payload.phone) u.phone = payload.phone;
+        if (payload.shipping_address) u.address = payload.shipping_address;
+        localStorage.setItem('user', JSON.stringify(u));
+        localStorage.setItem('current_user', JSON.stringify(u));
+    } catch(e) {}
 
     let orderData = null;
     try {
@@ -393,17 +456,14 @@ async function handleRazorpayCheckout(btn) {
         description: `Order #${orderData.order_number}`,
         order_id: orderData.razorpay_order_id,
         prefill: {
-            name: orderData.customer?.name || '',
-            email: orderData.customer?.email || '',
-            contact: orderData.customer?.phone || ''
+            name: orderData.customer?.name || (payload.first_name + ' ' + payload.last_name).trim(),
+            email: orderData.customer?.email || document.getElementById('co_email')?.value || '',
+            contact: orderData.customer?.phone || payload.phone || ''
         },
         theme: {
             color: '#6c63ff'
         },
         handler: async function (response) {
-            // response.razorpay_payment_id
-            // response.razorpay_order_id
-            // response.razorpay_signature
             await verifyAndCompleteRazorpayPayment(response, orderData, btn);
         },
         modal: {
@@ -497,8 +557,10 @@ async function handleCodCheckout(btn) {
     showProcessingOverlay('Cash on Delivery', checkoutCartTotal);
 
     const payload = {
-        phone:            document.getElementById('co_phone')?.value   || '',
-        shipping_address: document.getElementById('co_address')?.value || '',
+        first_name:       document.getElementById('co_firstName')?.value?.trim() || '',
+        last_name:        document.getElementById('co_lastName')?.value?.trim()  || '',
+        phone:            document.getElementById('co_phone')?.value?.trim()     || '',
+        shipping_address: document.getElementById('co_address')?.value?.trim()   || '',
         payment_method:   'Cash on Delivery',
         discount:         checkoutDiscountAmount,
         coupon_code:      activeCouponCode || '',
@@ -562,8 +624,8 @@ async function handlePayUSandboxFlow(btn) {
     }
 
     const payload = {
-        phone:            document.getElementById('co_phone')?.value   || '',
-        shipping_address: document.getElementById('co_address')?.value || '',
+        phone:            document.getElementById('co_phone')?.value?.trim()   || '',
+        shipping_address: document.getElementById('co_address')?.value?.trim() || '',
         discount:         checkoutDiscountAmount,
         coupon_code:      activeCouponCode || '',
         items: (window.cart || []).map(item => ({
@@ -591,7 +653,6 @@ async function handlePayUSandboxFlow(btn) {
             throw new Error(data.message || 'Failed to initiate PayU payment');
         }
 
-        // NOTE: We intentionally DO NOT clear cart here so customer doesn't lose items if PayU cancels!
         submitPayUForm(data.payu_url, data.params);
 
     } catch (err) {

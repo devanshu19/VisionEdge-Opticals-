@@ -93,6 +93,59 @@
                         </div>
                     </div>
 
+                    <!-- Razorpay Account & Payment Gateway Settings -->
+                    <div class="col-12" data-aos="fade-up" data-aos-delay="250">
+                        <div class="card shadow-sm border-0 rounded-4">
+                            <div class="card-header bg-transparent border-bottom pt-4 pb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="bi bi-credit-card-2-front-fill me-2 text-primary"></i>Razorpay Payment Gateway Account
+                                </h5>
+                                <span id="rzpAccountStatusBadge" class="badge bg-secondary-subtle text-secondary border px-3 py-2">
+                                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>Checking...
+                                </span>
+                            </div>
+                            <div class="card-body p-4">
+                                <p class="text-muted small mb-3">
+                                    Configure your Razorpay merchant account credentials to accept online payments (UPI, Cards, NetBanking, Wallets). Find your API keys in <a href="https://dashboard.razorpay.com/#/access/api-keys" target="_blank" class="fw-bold text-decoration-none">Razorpay Dashboard &rarr; Settings &rarr; API Keys</a>.
+                                </p>
+                                <div id="rzpSettingsAlert" class="alert d-none py-2 small mb-3"></div>
+                                <form id="razorpaySettingsForm" onsubmit="saveRazorpaySettings(event)">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Razorpay Key ID</label>
+                                            <input type="text" class="form-control" id="settingRzpKeyId" placeholder="e.g. rzp_test_... or rzp_live_..." required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Razorpay Key Secret</label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="settingRzpKeySecret" placeholder="Enter key secret (leave blank to keep current)">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="toggleRzpSecretVisibility()">
+                                                    <i class="bi bi-eye" id="rzpSecretEyeIcon"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Gateway Mode</label>
+                                            <select class="form-select" id="settingRzpMode">
+                                                <option value="test">Test Mode (Sandbox / Testing)</option>
+                                                <option value="live">Live Mode (Production Real Money)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Webhook Secret (Optional)</label>
+                                            <input type="text" class="form-control" id="settingRzpWebhookSecret" placeholder="Webhook signing secret">
+                                        </div>
+                                        <div class="col-12 text-end mt-4">
+                                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold shadow-sm" id="btnSaveRzpSettings">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Verify & Save Razorpay Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Backup & Restore -->
                     <div class="col-12" data-aos="fade-up" data-aos-delay="300">
                         <div class="card">
@@ -146,6 +199,9 @@
             window.addEventListener('themeChanged', () => {
                 if(toggle) toggle.checked = document.documentElement.getAttribute('data-theme') === 'dark';
             });
+
+            // Load Razorpay Settings
+            loadRazorpaySettings();
         });
 
         // 2. Accent Colors Picker
@@ -157,7 +213,7 @@
             const savedColors = savedColorsStr ? JSON.parse(savedColorsStr) : { accent: defaultColor };
             
             colorBtns.forEach(btn => {
-                btn.innerHTML = ''; // clear
+                btn.innerHTML = '';
                 const config = JSON.parse(btn.getAttribute('data-color'));
                 if (config.accent === savedColors.accent) {
                     btn.innerHTML = '<i class="bi bi-check text-white position-absolute top-50 start-50 translate-middle fs-4 fw-bold drop-shadow"></i>';
@@ -170,13 +226,14 @@
                 const colorConfig = JSON.parse(btn.getAttribute('data-color'));
                 localStorage.setItem('customColors', JSON.stringify(colorConfig));
                 
-                // Update CSS variables instantly
                 document.documentElement.style.setProperty('--primary-color', colorConfig.primary);
                 document.documentElement.style.setProperty('--secondary-color', colorConfig.secondary);
                 document.documentElement.style.setProperty('--accent-color', colorConfig.accent);
                 
                 updateActiveColorCheckmark();
-                showToast('Theme Updated', 'Your premium color palette has been applied globally!', 'success');
+                if (typeof showToast === 'function') {
+                    showToast('Theme Updated', 'Your premium color palette has been applied globally!', 'success');
+                }
             });
         });
         
@@ -185,7 +242,6 @@
         // 3. Notifications Save Logic
         const saveNotifBtn = document.getElementById('saveNotifBtn');
         if (saveNotifBtn) {
-            // Load saved
             document.getElementById('notifEmail').checked = localStorage.getItem('notifEmail') !== 'false';
             document.getElementById('notifSMS').checked = localStorage.getItem('notifSMS') !== 'false';
             document.getElementById('notifStock').checked = localStorage.getItem('notifStock') !== 'false';
@@ -202,7 +258,9 @@
                     
                     saveNotifBtn.innerHTML = originalText;
                     saveNotifBtn.disabled = false;
-                    showToast('Preferences Saved', 'Your notification settings have been updated.', 'success');
+                    if (typeof showToast === 'function') {
+                        showToast('Preferences Saved', 'Your notification settings have been updated.', 'success');
+                    }
                 }, 1000);
             });
         }
@@ -219,7 +277,9 @@
                 backupBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Backing up...';
                 backupBtn.disabled = true;
                 
-                showToast('Backup Initiated', 'Gathering database records. Please do not close the window.', 'warning');
+                if (typeof showToast === 'function') {
+                    showToast('Backup Initiated', 'Gathering database records. Please do not close the window.', 'warning');
+                }
 
                 setTimeout(() => {
                     const now = new Date();
@@ -229,9 +289,109 @@
                     
                     backupBtn.innerHTML = originalHtml;
                     backupBtn.disabled = false;
-                    showToast('Backup Complete', 'Your VisionEdge database has been successfully backed up securely!', 'success');
-                }, 3000);
+                    if (typeof showToast === 'function') {
+                        showToast('Backup Complete', 'Your VisionEdge database has been successfully backed up securely!', 'success');
+                    }
+                }, 2000);
             });
+        }
+
+        // 5. Razorpay Account Management
+        async function loadRazorpaySettings() {
+            const badge = document.getElementById('rzpAccountStatusBadge');
+            const token = localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken');
+            const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+
+            try {
+                const res = await fetch(`${apiUrl}/payment/razorpay/admin/credentials`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('Failed to load credentials');
+                const data = await res.json();
+
+                if (badge) {
+                    if (data.configured) {
+                        badge.className = 'badge bg-success-subtle text-success border border-success-subtle px-3 py-2';
+                        badge.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i>Active (${data.mode.toUpperCase()})`;
+                    } else {
+                        badge.className = 'badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2';
+                        badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i>Not Configured`;
+                    }
+                }
+
+                if (data.key_id) document.getElementById('settingRzpKeyId').value = data.key_id;
+                if (data.mode) document.getElementById('settingRzpMode').value = data.mode;
+            } catch (err) {
+                if (badge) {
+                    badge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2';
+                    badge.innerHTML = `<i class="bi bi-x-circle-fill me-1"></i>Offline / Error`;
+                }
+            }
+        }
+
+        function toggleRzpSecretVisibility() {
+            const secretInput = document.getElementById('settingRzpKeySecret');
+            const icon = document.getElementById('rzpSecretEyeIcon');
+            if (secretInput.type === 'password') {
+                secretInput.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                secretInput.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
+        }
+
+        async function saveRazorpaySettings(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('rzpSettingsAlert');
+            const btn = document.getElementById('btnSaveRzpSettings');
+            const token = localStorage.getItem('jwtToken') || localStorage.getItem('access_token') || sessionStorage.getItem('jwtToken');
+            const apiUrl = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+
+            alertBox.classList.add('d-none');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Verifying with Razorpay...';
+            btn.disabled = true;
+
+            const payload = {
+                key_id: document.getElementById('settingRzpKeyId').value.trim(),
+                key_secret: document.getElementById('settingRzpKeySecret').value.trim(),
+                mode: document.getElementById('settingRzpMode').value,
+                webhook_secret: document.getElementById('settingRzpWebhookSecret').value.trim()
+            };
+
+            try {
+                const res = await fetch(`${apiUrl}/payment/razorpay/admin/credentials`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    alertBox.className = 'alert alert-success py-2 small mb-3';
+                    alertBox.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>${data.message || 'Razorpay account credentials saved successfully!'}`;
+                    alertBox.classList.remove('d-none');
+                    loadRazorpaySettings();
+                    if (typeof showToast === 'function') {
+                        showToast('Account Connected', 'Razorpay account verified and updated!', 'success');
+                    }
+                } else {
+                    alertBox.className = 'alert alert-danger py-2 small mb-3';
+                    alertBox.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i>${data.message || 'Could not verify Razorpay credentials.'}`;
+                    alertBox.classList.remove('d-none');
+                }
+            } catch (err) {
+                alertBox.className = 'alert alert-danger py-2 small mb-3';
+                alertBox.innerHTML = `<i class="bi bi-wifi-off me-2"></i>Network connection error: ${err.message}`;
+                alertBox.classList.remove('d-none');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
     </script>
     <script src="assets/js/auth.js"></script>

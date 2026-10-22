@@ -113,6 +113,21 @@ def create_razorpay_order():
         return jsonify({"message": "Items array is required"}), 400
 
     try:
+        # Update user profile details from checkout input if provided
+        phone_input = (data.get("phone") or "").strip()
+        address_input = (data.get("shipping_address") or "").strip()
+        first_name_input = (data.get("first_name") or "").strip()
+        last_name_input = (data.get("last_name") or "").strip()
+
+        if phone_input:
+            user.phone = phone_input
+        if address_input:
+            user.address = address_input
+        if first_name_input and not user.first_name:
+            user.first_name = first_name_input
+        if last_name_input and not user.last_name:
+            user.last_name = last_name_input
+
         # Find or create customer record
         customer = Customer.query.filter_by(created_by=user.id).first()
         if not customer:
@@ -128,13 +143,23 @@ def create_razorpay_order():
                     customer_code=f"CUST{next_id:04d}",
                     first_name=user.first_name or user.username,
                     last_name=user.last_name or "",
-                    phone=data.get("phone") or user.phone or "0000000000",
+                    phone=phone_input or user.phone or "0000000000",
                     email=user.email,
-                    address=data.get("shipping_address") or user.address or "",
+                    address=address_input or user.address or "",
                     created_by=user.id
                 )
                 db.session.add(customer)
                 db.session.flush()
+
+        if customer:
+            if phone_input:
+                customer.phone = phone_input
+            if address_input:
+                customer.address = address_input
+            if first_name_input and not customer.first_name:
+                customer.first_name = first_name_input
+            if last_name_input and not customer.last_name:
+                customer.last_name = last_name_input
 
         # Recalculate totals strictly from database
         subtotal = 0.0
@@ -142,8 +167,13 @@ def create_razorpay_order():
         validated_items = []
 
         for item_entry in items_data:
-            itype = item_entry.get("item_type") or item_entry.get("product_type") or "Frame"
-            iid = item_entry.get("item_id") or item_entry.get("product_id")
+            itype = str(item_entry.get("item_type") or item_entry.get("product_type") or "Frame").strip()
+            raw_id = item_entry.get("item_id") or item_entry.get("product_id") or item_entry.get("id")
+            try:
+                iid = int(raw_id)
+            except (ValueError, TypeError):
+                iid = raw_id
+
             try:
                 qty = int(item_entry.get("quantity", 1))
             except (ValueError, TypeError):
@@ -174,8 +204,9 @@ def create_razorpay_order():
             unit_price = float(price_val or 0.0)
 
             item_subtotal = round(unit_price * qty, 2)
-            gst_perc = float(getattr(product, "gst_percent", 18.0) or 18.0)
-            item_gst = round(item_subtotal * (gst_perc / 100.0), 2)
+            # Retail selling prices are tax-inclusive by standard; fallback gst_percent is 0.0 unless set
+            gst_perc = float(getattr(product, "gst_percent", 0.0) or 0.0)
+            item_gst = round(item_subtotal * (gst_perc / 100.0), 2) if gst_perc > 0 else 0.0
             item_total = item_subtotal + item_gst
 
             subtotal += item_subtotal
@@ -1020,4 +1051,121 @@ def get_razorpay_transactions():
             "net_revenue": round(total_volume - total_refunded, 2)
         },
         "transactions": results
+    }), 200
+
+
+# ---------------------------------------------------------------------------
+# 9. GET & POST /admin/credentials — Admin Razorpay Account Management
+# ---------------------------------------------------------------------------
+@razorpay_bp.route("/admin/credentials", methods=["GET"])
+@jwt_required()
+def get_admin_razorpay_credentials():
+    """
+    Get current configured Razorpay account metadata (Key ID, Mode, Currency).
+    Does not expose raw secret.
+    """
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user or (user.role or "").lower() not in ("admin", "staff"):
+        return jsonify({"message": "Admin privileges required."}), 403
+
+    return jsonify({
+        "status": "success",
+        "configured": RazorpayService.is_configured(),
+        "key_id": Config.RAZORPAY_KEY_ID or "",
+        "mode": Config.RAZORPAY_MODE or "test",
+        "currency": Config.RAZORPAY_CURRENCY or "INR",
+        "has_secret": bool(Config.RAZORPAY_KEY_SECRET),
+        "has_webhook_secret": bool(Config.RAZORPAY_WEBHOOK_SECRET)
+    }), 200
+
+
+@razorpay_bp.route("/admin/credentials", methods=["POST"])
+@jwt_required()
+def update_admin_razorpay_credentials():
+    """
+    Validate and save admin's Razorpay credentials (Key ID, Key Secret, Mode).
+    Tests connection against Razorpay API before committing.
+    """
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user or (user.role or "").lower() not in ("admin", "staff"):
+        return jsonify({"message": "Admin privileges required."}), 403
+
+    data = request.get_json(silent=True) or {}
+    new_key_id = (data.get("key_id") or "").strip()
+    new_key_secret = (data.get("key_secret") or "").strip()
+    new_webhook_secret = (data.get("webhook_secret") or "").strip()
+    new_mode = (data.get("mode") or "test").strip().lower()
+
+    if not new_key_id:
+        return jsonify({"message": "Razorpay Key ID is required."}), 400
+
+    # If secret not passed, keep existing
+    secret_to_use = new_key_secret or Config.RAZORPAY_KEY_SECRET
+    if not secret_to_use:
+        return jsonify({"message": "Razorpay Key Secret is required."}), 400
+
+    # Test authentication directly with Razorpay
+    import razorpay
+    try:
+        test_client = razorpay.Client(auth=(new_key_id, secret_to_use))
+        test_client.order.all({"count": 1})
+    except Exception as e:
+        logger.warning("Razorpay credentials validation failed: %s", str(e))
+        return jsonify({
+            "status": "failed",
+            "message": f"Razorpay authentication failed: {str(e)}. Please check your Key ID and Secret."
+        }), 400
+
+    # Update runtime config
+    Config.RAZORPAY_KEY_ID = new_key_id
+    Config.RAZORPAY_KEY_SECRET = secret_to_use
+    if new_webhook_secret:
+        Config.RAZORPAY_WEBHOOK_SECRET = new_webhook_secret
+    Config.RAZORPAY_MODE = new_mode
+
+    # Update .env file on disk
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+    try:
+        if os.path.exists(env_path):
+            with open(env_path, 'r', encoding='utf-8') as ef:
+                env_lines = ef.readlines()
+
+            keys_to_set = {
+                'RAZORPAY_KEY_ID': new_key_id,
+                'RAZORPAY_KEY_SECRET': secret_to_use,
+                'RAZORPAY_MODE': new_mode
+            }
+            if new_webhook_secret:
+                keys_to_set['RAZORPAY_WEBHOOK_SECRET'] = new_webhook_secret
+
+            new_lines = []
+            found_keys = set()
+            for line in env_lines:
+                matched = False
+                for k, v in keys_to_set.items():
+                    if line.startswith(f"{k}="):
+                        new_lines.append(f"{k}={v}\n")
+                        found_keys.add(k)
+                        matched = True
+                        break
+                if not matched:
+                    new_lines.append(line)
+
+            for k, v in keys_to_set.items():
+                if k not in found_keys:
+                    new_lines.append(f"{k}={v}\n")
+
+            with open(env_path, 'w', encoding='utf-8') as ef:
+                ef.writelines(new_lines)
+    except Exception as env_err:
+        logger.error("Failed to write updated credentials to .env: %s", str(env_err))
+
+    return jsonify({
+        "status": "success",
+        "message": "Razorpay account credentials verified and updated successfully!",
+        "key_id": new_key_id,
+        "mode": new_mode,
+        "configured": True
     }), 200

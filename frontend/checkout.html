@@ -39,7 +39,22 @@
             <!-- Left Column: Shipping & Payment -->
             <div class="col-lg-8" data-aos="fade-right">
                 <div class="checkout-card p-4 mb-4">
-                    <h4 class="fw-bold mb-4"><i class="bi bi-geo-alt-fill text-primary me-2"></i>Shipping Information</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <h4 class="fw-bold mb-0"><i class="bi bi-geo-alt-fill text-primary me-2"></i>Shipping Information</h4>
+                    </div>
+
+                    <!-- Account Status Card -->
+                    <div id="accountStatusBanner" class="alert alert-light border d-flex justify-content-between align-items-center mb-4 py-2 px-3 rounded-3 shadow-sm">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-check-fill fs-5 text-primary"></i>
+                            <div>
+                                <span class="small text-muted d-block" style="font-size:0.75rem;">Account Profile</span>
+                                <span id="accountUserDisplay" class="text-dark small">Signed in as: Loading...</span>
+                            </div>
+                        </div>
+                        <a href="login.html?redirect=checkout.html" class="btn btn-sm btn-outline-primary fw-semibold" id="btnSwitchAccount"><i class="bi bi-arrow-repeat me-1"></i>Switch Account</a>
+                    </div>
+
                     <form id="checkoutForm">
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -152,15 +167,15 @@
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Shipping</span>
-                            <span class="fw-bold text-success">Free</span>
+                            <span class="fw-bold text-success">Free Delivery</span>
                         </div>
                         <div class="d-flex justify-content-between fs-5 border-top pt-3 mt-3">
-                            <span class="fw-bold">Total</span>
+                            <span class="fw-bold">Total (All Taxes Incl.)</span>
                             <span class="fw-bold text-primary" id="co_total">₹0</span>
                         </div>
                     </div>
                     
-                    <!-- PayU Pay Button -->
+                    <!-- Checkout Button -->
                     <button class="btn w-100 py-3 rounded-3 fw-bold shadow" id="btnPlaceOrder"
                         style="background:linear-gradient(135deg,#6c63ff,#3b5bdb);color:#fff;border:none;font-size:1rem;letter-spacing:.5px;">
                         <i class="bi bi-lock-fill me-2"></i>Pay Securely with Razorpay
@@ -192,10 +207,10 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>AOS.init({duration: 800, once: true});</script>
     
-    <script src="assets/js/auth.js?v=1002"></script>
-    <script src="assets/js/app.js?v=1002"></script>
-    <script src="assets/js/cart.js?v=1002"></script>
+    <script src="assets/js/auth.js?v=1003"></script>
+    <script src="assets/js/app.js?v=1003"></script>
+    <script src="assets/js/cart.js?v=1003"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="assets/js/checkout.js?v=1002"></script>
+    <script src="assets/js/checkout.js?v=1003"></script>
 </body>
 </html>

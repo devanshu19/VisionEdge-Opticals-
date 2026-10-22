@@ -293,6 +293,14 @@ def checkout():
         if not data.get('items'):
             return jsonify({"message": "Items are required"}), 400
 
+        # Update User details from checkout input if provided
+        phone_input = (data.get('phone') or '').strip()
+        address_input = (data.get('shipping_address') or '').strip()
+        if phone_input:
+            user.phone = phone_input
+        if address_input:
+            user.address = address_input
+
         # Find or create Customer record for this user
         customer = Customer.query.filter_by(created_by=user.id).first()
         if not customer:
@@ -309,15 +317,21 @@ def checkout():
                 
                 customer = Customer(
                     customer_code=customer_code,
-                    first_name=user.first_name,
-                    last_name=user.last_name,
-                    phone=user.phone or data.get('phone', '0000000000'),
+                    first_name=user.first_name or user.username,
+                    last_name=user.last_name or '',
+                    phone=phone_input or user.phone or '0000000000',
                     email=user.email,
-                    address=data.get('shipping_address', user.address),
+                    address=address_input or user.address or '',
                     created_by=user.id
                 )
                 db.session.add(customer)
                 db.session.flush()
+
+        if customer:
+            if phone_input:
+                customer.phone = phone_input
+            if address_input:
+                customer.address = address_input
 
         ord_num = generate_order_number()
         order = Order(
@@ -334,8 +348,12 @@ def checkout():
         
         for item_data in data['items']:
             item_type = item_data.get('item_type', 'Frame')
-            item_id = item_data['item_id']
-            qty = int(item_data['quantity'])
+            raw_id = item_data.get('item_id') or item_data.get('id')
+            try:
+                item_id = int(raw_id)
+            except (ValueError, TypeError):
+                item_id = raw_id
+            qty = int(item_data.get('quantity', 1))
             
             if item_type == 'Frame':
                 product = Frame.query.get(item_id)

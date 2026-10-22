@@ -168,6 +168,9 @@ window.removeFromCart = function(index) {
     saveCart();
     updateCartBadge();
     renderCart();
+    if (typeof window.renderCheckoutCart === 'function') {
+        window.renderCheckoutCart();
+    }
 }
 
 // Save to localStorage
@@ -175,6 +178,9 @@ function saveCart() {
     localStorage.setItem('visionEdgeCart', JSON.stringify(cart));
     localStorage.setItem('cart', JSON.stringify(cart));
     window.cart = cart;
+    if (typeof window.renderCheckoutCart === 'function') {
+        window.renderCheckoutCart();
+    }
 }
 
 window.handleAddToCart = function(btn, event) {
