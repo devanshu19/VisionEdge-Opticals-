@@ -245,31 +245,47 @@ function updateCheckoutTotals() {
 
 // ─── Payment method toggling & dynamic button ─────────────────────────────────
 function handlePaymentMethodChange() {
-    const selectedPm = document.querySelector('input[name="paymentMethod"]:checked');
-    const pm = selectedPm ? selectedPm.value : 'Razorpay';
-
     const btn = document.getElementById('btnPlaceOrder');
     if (!btn) return;
 
+    if (!window.cart || window.cart.length === 0 || checkoutCartTotal <= 0) {
+        btn.innerHTML = `<i class="bi bi-cart-x me-2"></i>Cart is Empty — Click to Select a Product`;
+        btn.className = 'btn btn-warning w-100 py-3 fw-bold shadow-sm';
+        btn.disabled = false;
+        return;
+    }
+
+    const selectedPm = document.querySelector('input[name="paymentMethod"]:checked');
+    const pm = selectedPm ? selectedPm.value : 'Razorpay';
     const formattedAmount = `₹${checkoutCartTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
     if (pm === 'Razorpay' || pm === 'Credit Card') {
         btn.innerHTML = `<i class="bi bi-shield-lock-fill me-2"></i>Pay ${formattedAmount} Securely with Razorpay`;
         btn.className = 'btn btn-primary w-100 py-3 fw-bold shadow-sm';
+        btn.disabled = false;
     } else if (pm === 'Cash on Delivery') {
         btn.innerHTML = `<i class="bi bi-cash-stack me-2"></i>Place Cash on Delivery Order (${formattedAmount})`;
         btn.className = 'btn btn-success w-100 py-3 fw-bold shadow-sm';
+        btn.disabled = false;
     } else if (pm === 'PayU Sandbox') {
         btn.innerHTML = `<i class="bi bi-box-arrow-up-right me-2"></i>Pay ${formattedAmount} via PayU Sandbox`;
         btn.className = 'btn btn-info text-white w-100 py-3 fw-bold shadow-sm';
+        btn.disabled = false;
     } else {
         btn.innerHTML = `<i class="bi bi-lock-fill me-2"></i>Proceed to Pay ${formattedAmount}`;
         btn.className = 'btn btn-primary w-100 py-3 fw-bold shadow-sm';
+        btn.disabled = false;
     }
 }
 
 // ─── Master Unified Checkout Controller ───────────────────────────────────────
 async function handleUnifiedCheckout() {
+    if (!window.cart || window.cart.length === 0 || checkoutCartTotal <= 0) {
+        alert('Your cart is empty! Redirecting to products so you can choose an eyewear item.');
+        window.location.href = 'products.html';
+        return;
+    }
+
     const form = document.getElementById('checkoutForm');
     if (form && !form.checkValidity()) { 
         form.reportValidity(); 
